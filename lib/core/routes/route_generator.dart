@@ -1,26 +1,43 @@
 import 'package:flutter/material.dart';
+import '../../features/dashboard/presentation/pages/dashboard_screen.dart';
+import '../../features/customers/presentation/pages/customer_list_screen.dart';
+import '../../features/orders/presentation/pages/order_list_screen.dart';
+import '../../features/settings/presentation/pages/settings_screen.dart';
+import '../../features/settings/presentation/pages/onboarding_screen.dart';
+import '../../features/notes/presentation/pages/notes_list_screen.dart';
+import '../../features/garments/presentation/pages/garments_library_screen.dart';
+import '../../features/analytics/presentation/pages/analytics_screen.dart';
+import '../../shared/data/local/settings_repository.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
-    // final args = settings.arguments;
-
     Widget page;
     switch (settings.name) {
       case '/':
-        // Normally this would be Splash/Onboarding or Home
-        page = const Scaffold(body: Center(child: Text('Splash/Onboarding')));
+        final SettingsRepository settingsRepo = SettingsRepository();
+        final bool isComplete = settingsRepo.isOnboardingComplete();
+        page = isComplete ? const DashboardScreen() : const OnboardingScreen();
         break;
       case '/dashboard':
-        page = const Scaffold(body: Center(child: Text('Dashboard')));
+        page = const DashboardScreen();
         break;
       case '/customers':
-        page = const Scaffold(body: Center(child: Text('Customers')));
+        page = const CustomerListScreen();
         break;
       case '/orders':
-        page = const Scaffold(body: Center(child: Text('Orders')));
+        page = const OrderListScreen();
+        break;
+      case '/garments':
+        page = const GarmentsLibraryScreen();
+        break;
+      case '/notes':
+        page = const NotesListScreen();
         break;
       case '/settings':
-        page = const Scaffold(body: Center(child: Text('Settings')));
+        page = const SettingsScreen();
+        break;
+      case '/analytics':
+        page = const AnalyticsScreen();
         break;
       default:
         page = _errorRoute();
