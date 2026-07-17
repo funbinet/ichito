@@ -1,0 +1,219 @@
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+
+class DatabaseHelper {
+  static final DatabaseHelper instance = DatabaseHelper._init();
+  static Database? _database;
+
+  DatabaseHelper._init();
+
+  Future<Database> get database async {
+    if (_database != null) return _database!;
+    _database = await _initDB('ichito.db');
+    return _database!;
+  }
+
+  Future<Database> _initDB(String filePath) async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, filePath);
+
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _createDB,
+      onConfigure: _onConfigure,
+    );
+  }
+
+  Future _onConfigure(Database db) async {
+    // Enable foreign keys
+    await db.execute('PRAGMA foreign_keys = ON');
+  }
+
+  Future _createDB(Database db, int version) async {
+    // 1. Customers Table
+    await db.execute('''
+      CREATE TABLE customers (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        phone TEXT NOT NULL,
+        email TEXT,
+        gender TEXT NOT NULL,
+        location TEXT,
+        photo_path TEXT,
+        measurements TEXT, -- JSON
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    ''');
+
+    // 2. Garments Table
+    await db.execute('''
+      CREATE TABLE garments (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        category TEXT NOT NULL,
+        description TEXT,
+        measurement_fields TEXT NOT NULL, -- JSON array
+        default_price REAL,
+        usage_count INTEGER DEFAULT 0,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    ''');
+
+    // 3. Fabrics Table
+    await db.execute('''
+      CREATE TABLE fabrics (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        description TEXT,
+        price_per_unit REAL NOT NULL,
+        unit TEXT NOT NULL,
+        category TEXT,
+        color TEXT,
+        image_path TEXT,
+        usage_count INTEGER DEFAULT 0,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    ''');
+
+    // 4. Designs Table
+    await db.execute('''
+      CREATE TABLE designs (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        description TEXT,
+        category TEXT,
+        image_path TEXT,
+        usage_count INTEGER DEFAULT 0,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    ''');
+
+    // 5. Orders Table
+    await db.execute('''
+      CREATE TABLE orders (
+        id TEXT PRIMARY KEY,
+        order_number TEXT NOT NULL UNIQUE,
+        customer_id TEXT NOT NULL,
+        garment_id TEXT NOT NULL,
+        fabric_id TEXT,
+        design_id TEXT,
+        order_date TEXT NOT NULL,
+        due_date TEXT NOT NULL,
+        trial_date TEXT,
+        status TEXT NOT NULL,
+        total_amount REAL NOT NULL,
+        paid_amount REAL NOT NULL DEFAULT 0,
+        measurements TEXT NOT NULL, -- JSON
+        notes TEXT,
+        special_instructions TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        FOREIGN KEY (customer_id) REFERENCES customers (id) ON DELETE RESTRICT,
+        FOREIGN KEY (garment_id) REFERENCES garments (id) ON DELETE RESTRICT,
+        FOREIGN KEY (fabric_id) REFERENCES fabrics (id) ON DELETE SET NULL,
+        FOREIGN KEY (design_id) REFERENCES designs (id) ON DELETE SET NULL
+      )
+    ''');
+
+    // 6. Payments Table
+    await db.execute('''
+      CREATE TABLE payments (
+        id TEXT PRIMARY KEY,
+        order_id TEXT NOT NULL,
+        amount REAL NOT NULL,
+        date TEXT NOT NULL,
+        method TEXT NOT NULL,
+        notes TEXT,
+        created_at TEXT NOT NULL,
+        FOREIGN KEY (order_id) REFERENCES orders (id) ON DELETE CASCADE
+      )
+    ''');
+
+    // 7. Order Status Logs Table
+    await db.execute('''
+      CREATE TABLE order_status_logs (
+        id TEXT PRIMARY KEY,
+        order_id TEXT NOT NULL,
+        from_status TEXT NOT NULL,
+        to_status TEXT NOT NULL,
+        changed_at TEXT NOT NULL,
+        notes TEXT,
+        FOREIGN KEY (order_id) REFERENCES orders (id) ON DELETE CASCADE
+      )
+    ''');
+
+    // 8. Notes Table
+    await db.execute('''
+      CREATE TABLE notes (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        content TEXT,
+        type TEXT NOT NULL,
+        speaker TEXT,
+        bible_verses TEXT, -- JSON array
+        meeting_date TEXT,
+        members TEXT, -- JSON array
+        contributions TEXT, -- JSON map
+        total_collected REAL,
+        expected_total REAL,
+        recipient TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    ''');
+
+    // Create Triggers for auto-updating usage_count
+    await _createTriggers(db);
+  }
+
+  Future _createTriggers(Database db) async {
+    await db.execute('''
+      CREATE TRIGGER increment_garment_usage AFTER INSERT ON orders
+      BEGIN
+        UPDATE garments SET usage_count = usage_count + 1 WHERE id = NEW.garment_id;
+      END;
+    ''');
+
+    await db.execute('''
+      CREATE TRIGGER increment_fabric_usage AFTER INSERT ON orders
+      WHEN NEW.fabric_id IS NOT NULL
+      BEGIN
+        UPDATE fabrics SET usage_count = usage_count + 1 WHERE id = NEW.fabric_id;
+      END;
+    ''');
+
+    await db.execute('''
+      CREATE TRIGGER increment_design_usage AFTER INSERT ON orders
+      WHEN NEW.design_id IS NOT NULL
+      BEGIN
+        UPDATE designs SET usage_count = usage_count + 1 WHERE id = NEW.design_id;
+      END;
+    ''');
+    
+    // Auto-update paid_amount on orders when payment is inserted
+    await db.execute('''
+      CREATE TRIGGER update_order_paid_amount_insert AFTER INSERT ON payments
+      BEGIN
+        UPDATE orders SET paid_amount = paid_amount + NEW.amount WHERE id = NEW.order_id;
+      END;
+    ''');
+    
+    // Auto-update paid_amount on orders when payment is deleted
+    await db.execute('''
+      CREATE TRIGGER update_order_paid_amount_delete AFTER DELETE ON payments
+      BEGIN
+        UPDATE orders SET paid_amount = paid_amount - OLD.amount WHERE id = OLD.order_id;
+      END;
+    ''');
+  }
+
+  Future close() async {
+    final db = await instance.database;
+    db.close();
+  }
+}
