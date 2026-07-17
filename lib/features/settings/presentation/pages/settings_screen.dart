@@ -57,8 +57,8 @@ class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
       color: theme.cardColor,
       shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
       child: Column(
-        children: ThemeMode.values.map((mode) {
-          return RadioListTile<ThemeMode>(
+        children: AppThemeMode.values.map((mode) {
+          return RadioListTile<AppThemeMode>(
             title: Text(mode.name.toUpperCase(), style: bodyStyle),
             value: mode,
             groupValue: theme.themeMode,

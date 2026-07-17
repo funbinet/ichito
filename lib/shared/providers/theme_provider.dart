@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum ThemeMode { amoledDark, dark, light }
+enum AppThemeMode { light, dark, amoledDark }
 enum CornerStyle {
   rounded, sharp, pill, notched, teardrop,
   beveled, asymmetric, cascading, soft, modern,
@@ -8,7 +8,7 @@ enum CornerStyle {
 }
 
 class ThemeProvider extends ChangeNotifier {
-  ThemeMode _themeMode = ThemeMode.amoledDark;
+  AppThemeMode _themeMode = AppThemeMode.amoledDark;
   Color _accentColor = const Color(0xFFFFD700); // Default Gold
   CornerStyle _cornerStyle = CornerStyle.rounded;
   String _fontFamily = 'Roboto';
@@ -17,7 +17,7 @@ class ThemeProvider extends ChangeNotifier {
   double _shadowIntensity = 0.15;
 
   // Getters
-  ThemeMode get themeMode => _themeMode;
+  AppThemeMode get themeMode => _themeMode;
   Color get accentColor => _accentColor;
   CornerStyle get cornerStyle => _cornerStyle;
   String get fontFamily => _fontFamily;
@@ -25,41 +25,58 @@ class ThemeProvider extends ChangeNotifier {
   bool get enableShadows => _enableShadows;
   double get shadowIntensity => _shadowIntensity;
 
+  void loadFromSettings(String modeStr) {
+    if (modeStr == 'light') {
+      _themeMode = AppThemeMode.light;
+    } else if (modeStr == 'dark') {
+      _themeMode = AppThemeMode.dark;
+    } else {
+      _themeMode = AppThemeMode.amoledDark;
+    }
+    notifyListeners();
+  }
+
   // Colors based on theme mode
   Color get backgroundColor {
     switch (_themeMode) {
-      case ThemeMode.amoledDark: return const Color(0xFF000000);
-      case ThemeMode.dark: return const Color(0xFF121212);
-      case ThemeMode.light: return const Color(0xFFF5F5F5);
+      case AppThemeMode.light:
+        return const Color(0xFFF5F5F5);
+      case AppThemeMode.dark:
+        return const Color(0xFF1E1E1E);
+      case AppThemeMode.amoledDark:
+        return Colors.black;
     }
   }
 
   Color get surfaceColor {
     switch (_themeMode) {
-      case ThemeMode.amoledDark: return const Color(0xFF0A0A0A);
-      case ThemeMode.dark: return const Color(0xFF1E1E1E);
-      case ThemeMode.light: return const Color(0xFFFFFFFF);
+      case AppThemeMode.amoledDark: return const Color(0xFF0A0A0A);
+      case AppThemeMode.dark: return const Color(0xFF1E1E1E);
+      case AppThemeMode.light: return const Color(0xFFFFFFFF);
     }
   }
 
   Color get cardColor {
     switch (_themeMode) {
-      case ThemeMode.amoledDark: return const Color(0xFF111111);
-      case ThemeMode.dark: return const Color(0xFF242424);
-      case ThemeMode.light: return const Color(0xFFFFFFFF);
+      case AppThemeMode.light:
+        return Colors.white;
+      case AppThemeMode.dark:
+        return const Color(0xFF2C2C2C);
+      case AppThemeMode.amoledDark:
+        return const Color(0xFF121212);
     }
   }
 
   Color get textPrimary {
-    return _themeMode == ThemeMode.light ? const Color(0xFF000000) : const Color(0xFFFFFFFF);
+    return _themeMode == AppThemeMode.light ? Colors.black87 : Colors.white;
   }
 
   Color get textSecondary {
-    return _themeMode == ThemeMode.light ? const Color(0xFF666666) : const Color(0xFFAAAAAA);
+    return _themeMode == AppThemeMode.light ? Colors.black54 : Colors.white70;
   }
 
   Color get borderColor {
-    return _themeMode == ThemeMode.light ? const Color(0xFFE0E0E0) : const Color(0xFF333333);
+    return _themeMode == AppThemeMode.light ? Colors.grey.shade300 : Colors.grey.shade800;
   }
 
   Color get accentLight => _accentColor.withOpacity(0.15);
@@ -104,7 +121,7 @@ class ThemeProvider extends ChangeNotifier {
   BoxShadow? get cardShadow {
     if (!_enableShadows) return null;
     return BoxShadow(
-      color: _themeMode == ThemeMode.light 
+      color: _themeMode == AppThemeMode.light 
           ? Colors.black.withOpacity(_shadowIntensity) 
           : Colors.black.withOpacity(_shadowIntensity * 1.5),
       blurRadius: 10,
@@ -113,7 +130,7 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   // Setters with notifyListeners
-  void setThemeMode(ThemeMode mode) {
+  void setThemeMode(AppThemeMode mode) {
     _themeMode = mode;
     notifyListeners();
   }

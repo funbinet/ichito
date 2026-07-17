@@ -6,6 +6,7 @@ import 'shared/providers/theme_provider.dart';
 import 'shared/providers/language_provider.dart';
 import 'shared/providers/app_state_provider.dart';
 import 'shared/data/database/database_helper.dart';
+import 'core/routes/route_generator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,20 +41,17 @@ class IchitoApp extends StatelessWidget {
       title: 'ICHITO',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        brightness: themeProvider.themeMode == ThemeMode.light ? Brightness.light : Brightness.dark,
+        brightness: themeProvider.themeMode == AppThemeMode.light ? Brightness.light : Brightness.dark,
         scaffoldBackgroundColor: themeProvider.backgroundColor,
         colorScheme: ColorScheme.fromSeed(
           seedColor: themeProvider.accentColor,
-          brightness: themeProvider.themeMode == ThemeMode.light ? Brightness.light : Brightness.dark,
+          brightness: themeProvider.themeMode == AppThemeMode.light ? Brightness.light : Brightness.dark,
         ),
         useMaterial3: true,
         fontFamily: themeProvider.fontFamily,
       ),
-      home: const Scaffold(
-        body: Center(
-          child: Text('ICHITO App Initialized'),
-        ),
-      ),
+      initialRoute: '/',
+      onGenerateRoute: RouteGenerator.generateRoute,
     );
   }
 }
