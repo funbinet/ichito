@@ -24,6 +24,7 @@ class ThemeProvider extends ChangeNotifier {
   double get fontSize => _fontSize;
   bool get enableShadows => _enableShadows;
   double get shadowIntensity => _shadowIntensity;
+  bool get isLightMode => _themeMode == AppThemeMode.light;
 
   void loadFromSettings(String modeStr) {
     if (modeStr == 'light') {

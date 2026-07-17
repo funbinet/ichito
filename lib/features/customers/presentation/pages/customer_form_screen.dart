@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
 import '../../../../shared/mixins/navigation_mixin.dart';
 import '../../../../core/widgets/adaptive_components.dart';
@@ -22,7 +23,12 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
   late TextEditingController _phoneController;
   late TextEditingController _emailController;
   late TextEditingController _locationController;
-  String _selectedGender = 'unisex';
+  
+  String _selectedGender = 'female';
+  String? _photoPath;
+  
+  // Measurement controllers
+  final Map<String, TextEditingController> _measurementControllers = {};
 
   @override
   void initState() {
@@ -31,9 +37,35 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
     _phoneController = TextEditingController(text: widget.customer?.phone ?? '');
     _emailController = TextEditingController(text: widget.customer?.email ?? '');
     _locationController = TextEditingController(text: widget.customer?.location ?? '');
+    
     if (widget.customer != null) {
       _selectedGender = widget.customer!.gender;
+      _photoPath = widget.customer!.photoPath;
+      
+      // Initialize existing measurements
+      widget.customer?.measurements?.forEach((key, value) {
+        _measurementControllers[key] = TextEditingController(text: value.toString());
+      });
     }
+    
+    _initMeasurementFields();
+  }
+  
+  void _initMeasurementFields() {
+    final fields = _getMeasurementFieldsForGender(_selectedGender);
+    for (final field in fields) {
+      if (!_measurementControllers.containsKey(field)) {
+        _measurementControllers[field] = TextEditingController();
+      }
+    }
+  }
+  
+  List<String> _getMeasurementFieldsForGender(String gender) {
+    if (gender.toLowerCase() == 'male') {
+      return ['height', 'chest', 'waist', 'hip', 'shoulder', 'neck', 'sleeve_length'];
+    }
+    // Female or default
+    return ['height', 'bust', 'waist', 'hip', 'shoulder', 'sleeve_length'];
   }
 
   @override
@@ -42,6 +74,9 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
     _phoneController.dispose();
     _emailController.dispose();
     _locationController.dispose();
+    for (var c in _measurementControllers.values) {
+      c.dispose();
+    }
     super.dispose();
   }
 
@@ -51,8 +86,25 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
            _phoneController.text != (widget.customer?.phone ?? '');
   }
 
+  Future<void> _pickImage() async {
+    // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Image picking not implemented yet')));
+    // Typically use image_picker here. Mocking for now.
+  }
+
   Future<void> _saveCustomer() async {
     if (!_formKey.currentState!.validate()) return;
+    
+    // Parse measurements
+    final Map<String, double> measurements = {};
+    _measurementControllers.forEach((key, controller) {
+      final text = controller.text.trim();
+      if (text.isNotEmpty) {
+        final val = double.tryParse(text);
+        if (val != null) {
+          measurements[key] = val;
+        }
+      }
+    });
 
     final customer = Customer(
       id: widget.customer?.id,
@@ -61,7 +113,8 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
       email: _emailController.text.trim(),
       gender: _selectedGender,
       location: _locationController.text.trim(),
-      measurements: widget.customer?.measurements, // Keep existing if editing
+      photoPath: _photoPath,
+      measurements: measurements.isEmpty ? null : measurements,
       createdAt: widget.customer?.createdAt ?? DateTime.now(),
       updatedAt: DateTime.now(),
     );
@@ -76,77 +129,238 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
       Navigator.pop(context, true); // Return true to indicate success
     }
   }
+  
+  String _formatMeasurementLabel(String key) {
+    return key.split('_').map((w) => '${w[0].toUpperCase()}${w.substring(1)}').join(' ');
+  }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: handleWillPop,
+    return PopScope(
+      canPop: !hasUnsavedChanges(),
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          handleWillPop();
+        }
+      },
       child: Scaffold(
+        backgroundColor: theme.backgroundColor,
         appBar: AppBar(
-          title: Text(widget.customer == null ? lang.t('add_customer') : lang.t('edit_customer'), style: headingStyle),
+          leading: IconButton(
+            icon: Icon(Icons.close, color: theme.textPrimary),
+            onPressed: () {
+              if (hasUnsavedChanges()) {
+                handleWillPop();
+              } else {
+                Navigator.pop(context);
+              }
+            },
+          ),
+          title: Text(widget.customer == null ? 'Add New Customer' : 'Edit Customer', style: headingStyle),
           backgroundColor: theme.backgroundColor,
           elevation: 0,
-          iconTheme: IconThemeData(color: theme.textPrimary),
+          actions: [
+            TextButton(
+              onPressed: _saveCustomer,
+              child: Text(
+                'Save',
+                style: TextStyle(
+                  color: theme.accentColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  fontFamily: theme.fontFamily,
+                ),
+              ),
+            ),
+          ],
         ),
         body: Form(
           key: _formKey,
           child: ListView(
-            padding: const EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 24),
             children: [
+              // Photo Upload
+              Center(
+                child: GestureDetector(
+                  onTap: _pickImage,
+                  child: Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: theme.accentLight,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: theme.accentColor, width: 2),
+                      image: _photoPath != null
+                          ? DecorationImage(image: FileImage(File(_photoPath!)), fit: BoxFit.cover)
+                          : null,
+                    ),
+                    child: _photoPath == null
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.camera_alt_outlined, color: theme.accentColor, size: 32),
+                              const SizedBox(height: 4),
+                              Text('Upload', style: TextStyle(fontSize: 12, color: theme.accentColor, fontFamily: theme.fontFamily)),
+                            ],
+                          )
+                        : null,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              
+              Padding(
+                padding: const EdgeInsets.only(left: 16, bottom: 8),
+                child: Text('Full Name *', style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
+              ),
               AdaptiveTextField(
                 controller: _nameController,
-                label: 'Full Name',
+                label: '',
+                hint: 'e.g. Jane Muthoni',
                 prefixIcon: Icons.person_outline,
                 validator: (val) => val == null || val.isEmpty ? 'Name is required' : null,
               ),
+              
+              Padding(
+                padding: const EdgeInsets.only(left: 16, top: 16, bottom: 8),
+                child: Text('Phone *', style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
+              ),
               AdaptiveTextField(
                 controller: _phoneController,
-                label: 'Phone Number',
+                label: '',
+                hint: 'e.g. 0712 345 678',
                 prefixIcon: Icons.phone_outlined,
                 keyboardType: TextInputType.phone,
                 validator: (val) => val == null || val.isEmpty ? 'Phone is required' : null,
               ),
+              
+              Padding(
+                padding: const EdgeInsets.only(left: 16, top: 16, bottom: 8),
+                child: Text('Email (Optional)', style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
+              ),
               AdaptiveTextField(
                 controller: _emailController,
-                label: 'Email Address (Optional)',
+                label: '',
+                hint: 'e.g. jane@email.com',
                 prefixIcon: Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
               ),
-              AdaptiveTextField(
-                controller: _locationController,
-                label: 'Location/Address (Optional)',
-                prefixIcon: Icons.location_on_outlined,
-              ),
+              
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: DropdownButtonFormField<String>(
-                  value: _selectedGender,
-                  decoration: InputDecoration(
-                    labelText: 'Gender',
-                    border: OutlineInputBorder(borderRadius: theme.cornerRadius),
-                  ),
-                  items: const [
-                    DropdownMenuItem(value: 'men', child: Text('Male')),
-                    DropdownMenuItem(value: 'women', child: Text('Female')),
-                    DropdownMenuItem(value: 'unisex', child: Text('Unisex')),
-                  ],
-                  onChanged: (val) {
-                    if (val != null) setState(() => _selectedGender = val);
-                  },
-                ),
+                padding: const EdgeInsets.only(left: 16, top: 16, bottom: 8),
+                child: Text('Gender *', style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
               ),
-              const SizedBox(height: 24),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: AdaptiveButton(
-                  text: lang.t('save'),
-                  icon: Icons.save_outlined,
-                  onPressed: _saveCustomer,
+                child: SegmentedButton<String>(
+                  segments: const [
+                    ButtonSegment(value: 'male', label: Text('Male'), icon: Icon(Icons.male)),
+                    ButtonSegment(value: 'female', label: Text('Female'), icon: Icon(Icons.female)),
+                  ],
+                  selected: {_selectedGender.toLowerCase() == 'male' ? 'male' : 'female'},
+                  onSelectionChanged: (Set<String> newSelection) {
+                    setState(() {
+                      _selectedGender = newSelection.first;
+                      _initMeasurementFields();
+                    });
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                        if (states.contains(MaterialState.selected)) {
+                          return theme.accentColor;
+                        }
+                        return theme.cardColor;
+                      },
+                    ),
+                    foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                        if (states.contains(MaterialState.selected)) {
+                          return theme.onAccent;
+                        }
+                        return theme.textPrimary;
+                      },
+                    ),
+                  ),
                 ),
               ),
+              
+              Padding(
+                padding: const EdgeInsets.only(left: 16, top: 16, bottom: 8),
+                child: Text('Location (Optional)', style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
+              ),
+              AdaptiveTextField(
+                controller: _locationController,
+                label: '',
+                hint: 'e.g. Nairobi CBD',
+                prefixIcon: Icons.location_on_outlined,
+              ),
+              
+              const SizedBox(height: 32),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Expanded(child: Divider(color: theme.borderColor)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text('Default Measurements (Optional)', style: TextStyle(color: theme.textSecondary, fontSize: 12, fontFamily: theme.fontFamily)),
+                    ),
+                    Expanded(child: Divider(color: theme.borderColor)),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              
+              _buildMeasurementGrid(),
+              
+              const SizedBox(height: 48),
             ],
           ),
         ),
+      ),
+    );
+  }
+  
+  Widget _buildMeasurementGrid() {
+    final fields = _getMeasurementFieldsForGender(_selectedGender);
+    
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 2.5,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+        ),
+        itemCount: fields.length,
+        itemBuilder: (context, index) {
+          final field = fields[index];
+          return TextField(
+            controller: _measurementControllers[field],
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily),
+            decoration: InputDecoration(
+              labelText: _formatMeasurementLabel(field),
+              labelStyle: TextStyle(color: theme.textSecondary, fontSize: 14, fontFamily: theme.fontFamily),
+              border: OutlineInputBorder(borderRadius: theme.cornerRadius),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: theme.cornerRadius,
+                borderSide: BorderSide(color: theme.borderColor),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: theme.cornerRadius,
+                borderSide: BorderSide(color: theme.accentColor, width: 2),
+              ),
+              suffixText: 'cm', // Or fetch from settings
+              suffixStyle: TextStyle(color: theme.textSecondary, fontSize: 12, fontFamily: theme.fontFamily),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            ),
+          );
+        },
       ),
     );
   }

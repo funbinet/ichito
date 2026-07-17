@@ -102,23 +102,27 @@ class AdaptiveButton extends StatelessWidget {
 }
 
 class AdaptiveTextField extends StatelessWidget {
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final String label;
   final String? hint;
   final IconData? prefixIcon;
   final TextInputType keyboardType;
   final int maxLines;
   final String? Function(String?)? validator;
+  final bool obscureText;
+  final ValueChanged<String>? onChanged;
 
   const AdaptiveTextField({
     super.key,
-    required this.controller,
+    this.controller,
     required this.label,
     this.hint,
     this.prefixIcon,
     this.keyboardType = TextInputType.text,
     this.maxLines = 1,
     this.validator,
+    this.obscureText = false,
+    this.onChanged,
   });
 
   @override
@@ -129,9 +133,11 @@ class AdaptiveTextField extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: TextFormField(
         controller: controller,
+        onChanged: onChanged,
         keyboardType: keyboardType,
         maxLines: maxLines,
         validator: validator,
+        obscureText: obscureText,
         style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily),
         decoration: InputDecoration(
           labelText: label,
@@ -140,7 +146,7 @@ class AdaptiveTextField extends StatelessWidget {
           hintStyle: TextStyle(color: theme.textSecondary.withOpacity(0.5)),
           prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: theme.accentColor) : null,
           filled: true,
-          fillColor: theme.themeMode == ThemeMode.light 
+          fillColor: theme.isLightMode 
               ? Colors.grey.withOpacity(0.1) 
               : Colors.white.withOpacity(0.05),
           border: OutlineInputBorder(
