@@ -5,7 +5,7 @@ import '../../../../core/widgets/ichito_scaffold.dart';
 import '../../../../core/widgets/adaptive_components.dart';
 import '../../data/models/note.dart';
 import '../../data/repositories/note_repository.dart';
-import 'widgets/note_components.dart';
+import '../widgets/note_components.dart';
 
 enum NoteSortOption { newest, oldest, titleAsc, titleDesc }
 
@@ -160,7 +160,7 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
           icon: Icon(Icons.arrow_back, color: theme.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(lang.t('notes', defaultValue: 'Notes'), style: headingStyle),
+        title: Text(lang.t('notes'), style: headingStyle),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         actions: [
@@ -223,7 +223,7 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
               side: BorderSide(
                 color: _activeFilter == filter ? theme.accentColor : theme.borderColor,
               ),
-              shape: RoundedRectangleBorder(borderRadius: theme.chipRadius),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
           ),
         ).toList(),

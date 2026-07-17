@@ -209,7 +209,7 @@ class ActivityFeedItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    order.orderNumber,
+                    'Order ${order.orderNumber}',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -217,12 +217,13 @@ class ActivityFeedItem extends StatelessWidget {
                       fontFamily: theme.fontFamily,
                     ),
                   ),
+                  const SizedBox(height: 4),
                   Text(
-                    order.customer?.name ?? 'Unknown Customer',
+                    'Customer ID: ${order.customerId} - ${language.formatCurrency(order.totalAmount, showSymbol: true)}',
                     style: TextStyle(fontSize: 13, color: theme.textSecondary, fontFamily: theme.fontFamily),
                   ),
                   Text(
-                    '${order.garment?.name ?? "Garment"} - ${language.formatCurrency(order.totalAmount, showSymbol: true)}',
+                    'Garment ID: ${order.garmentId}',
                     style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily),
                   ),
                 ],

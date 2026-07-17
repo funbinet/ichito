@@ -50,6 +50,7 @@ dependencies:
   intl: ^0.20.3
   shared_preferences: ^2.5.5
   path: ^1.9.1
+  timeago: ^3.7.1
 
 dev_dependencies:
   flutter_test:

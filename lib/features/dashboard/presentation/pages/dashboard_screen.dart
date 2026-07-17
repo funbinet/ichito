@@ -6,9 +6,9 @@ import '../../../../core/widgets/ichito_scaffold.dart';
 import '../../../../shared/providers/language_provider.dart';
 import '../../../orders/data/repositories/order_repository.dart';
 import '../../../orders/data/models/order.dart';
-import 'widgets/welcome_header.dart';
-import 'widgets/stat_card.dart';
-import 'widgets/dashboard_components.dart';
+import '../widgets/welcome_header.dart';
+import '../widgets/stat_card.dart';
+import '../widgets/dashboard_components.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});

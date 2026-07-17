@@ -5,7 +5,7 @@ import '../../../../core/widgets/ichito_scaffold.dart';
 import '../../../../core/widgets/adaptive_components.dart';
 import '../../data/models/customer.dart';
 import '../../data/repositories/customer_repository.dart';
-import 'widgets/customer_components.dart';
+import '../widgets/customer_components.dart';
 
 enum ViewMode { grid, list }
 enum SortOption { name, orders, spent, recent }
@@ -206,7 +206,7 @@ class _CustomerListScreenState extends State<CustomerListScreen> with ThemeAware
               side: BorderSide(
                 color: _activeFilter == filter ? theme.accentColor : theme.borderColor,
               ),
-              shape: RoundedRectangleBorder(borderRadius: theme.chipRadius),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
           ),
         ).toList(),

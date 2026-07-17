@@ -53,7 +53,7 @@ class WelcomeHeader extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                '${language.t("greeting", defaultValue: "Welcome back")}, ${appState.userName}',
+                '${language.t("greeting")}, ${appState.userName}',
                 style: TextStyle(
                   fontSize: 14,
                   color: theme.textSecondary,
