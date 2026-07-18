@@ -7,6 +7,7 @@ class IchitoScaffold extends StatelessWidget {
   final bool showRadialMenu;
   final Color? backgroundColor;
   final Widget? floatingActionButton;
+  final Widget? pageActionButton;
 
   const IchitoScaffold({
     required this.body,
@@ -14,6 +15,7 @@ class IchitoScaffold extends StatelessWidget {
     this.showRadialMenu = true,
     this.backgroundColor,
     this.floatingActionButton,
+    this.pageActionButton,
     super.key,
   });
 
@@ -26,6 +28,7 @@ class IchitoScaffold extends StatelessWidget {
       body: Stack(
         children: [
           Positioned.fill(child: body),
+          if (pageActionButton != null) pageActionButton!,
           if (showRadialMenu) const Positioned.fill(child: RadialMenu()),
         ],
       ),

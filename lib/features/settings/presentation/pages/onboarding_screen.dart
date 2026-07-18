@@ -13,6 +13,7 @@ import '../../../../shared/providers/theme_provider.dart';
 import '../../../../shared/widgets/image_picker_dialog.dart';
 import '../../../../shared/widgets/image_crop_dialog.dart';
 import 'package:provider/provider.dart';
+import '../../../security/services/security_service.dart';
 
 import '../../../garments/data/models/garment.dart';
 import '../../../garments/data/repositories/garment_repository.dart';
@@ -126,8 +127,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
     
     // 3. Security
     if (_enableAppLock && _pin.length >= 4) {
+      await SecurityService().setPin(_pin);
+      // setAppLockEnabled is already called inside setPin, but just to be sure
       await _settings.setAppLockEnabled(true);
-      await _settings.setAppPin(_pin);
     }
 
     // 4. Data Setup
@@ -414,7 +416,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
               DropdownMenuItem(value: AppLanguage.english, child: Text('English')),
               DropdownMenuItem(value: AppLanguage.sheng, child: Text('Sheng (Kenyan Slang)')),
             ],
-            onChanged: (val) => setState(() => _selectedLanguage = val ?? AppLanguage.english),
+            onChanged: (val) {
+              if (val != null) {
+                setState(() => _selectedLanguage = val);
+                Provider.of<LanguageProvider>(context, listen: false).setLanguage(val);
+              }
+            },
           ),
           const SizedBox(height: 16),
           Text('Currency', style: subtitleStyle),
@@ -429,7 +436,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
               DropdownMenuItem(value: 'TZS', child: Text('Tanzanian Shilling (TZS)')),
               DropdownMenuItem(value: 'USD', child: Text('US Dollar (USD)')),
             ],
-            onChanged: (val) => setState(() => _selectedCurrency = val ?? 'KES'),
+            onChanged: (val) {
+              if (val != null) {
+                setState(() => _selectedCurrency = val);
+                Provider.of<LanguageProvider>(context, listen: false).setCurrency(val);
+              }
+            },
           ),
           const SizedBox(height: 16),
           Text('Measurement Unit', style: subtitleStyle),
@@ -442,7 +454,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
               DropdownMenuItem(value: 'cm', child: Text('Centimeters (cm)')),
               DropdownMenuItem(value: 'inches', child: Text('Inches (in)')),
             ],
-            onChanged: (val) => setState(() => _selectedUnit = val ?? 'cm'),
+            onChanged: (val) {
+              if (val != null) {
+                setState(() => _selectedUnit = val);
+                Provider.of<LanguageProvider>(context, listen: false).setMeasurementUnit(val);
+              }
+            },
           ),
         ],
       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum AppThemeMode { light, dark, amoledDark }
+enum AppThemeMode { light, dark, amoledDark, system }
 enum CornerStyle {
   rounded, sharp, pill, notched, teardrop,
   beveled, asymmetric, cascading, soft, modern,
@@ -8,8 +8,9 @@ enum CornerStyle {
 }
 
 class ThemeProvider extends ChangeNotifier {
-  AppThemeMode _themeMode = AppThemeMode.amoledDark;
+  AppThemeMode _themeMode = AppThemeMode.system;
   Color _accentColor = const Color(0xFFFFD700); // Default Gold
+  bool _useGradients = false;
   CornerStyle _cornerStyle = CornerStyle.rounded;
   String _fontFamily = 'Roboto';
   double _fontSize = 16.0;
@@ -19,6 +20,7 @@ class ThemeProvider extends ChangeNotifier {
   // Getters
   AppThemeMode get themeMode => _themeMode;
   Color get accentColor => _accentColor;
+  bool get useGradients => _useGradients;
   CornerStyle get cornerStyle => _cornerStyle;
   String get fontFamily => _fontFamily;
   double get fontSize => _fontSize;
@@ -33,6 +35,8 @@ class ThemeProvider extends ChangeNotifier {
       _themeMode = AppThemeMode.dark;
     } else {
       _themeMode = AppThemeMode.amoledDark;
+      // Note: If you implement useGradients persistence in settings repository, load it here.
+      // _useGradients = _repository.getUseGradients();
     }
     notifyListeners();
   }
@@ -45,6 +49,7 @@ class ThemeProvider extends ChangeNotifier {
       case AppThemeMode.dark:
         return const Color(0xFF1E1E1E);
       case AppThemeMode.amoledDark:
+      case AppThemeMode.system:
         return Colors.black;
     }
   }
@@ -54,6 +59,7 @@ class ThemeProvider extends ChangeNotifier {
       case AppThemeMode.amoledDark: return const Color(0xFF0A0A0A);
       case AppThemeMode.dark: return const Color(0xFF1E1E1E);
       case AppThemeMode.light: return const Color(0xFFFFFFFF);
+      case AppThemeMode.system: return const Color(0xFF0A0A0A);
     }
   }
 
@@ -64,6 +70,7 @@ class ThemeProvider extends ChangeNotifier {
       case AppThemeMode.dark:
         return const Color(0xFF2C2C2C);
       case AppThemeMode.amoledDark:
+      case AppThemeMode.system:
         return const Color(0xFF121212);
     }
   }
@@ -137,9 +144,18 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   void setAccentColor(Color color) {
-    _accentColor = color;
-    notifyListeners();
+    if (_accentColor != color) {
+      _accentColor = color;
+      notifyListeners();
+    }
   }
+
+  void setUseGradients(bool value) {
+    if (_useGradients != value) {
+      _useGradients = value;
+      notifyListeners();
+    }
+  } 
 
   void setCornerStyle(CornerStyle style) {
     _cornerStyle = style;

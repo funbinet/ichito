@@ -6,6 +6,13 @@ import '../../../../core/widgets/adaptive_components.dart';
 import '../../data/models/note.dart';
 import '../../data/repositories/note_repository.dart';
 import '../widgets/note_components.dart';
+import '../widgets/note_type_selector_dialog.dart';
+import 'normal_note_editor.dart';
+import 'church_note_editor.dart';
+import 'chama_note_editor.dart';
+import '../../../../shared/widgets/page_action_button.dart';
+import '../../../../shared/widgets/auth_delete_dialog.dart';
+import '../../../security/services/security_service.dart';
 
 enum NoteSortOption { newest, oldest, titleAsc, titleDesc }
 
@@ -100,54 +107,48 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
     });
   }
 
-  void _showAddNoteSheet() {
-    showModalBottomSheet(
+  void _showAddNoteSheet() async {
+    final type = await showDialog<String>(
       context: context,
-      backgroundColor: theme.backgroundColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: theme.cornerRadius.topLeft)),
-      builder: (context) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text('What type of note?', style: headingStyle),
-              ),
-              ListTile(
-                leading: Icon(Icons.note_outlined, color: theme.accentColor),
-                title: Text('Normal Note', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                subtitle: Text('General notes and reminders', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
-                onTap: () {
-                  Navigator.pop(context);
-                  // navigateTo('/notes/new', arguments: 'normal');
-                },
-              ),
-              const Divider(height: 1),
-              ListTile(
-                leading: const Icon(Icons.church_outlined, color: Color(0xFF9C27B0)),
-                title: Text('Church Note', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                subtitle: Text('Sermon notes and Bible study', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
-                onTap: () {
-                  Navigator.pop(context);
-                  // navigateTo('/notes/new', arguments: 'church');
-                },
-              ),
-              const Divider(height: 1),
-              ListTile(
-                leading: const Icon(Icons.groups_outlined, color: Color(0xFF4CAF50)),
-                title: Text('Chama Note', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                subtitle: Text('Group savings meeting records', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
-                onTap: () {
-                  Navigator.pop(context);
-                  // navigateTo('/notes/new', arguments: 'chama');
-                },
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        );
-      },
+      builder: (context) => const NoteTypeSelectorDialog(),
+    );
+    
+    if (type != null) {
+      _navigateToEditor(type, null);
+    }
+  }
+
+  void _navigateToEditor(String type, Note? note) async {
+    Widget page;
+    switch (type) {
+      case 'church':
+        page = ChurchNoteEditor(note: note);
+        break;
+      case 'chama':
+        page = ChamaNoteEditor(note: note);
+        break;
+      default:
+        page = NormalNoteEditor(note: note);
+        break;
+    }
+
+    final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+    if (result == true) {
+      _loadNotes();
+    }
+  }
+  
+  void _deleteNoteWithAuth(Note note) {
+    showDialog(
+      context: context,
+      builder: (context) => AuthDeleteDialog(
+        itemName: note.title,
+        securityService: SecurityService(),
+        onDelete: () async {
+          await _repository.deleteNote(note.id!);
+          _loadNotes();
+        },
+      ),
     );
   }
 
@@ -163,13 +164,11 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
         title: Text(lang.t('notes'), style: headingStyle),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
-        actions: [
-          TextButton.icon(
-            icon: Icon(Icons.add, size: 18, color: theme.accentColor),
-            label: Text('New Note', style: TextStyle(color: theme.accentColor, fontFamily: theme.fontFamily)),
-            onPressed: _showAddNoteSheet,
-          ),
-        ],
+      ),
+      pageActionButton: PageActionButton(
+        label: lang.t('create_note'),
+        icon: Icons.note_add_outlined,
+        onPressed: _showAddNoteSheet,
       ),
       body: Column(
         children: [
@@ -281,8 +280,27 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
         final note = _filteredNotes[index];
         return NoteCard(
           note: note,
-          onTap: () {
-            // navigateTo('/notes/detail', arguments: note.id);
+          onTap: () => _navigateToEditor(note.type, note),
+          onLongPress: () {
+            showModalBottomSheet(
+              context: context,
+              backgroundColor: theme.backgroundColor,
+              builder: (context) => SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.delete, color: Colors.red),
+                      title: const Text('Delete Note', style: TextStyle(color: Colors.red)),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _deleteNoteWithAuth(note);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            );
           },
         );
       },

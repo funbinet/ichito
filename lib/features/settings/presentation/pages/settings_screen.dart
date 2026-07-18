@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
-import '../../../../shared/providers/theme_provider.dart';
 import '../../../../shared/providers/language_provider.dart';
-import '../../../../shared/providers/app_state_provider.dart';
-import '../../../../shared/data/local/settings_repository.dart';
+import '../../../../shared/widgets/auth_delete_dialog.dart';
+import '../../../security/services/security_service.dart';
+import '../../../../shared/data/database/backup_service.dart';
 import '../../../../core/widgets/ichito_scaffold.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -15,235 +15,194 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
-  final SettingsRepository _settings = SettingsRepository();
+
+  void _showFactoryResetDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AuthDeleteDialog(
+        itemName: 'ALL APP DATA',
+        securityService: SecurityService(),
+        onDelete: () async {
+          // Perform factory reset logic here
+          if (mounted) {
+            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+          }
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return IchitoScaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text(lang.t('Settings'), style: headingStyle.copyWith(fontSize: 18)),
+        title: Text(lang.t('Settings') ?? 'Settings', style: headingStyle.copyWith(fontSize: 18)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
+        padding: const EdgeInsets.all(16).copyWith(bottom: 120),
         children: [
-          _buildSectionHeader('Appearance'),
-          _buildThemeSelector(),
-          _buildAccentColorSelector(),
-          const SizedBox(height: 24),
-          _buildSectionHeader('Localization'),
-          _buildLanguageSelector(),
-          const SizedBox(height: 24),
-          _buildSectionHeader('Security'),
-          _buildSecuritySettings(),
-          const SizedBox(height: 24),
-          _buildSectionHeader('Data Management'),
-          _buildDataManagementSettings(),
+          _buildSettingsTile(
+            title: 'Profile',
+            subtitle: 'Personal & business information',
+            icon: Icons.person_outline,
+            onTap: () => Navigator.pushNamed(context, '/settings/profile'),
+          ),
+          _buildSettingsTile(
+            title: 'Appearance',
+            subtitle: 'Theme, colors, and gradients',
+            icon: Icons.palette_outlined,
+            onTap: () => Navigator.pushNamed(context, '/settings/appearance'),
+          ),
+          _buildSettingsTile(
+            title: 'Localization',
+            subtitle: 'Language and region settings',
+            icon: Icons.language_outlined,
+            onTap: () {
+              // Show language selector dialog or navigate
+            },
+          ),
+          _buildSettingsTile(
+            title: 'Notifications',
+            subtitle: 'Alerts and push notifications',
+            icon: Icons.notifications_outlined,
+            onTap: () {
+              Navigator.pushNamed(context, '/notifications');
+            },
+          ),
+          _buildSettingsTile(
+            title: 'Security',
+            subtitle: 'App lock, biometrics, PIN',
+            icon: Icons.security_outlined,
+            onTap: () => Navigator.pushNamed(context, '/settings/security'),
+          ),
+          _buildSettingsTile(
+            title: 'Backup Data',
+            subtitle: 'Export a local .zip backup',
+            icon: Icons.cloud_download_outlined,
+            onTap: () async {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Preparing backup...')));
+              final result = await BackupService().exportBackup();
+              if (result != null && mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Backup ready to share')));
+              } else if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Backup failed')));
+              }
+            },
+          ),
+          _buildSettingsTile(
+            title: 'Restore Data',
+            subtitle: 'Import a local .zip backup',
+            icon: Icons.restore_outlined,
+            onTap: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  backgroundColor: theme.cardColor,
+                  title: Text('Restore Backup?', style: TextStyle(color: theme.textPrimary)),
+                  content: Text('This will overwrite all current data. This action cannot be undone.', 
+                    style: TextStyle(color: theme.textSecondary)),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                    TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Restore', style: TextStyle(color: Colors.red))),
+                  ],
+                ),
+              );
+
+              if (confirm == true && mounted) {
+                final success = await BackupService().importBackup();
+                if (success && mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Restore successful. Restarting app...')));
+                  // Restart to reload state
+                  Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+                } else if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Restore failed')));
+                }
+              }
+            },
+          ),
+          _buildSettingsTile(
+            title: 'Feedback',
+            subtitle: 'Report bugs or request features',
+            icon: Icons.feedback_outlined,
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feedback feature coming soon')));
+            },
+          ),
+          _buildSettingsTile(
+            title: 'Share App',
+            subtitle: 'Share ICHITO with friends',
+            icon: Icons.share_outlined,
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Share feature coming soon')));
+            },
+          ),
+          _buildSettingsTile(
+            title: 'About',
+            subtitle: 'App version and information',
+            icon: Icons.info_outline,
+            onTap: () {},
+          ),
+          const SizedBox(height: 16),
+          _buildSettingsTile(
+            title: 'Factory Reset',
+            subtitle: 'Delete all data and reset app',
+            icon: Icons.delete_forever_outlined,
+            iconColor: Colors.red,
+            titleColor: Colors.red,
+            onTap: _showFactoryResetDialog,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Text(
-        title.toUpperCase(),
-        style: subtitleStyle.copyWith(color: theme.accentColor, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
-  Widget _buildThemeSelector() {
+  Widget _buildSettingsTile({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required VoidCallback onTap,
+    Color? iconColor,
+    Color? titleColor,
+  }) {
     return Card(
       color: theme.cardColor,
+      margin: const EdgeInsets.only(bottom: 8),
       shape: RoundedRectangleBorder(
         borderRadius: theme.cornerRadius,
-        side: BorderSide(color: theme.accentColor.withOpacity(0.2)),
+        side: BorderSide(color: theme.borderColor),
       ),
-      child: Column(
-        children: AppThemeMode.values.map((mode) {
-          return RadioListTile<AppThemeMode>(
-            title: Text(mode.name.toUpperCase(), style: bodyStyle),
-            value: mode,
-            groupValue: theme.themeMode,
-            activeColor: theme.accentColor,
-            onChanged: (val) {
-              if (val != null) {
-                theme.setThemeMode(val);
-                _settings.setThemeMode(val.name);
-              }
-            },
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildAccentColorSelector() {
-    final colors = [
-      Colors.red, Colors.pink, Colors.purple, Colors.deepPurple,
-      Colors.indigo, Colors.blue, Colors.lightBlue, Colors.cyan,
-      Colors.teal, Colors.green, Colors.lightGreen, Colors.lime,
-      Colors.yellow, Colors.amber, Colors.orange, Colors.deepOrange,
-      Colors.brown, Colors.grey, Colors.blueGrey, const Color(0xFFFFD700),
-    ];
-
-    return Card(
-      color: theme.cardColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: theme.cornerRadius,
-        side: BorderSide(color: theme.accentColor.withOpacity(0.2)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Accent Color', style: bodyStyle),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: colors.map((color) {
-                final isSelected = theme.accentColor.value == color.value;
-                return GestureDetector(
-                  onTap: () {
-                    theme.setAccentColor(color);
-                    _settings.setAccentColor(color.value);
-                  },
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: color,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: isSelected ? theme.textPrimary : Colors.transparent,
-                        width: 3,
-                      ),
-                    ),
-                    child: isSelected ? Icon(Icons.check, color: theme.onAccent) : null,
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: (iconColor ?? theme.accentColor).withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: iconColor ?? theme.accentColor),
         ),
-      ),
-    );
-  }
-
-  Widget _buildLanguageSelector() {
-    return Card(
-      color: theme.cardColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: theme.cornerRadius,
-        side: BorderSide(color: theme.accentColor.withOpacity(0.2)),
-      ),
-      child: Column(
-        children: AppLanguage.values.map((l) {
-          return RadioListTile<AppLanguage>(
-            title: Text(l.name.toUpperCase(), style: bodyStyle),
-            value: l,
-            groupValue: lang.currentLanguage,
-            activeColor: theme.accentColor,
-            onChanged: (val) {
-              if (val != null) {
-                lang.setLanguage(val);
-                _settings.setLanguage(val.name);
-              }
-            },
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildSecuritySettings() {
-    final appState = Provider.of<AppStateProvider>(context);
-    return Card(
-      color: theme.cardColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: theme.cornerRadius,
-        side: BorderSide(color: theme.accentColor.withOpacity(0.2)),
-      ),
-      child: Column(
-        children: [
-          SwitchListTile(
-            title: Text('Enable App Lock (PIN)', style: bodyStyle),
-            value: appState.isAppLockEnabled,
-            activeColor: theme.accentColor,
-            onChanged: (val) {
-              appState.setAppLockEnabled(val);
-              if (val) {
-                // In real app, route to Set PIN screen
-              }
-            },
+        title: Text(
+          title,
+          style: TextStyle(
+            color: titleColor ?? theme.textPrimary,
+            fontFamily: theme.fontFamily,
+            fontWeight: FontWeight.bold,
           ),
-          if (appState.isAppLockEnabled)
-            SwitchListTile(
-              title: Text('Enable Biometrics', style: bodyStyle),
-              value: appState.isBiometricEnabled,
-              activeColor: theme.accentColor,
-              onChanged: (val) {
-                appState.setBiometricEnabled(val);
-              },
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDataManagementSettings() {
-    return Card(
-      color: theme.cardColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: theme.cornerRadius,
-        side: BorderSide(color: theme.accentColor.withOpacity(0.2)),
-      ),
-      child: Column(
-        children: [
-          ListTile(
-            leading: Icon(Icons.delete_forever_outlined, color: Colors.red),
-            title: Text('Factory Reset', style: bodyStyle.copyWith(color: Colors.red, fontWeight: FontWeight.bold)),
-            subtitle: Text('Delete all data and reset app', style: subtitleStyle),
-            onTap: () => _showFactoryResetDialog(),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(
+            color: theme.textSecondary,
+            fontFamily: theme.fontFamily,
+            fontSize: theme.fontSize * 0.85,
           ),
-        ],
+        ),
+        trailing: Icon(Icons.chevron_right, color: theme.textSecondary),
+        onTap: onTap,
       ),
     );
-  }
-
-  Future<void> _showFactoryResetDialog() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: theme.backgroundColor,
-        title: Text('Factory Reset', style: headingStyle.copyWith(color: Colors.red)),
-        content: Text('This will delete ALL data including customers, orders, notes, and images. This CANNOT be undone.\n\nAre you absolutely sure?', style: bodyStyle),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('CANCEL', style: TextStyle(color: theme.textSecondary))),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('YES, DELETE EVERYTHING', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      // Execute factory reset
-      final appState = Provider.of<AppStateProvider>(context, listen: false);
-      appState.setAppLockEnabled(false);
-      
-      if (mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-      }
-    }
   }
 }

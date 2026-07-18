@@ -3,6 +3,10 @@ import 'dart:io';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
 import '../../../../shared/mixins/navigation_mixin.dart';
 import '../../../../core/widgets/adaptive_components.dart';
+import '../../../../shared/widgets/image_picker_dialog.dart';
+import '../../../../shared/widgets/image_crop_dialog.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:convert';
 import '../../data/models/customer.dart';
 import '../../data/repositories/customer_repository.dart';
 
@@ -87,8 +91,23 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
   }
 
   Future<void> _pickImage() async {
-    // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Image picking not implemented yet')));
-    // Typically use image_picker here. Mocking for now.
+    final source = await ImagePickerDialog.show(context);
+    if (source == null) return;
+    
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: source == 'camera' ? ImageSource.camera : ImageSource.gallery,
+    );
+    
+    if (pickedFile == null) return;
+    if (!mounted) return;
+    
+    final croppedBytes = await ImageCropDialog.show(context, File(pickedFile.path));
+    if (croppedBytes == null) return;
+    
+    setState(() {
+      _photoPath = base64Encode(croppedBytes);
+    });
   }
 
   Future<void> _saveCustomer() async {
@@ -191,7 +210,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
                       shape: BoxShape.circle,
                       border: Border.all(color: theme.accentColor, width: 2),
                       image: _photoPath != null
-                          ? DecorationImage(image: FileImage(File(_photoPath!)), fit: BoxFit.cover)
+                          ? DecorationImage(image: MemoryImage(base64Decode(_photoPath!)), fit: BoxFit.cover)
                           : null,
                     ),
                     child: _photoPath == null

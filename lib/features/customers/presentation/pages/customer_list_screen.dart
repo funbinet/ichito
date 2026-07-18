@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
 import '../../../../shared/mixins/navigation_mixin.dart';
+import '../../../../shared/providers/language_provider.dart';
+import '../../../../shared/widgets/page_action_button.dart';
 import '../../../../core/widgets/ichito_scaffold.dart';
-import '../../../../core/widgets/adaptive_components.dart';
 import '../../data/models/customer.dart';
 import '../../data/repositories/customer_repository.dart';
 import '../widgets/customer_components.dart';
@@ -145,10 +148,6 @@ class _CustomerListScreenState extends State<CustomerListScreen> with ThemeAware
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.add, color: theme.textPrimary),
-            onPressed: () => navigateTo('/customers/new'),
-          ),
-          IconButton(
             icon: Icon(Icons.bar_chart_outlined, color: theme.textPrimary),
             onPressed: _showCustomerStats,
           ),
@@ -168,6 +167,11 @@ class _CustomerListScreenState extends State<CustomerListScreen> with ThemeAware
           ),
           const SizedBox(height: 80), // Padding for RadialMenu
         ],
+      ),
+      pageActionButton: PageActionButton(
+        label: 'Add Client',
+        icon: Icons.add,
+        onPressed: () => navigateTo('/customers/new'),
       ),
     );
   }
@@ -274,7 +278,7 @@ class _CustomerListScreenState extends State<CustomerListScreen> with ThemeAware
         children: [
           Icon(Icons.people_outline, size: 80, color: theme.textSecondary.withOpacity(0.5)),
           const SizedBox(height: 16),
-          Text('No customers found', style: subtitleStyle),
+          Text('No clients found', style: subtitleStyle),
         ],
       ),
     );

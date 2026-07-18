@@ -48,6 +48,16 @@ class GarmentRepository {
     return null;
   }
 
+  Future<int> updateGarment(Garment garment) async {
+    final db = await _dbHelper.database;
+    return await db.update(
+      'garments',
+      garment.toMap(),
+      where: 'id = ?',
+      whereArgs: [garment.id],
+    );
+  }
+
   Future<int> deleteGarment(String id) async {
     final db = await _dbHelper.database;
     return await db.delete('garments', where: 'id = ?', whereArgs: [id]);

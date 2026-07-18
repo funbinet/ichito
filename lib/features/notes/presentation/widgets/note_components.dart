@@ -57,11 +57,13 @@ class VerseChip extends StatelessWidget {
 class NoteCard extends StatelessWidget {
   final Note note;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
   
   const NoteCard({
     super.key,
     required this.note,
     required this.onTap,
+    this.onLongPress,
   });
 
   void _showQuickActions(BuildContext context) {
@@ -75,7 +77,7 @@ class NoteCard extends StatelessWidget {
     
     return GestureDetector(
       onTap: onTap,
-      onLongPress: () => _showQuickActions(context),
+      onLongPress: onLongPress ?? () => _showQuickActions(context),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         padding: const EdgeInsets.all(16),

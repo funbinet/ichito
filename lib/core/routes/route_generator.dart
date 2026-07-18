@@ -10,6 +10,13 @@ import '../../features/garments/presentation/pages/garments_library_screen.dart'
 import '../../features/analytics/presentation/pages/analytics_screen.dart';
 import '../../features/orders/presentation/pages/order_wizard_screen.dart';
 import '../../features/notifications/presentation/pages/notifications_screen.dart';
+import '../../features/designs/presentation/pages/designs_list_screen.dart';
+import '../../features/fabrics/presentation/pages/fabrics_list_screen.dart';
+import '../../features/settings/presentation/pages/sub_screens/profile_settings_screen.dart';
+import '../../features/settings/presentation/pages/sub_screens/appearance_settings_screen.dart';
+import '../../features/settings/presentation/pages/sub_screens/security_settings_screen.dart';
+import '../../features/security/presentation/pages/pin_lock_screen.dart';
+import '../../features/security/presentation/pages/pin_setup_screen.dart';
 import '../../shared/data/local/settings_repository.dart';
 
 class RouteGenerator {
@@ -39,6 +46,21 @@ class RouteGenerator {
       case '/settings':
         page = const SettingsScreen();
         break;
+      case '/settings/profile':
+        page = const ProfileSettingsScreen();
+        break;
+      case '/settings/appearance':
+        page = const AppearanceSettingsScreen();
+        break;
+      case '/settings/security':
+        page = const SecuritySettingsScreen();
+        break;
+      case '/setup_pin':
+        page = const PinSetupScreen();
+        break;
+      case '/lock_screen':
+        page = PinLockScreen(onUnlocked: () {});
+        break;
       case '/analytics':
         page = const AnalyticsScreen();
         break;
@@ -51,8 +73,22 @@ class RouteGenerator {
       case '/notifications':
         page = const NotificationsScreen();
         break;
-      case '/fabrics':
       case '/designs':
+        page = const DesignsListScreen();
+        break;
+      case '/fabrics':
+        page = const FabricsListScreen();
+        break;
+      case '/designs/detail':
+      case '/designs/form':
+      case '/garments/detail':
+      case '/garments/form':
+      case '/notes/new/normal':
+      case '/notes/new/church':
+      case '/notes/new/chama':
+      case '/settings/pin-setup':
+      case '/settings/security-key':
+      case '/lock':
       case '/customers/new':
       case '/customers/detail':
       case '/order_detail':

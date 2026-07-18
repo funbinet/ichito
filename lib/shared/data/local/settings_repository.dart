@@ -85,7 +85,10 @@ class SettingsRepository {
   static const String _dateFormatKey = 'dateFormat';
   static const String _onboardingCompleteKey = 'onboardingComplete';
   static const String _appLockEnabledKey = 'appLockEnabled';
+  static const String _lockTypeKey = 'lockType';
   static const String _appPinKey = 'appPin';
+  static const String _biometricEnabledKey = 'biometricEnabled';
+  static const String _autoLockMinutesKey = 'autoLockMinutes';
   static const String _measurementSchemaKey = 'measurementSchema';
 
   // ─── Read Methods (synchronous from cache) ─────────────────────
@@ -109,7 +112,10 @@ class SettingsRepository {
   bool isOnboardingComplete() => _getBool(_onboardingCompleteKey, false);
 
   bool getAppLockEnabled() => _getBool(_appLockEnabledKey, false);
+  String getLockType() => _getString(_lockTypeKey, 'pin');
   String? getAppPin() => _cache[_appPinKey];
+  bool getBiometricEnabled() => _getBool(_biometricEnabledKey, false);
+  int getAutoLockMinutes() => _getInt(_autoLockMinutesKey, 5);
 
   List<String> getMeasurementSchema() {
     final val = _cache[_measurementSchemaKey];
@@ -134,7 +140,10 @@ class SettingsRepository {
   Future<void> setOnboardingComplete(bool complete) => _set(_onboardingCompleteKey, complete ? '1' : '0');
 
   Future<void> setAppLockEnabled(bool enabled) => _set(_appLockEnabledKey, enabled ? '1' : '0');
+  Future<void> setLockType(String type) => _set(_lockTypeKey, type);
   Future<void> setAppPin(String pin) => _set(_appPinKey, pin);
+  Future<void> setBiometricEnabled(bool enabled) => _set(_biometricEnabledKey, enabled ? '1' : '0');
+  Future<void> setAutoLockMinutes(int minutes) => _set(_autoLockMinutesKey, minutes.toString());
 
   Future<void> setMeasurementSchema(List<String> schema) => _set(_measurementSchemaKey, schema.join('||'));
 }

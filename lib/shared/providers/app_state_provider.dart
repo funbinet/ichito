@@ -20,6 +20,8 @@ class AppStateProvider extends ChangeNotifier {
   void initialize() {
     _isFirstLaunch = !_settings.isOnboardingComplete();
     _isAppLockEnabled = _settings.getAppLockEnabled();
+    _isBiometricEnabled = _settings.getBiometricEnabled();
+    _autoLockMinutes = _settings.getAutoLockMinutes();
     
     if (_isAppLockEnabled) {
       _isLocked = true;
@@ -44,12 +46,14 @@ class AppStateProvider extends ChangeNotifier {
   void setBiometricEnabled(bool enabled) {
     if (_isAppLockEnabled) {
       _isBiometricEnabled = enabled;
+      _settings.setBiometricEnabled(enabled);
       notifyListeners();
     }
   }
 
   void setAutoLockMinutes(int minutes) {
     _autoLockMinutes = minutes;
+    _settings.setAutoLockMinutes(minutes);
     notifyListeners();
   }
 

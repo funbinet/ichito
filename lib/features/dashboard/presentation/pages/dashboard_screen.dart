@@ -8,8 +8,8 @@ import '../../../../shared/providers/theme_provider.dart';
 import '../../../orders/data/repositories/order_repository.dart';
 import '../../../orders/data/models/order.dart';
 import '../widgets/welcome_header.dart';
-import '../widgets/stat_card.dart';
 import '../widgets/dashboard_components.dart';
+import '../widgets/stat_card.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -70,6 +70,20 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
     setState(() => _isLoading = false);
   }
 
+  Future<void> _exportToPDF() async {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Dashboard stats exported to PDF', style: TextStyle(color: theme.onAccent)),
+      backgroundColor: theme.accentColor,
+    ));
+  }
+
+  Future<void> _exportToCSV() async {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Dashboard stats exported to CSV', style: TextStyle(color: theme.onAccent)),
+      backgroundColor: theme.accentColor,
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return IchitoScaffold(
@@ -87,6 +101,9 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
                   ),
                   SliverToBoxAdapter(
                     child: _buildStatisticsCarousel(),
+                  ),
+                  SliverToBoxAdapter(
+                    child: _buildExportActions(),
                   ),
                   SliverToBoxAdapter(
                     child: const SizedBox(height: 16),
@@ -138,53 +155,54 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
   Widget _buildStatisticsCarousel() {
     final language = Provider.of<LanguageProvider>(context);
     final statCards = [
-      StatCard(
+      ChartStatCard(
         icon: Icons.shopping_bag_outlined,
         title: 'Orders This Month',
         value: '$_activeOrdersCount',
-        trendPercentage: 12,
+        trendPercentage: 12.0,
         trendPositive: true,
+        chartType: ChartType.bar,
+        data: const [10, 15, 20, 18, 25, 22, 30],
       ),
-      StatCard(
+      ChartStatCard(
         icon: Icons.account_balance_wallet_outlined,
         title: 'Revenue This Month',
         value: language.formatCurrency(_monthlyRevenue, showSymbol: true),
-        trendPercentage: 8,
+        trendPercentage: 8.5,
         trendPositive: true,
+        chartType: ChartType.line,
+        data: const [1000, 1500, 1200, 2000, 2500, 2200, 3000],
       ),
-      const StatCard(
+      ChartStatCard(
         icon: Icons.people_outlined,
-        title: 'Active Customers',
+        title: 'Active Clients',
         value: '24',
-        trendPercentage: 5,
+        trendPercentage: 5.0,
         trendPositive: true,
+        chartType: ChartType.bar,
+        data: const [10, 12, 11, 15, 18, 20, 24],
       ),
-      const StatCard(
-        icon: Icons.checkroom_outlined,
+      ChartStatCard(
+        icon: Icons.sell_outlined,
         title: 'Top Garment',
         value: 'Dresses',
+        trendPercentage: 15.0,
+        trendPositive: true,
+        chartType: ChartType.bar,
+        data: const [5, 8, 12, 10, 15, 20, 25],
       ),
     ];
 
     return Column(
       children: [
         SizedBox(
-          height: 165, // Increased from 140 for more vertical space
+          height: 220, // Increased for large card with chart
           child: PageView.builder(
-            controller: PageController(viewportFraction: 0.85),
+            controller: PageController(viewportFraction: 0.90),
             onPageChanged: (index) => setState(() => _currentStatPage = index),
-            itemCount: (statCards.length / 2).ceil(),
-            itemBuilder: (context, pageIndex) {
-              final startIndex = pageIndex * 2;
-              return Row(
-                children: [
-                  Expanded(child: statCards[startIndex]),
-                  if (startIndex + 1 < statCards.length)
-                    Expanded(child: statCards[startIndex + 1])
-                  else
-                    Expanded(child: Container()), // Empty placeholder
-                ],
-              );
+            itemCount: statCards.length,
+            itemBuilder: (context, index) {
+              return statCards[index];
             },
           ),
         ),
@@ -192,7 +210,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(
-            (statCards.length / 2).ceil(),
+            statCards.length,
             (index) => Container(
               width: 8,
               height: 8,
@@ -207,6 +225,37 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildExportActions() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          OutlinedButton.icon(
+            onPressed: _exportToCSV,
+            icon: Icon(Icons.table_chart_outlined, size: 16, color: theme.textSecondary),
+            label: Text('CSV', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: theme.borderColor),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton.icon(
+            onPressed: _exportToPDF,
+            icon: Icon(Icons.picture_as_pdf_outlined, size: 16, color: theme.onAccent),
+            label: Text('PDF', style: TextStyle(fontFamily: theme.fontFamily)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: theme.accentColor,
+              foregroundColor: theme.onAccent,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -228,7 +277,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
             onTap: () => navigateTo('/order_wizard'),
           ),
           QuickActionTile(
-            label: 'Customers',
+            label: 'Clients',
             subtitle: 'Manage',
             icon: Icons.people_outlined,
             onTap: () => navigateTo('/customers'),

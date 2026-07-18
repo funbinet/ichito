@@ -219,7 +219,7 @@ class ActivityFeedItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Customer ID: ${order.customerId} - ${language.formatCurrency(order.totalAmount, showSymbol: true)}',
+                    'Client ID: ${order.customerId} - ${language.formatCurrency(order.totalAmount, showSymbol: true)}',
                     style: TextStyle(fontSize: 13, color: theme.textSecondary, fontFamily: theme.fontFamily),
                   ),
                   Text(

@@ -5,6 +5,7 @@ enum AppLanguage { english, sheng }
 
 class TranslationMaps {
   static const Map<String, String> en = {
+    // General
     'app_name': 'ICHITO',
     'cancel': 'Cancel',
     'save': 'Save',
@@ -15,22 +16,78 @@ class TranslationMaps {
     'welcome_back': 'Welcome back,',
     'quick_actions': 'Quick Actions',
     'recent_orders': 'Recent Orders',
-    'customers': 'Customers',
-    'add_customer': 'Add Customer',
+    'add': 'Add',
+    'create': 'Create',
+    
+    // Clients
+    'customers': 'Clients',
+    'add_customer': 'Add Client',
     'vip': 'VIP',
     'regular': 'Regular',
+    
+    // Orders
     'orders': 'Orders',
     'new_order': 'New Order',
     'pending': 'Pending',
     'in_progress': 'In Progress',
     'completed': 'Completed',
     'overdue': 'Overdue',
+    
+    // Financials
     'total_amount': 'Total',
     'deposit': 'Deposit',
     'balance': 'Balance',
+    
+    // Garments
+    'garments': 'Garments',
+    'garments_library': 'Garments Library',
+    'add_garment': 'Add Garment',
+    'no_garments_found': 'No garments found',
+    
+    // Fabrics
+    'fabrics': 'Fabrics',
+    'add_fabric': 'Add Fabric',
+    'price_per_unit': 'Price per unit',
+    
+    // Designs
+    'designs': 'Designs',
+    'add_design': 'Add Design',
+    
+    // Notes
+    'notes': 'Notes',
+    'create_note': 'Create Note',
+    'normal_note': 'Normal Note',
+    'church_note': 'Church Note',
+    'chama_note': 'Chama Note',
+    
+    // Settings & Security
+    'settings': 'Settings',
+    'appearance': 'Appearance',
+    'security': 'Security',
+    'app_lock': 'App Lock',
+    'biometrics': 'Biometrics',
+    'auto_lock': 'Auto Lock',
+    'factory_reset': 'Factory Reset',
+    
+    // Analytics
+    'statistics': 'Statistics',
+    'analytics': 'Analytics',
+    
+    // Notifications
+    'notifications': 'Notifications',
+    'profile': 'Profile',
+    
+    // Form fields
+    'name': 'Name',
+    'description': 'Description',
+    'category': 'Category',
+    
+    // Actions
+    'view_all': 'View All',
   };
 
   static const Map<String, String> sheng = {
+    // General
     'app_name': 'ICHITO',
     'cancel': 'Wacha',
     'save': 'Save',
@@ -41,19 +98,74 @@ class TranslationMaps {
     'welcome_back': 'Karibu tena,',
     'quick_actions': 'Zako za Chap',
     'recent_orders': 'Kazi Ziko',
+    'add': 'Weka',
+    'create': 'Tengeneza',
+    
+    // Customers
     'customers': 'Wateja',
     'add_customer': 'Mteja Mpyia',
     'vip': 'Oga',
     'regular': 'Wetu',
+    
+    // Orders
     'orders': 'Oda',
     'new_order': 'Oda Mpya',
     'pending': 'Inangoja',
     'in_progress': 'Iko Jikoni',
     'completed': 'Imeweza',
     'overdue': 'Imechelewa',
+    
+    // Financials
     'total_amount': 'Jumla',
     'deposit': 'Lipa Kiasi',
     'balance': 'Baki',
+    
+    // Garments
+    'garments': 'Nguo',
+    'garments_library': 'Kabati ya Nguo',
+    'add_garment': 'Weka Nguo',
+    'no_garments_found': 'Hakuna nguo',
+    
+    // Fabrics
+    'fabrics': 'Vitambaa',
+    'add_fabric': 'Weka Kitambaa',
+    'price_per_unit': 'Bei',
+    
+    // Designs
+    'designs': 'Design',
+    'add_design': 'Weka Design',
+    
+    // Notes
+    'notes': 'Mamboch',
+    'create_note': 'Andika Note',
+    'normal_note': 'Note ya Kawaida',
+    'church_note': 'Note ya Kanisa',
+    'chama_note': 'Note ya Chama',
+    
+    // Settings & Security
+    'settings': 'Mipangilio',
+    'appearance': 'Muonekano',
+    'security': 'Usalama',
+    'app_lock': 'Funga App',
+    'biometrics': 'Kidole',
+    'auto_lock': 'Kujifunga',
+    'factory_reset': 'Futa Zote',
+    
+    // Analytics
+    'statistics': 'Hesabu',
+    'analytics': 'Hesabu',
+    
+    // Notifications
+    'notifications': 'Ujumbe',
+    'profile': 'Mimi',
+    
+    // Form fields
+    'name': 'Jina',
+    'description': 'Maelezo',
+    'category': 'Aina',
+    
+    // Actions
+    'view_all': 'Ona Zote',
   };
 }
 

@@ -4,6 +4,8 @@ import '../../../../shared/mixins/theme_aware_mixin.dart';
 import '../../../../core/widgets/adaptive_components.dart';
 import '../../data/models/order.dart';
 import '../../data/repositories/order_repository.dart';
+import '../../../../shared/widgets/auth_delete_dialog.dart';
+import '../../../security/services/security_service.dart';
 
 class OrderDetailScreen extends StatefulWidget {
   final String orderId;
@@ -129,23 +131,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
   void _confirmDeleteOrder() {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: theme.cardColor,
-        title: Text('Delete Order?', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
-        content: Text('Are you sure you want to delete this order? This cannot be undone.', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          TextButton(
-            onPressed: () async {
-              await _repository.deleteOrder(widget.orderId);
-              if (mounted) {
-                Navigator.pop(ctx);
-                Navigator.pop(context);
-              }
-            },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
+      builder: (ctx) => AuthDeleteDialog(
+        itemName: _order!.orderNumber,
+        securityService: SecurityService(),
+        onDelete: () async {
+          await _repository.deleteOrder(widget.orderId);
+          if (mounted) {
+            Navigator.pop(context);
+          }
+        },
       ),
     );
   }
@@ -218,7 +212,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text('Customer & Garment', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+        Text('Client & Garment', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
         const SizedBox(height: 8),
         Card(
           color: theme.cardColor,

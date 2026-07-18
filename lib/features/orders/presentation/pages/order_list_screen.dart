@@ -91,7 +91,7 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
             child: TextField(
               onChanged: _onSearchChanged,
               decoration: InputDecoration(
-                hintText: 'Search by Order # or Customer...',
+                hintText: 'Search by Order # or Client...',
                 hintStyle: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily),
                 prefixIcon: Icon(Icons.search, color: theme.textSecondary),
                 filled: true,

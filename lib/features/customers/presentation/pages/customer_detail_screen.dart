@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
@@ -12,6 +13,8 @@ import '../../../orders/data/repositories/order_repository.dart';
 import 'customer_form_screen.dart';
 import 'widgets/customer_components.dart';
 import '../../../dashboard/presentation/widgets/dashboard_components.dart';
+import '../../../../shared/widgets/auth_delete_dialog.dart';
+import '../../../security/services/security_service.dart';
 
 class CustomerDetailScreen extends StatefulWidget {
   final String customerId;
@@ -145,7 +148,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with ThemeA
         CircleAvatar(
           radius: 32,
           backgroundColor: theme.accentLight,
-          backgroundImage: _customer!.photoPath != null ? FileImage(File(_customer!.photoPath!)) : null,
+          backgroundImage: _customer!.photoPath != null ? MemoryImage(base64Decode(_customer!.photoPath!)) : null,
           child: _customer!.photoPath == null
               ? Text(_customer!.initials, style: TextStyle(color: theme.accentColor, fontSize: 24, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily))
               : null,
@@ -435,27 +438,17 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with ThemeA
   }
 
   Future<void> _confirmDelete() async {
-    final confirm = await showDialog<bool>(
+    showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: theme.cardColor,
-        title: Text('Delete Customer?', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
-        content: Text('This action cannot be undone. Are you sure you want to delete ${_customer!.name}?', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('Cancel', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily))),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text('Delete', style: TextStyle(fontFamily: theme.fontFamily)),
-          ),
-        ],
+      builder: (ctx) => AuthDeleteDialog(
+        itemName: _customer!.name,
+        securityService: SecurityService(),
+        onDelete: () async {
+          await _customerRepo.deleteCustomer(_customer!.id!);
+          if (mounted) Navigator.pop(context, true);
+        },
       ),
     );
-
-    if (confirm == true) {
-      await _customerRepo.deleteCustomer(_customer!.id!);
-      if (mounted) Navigator.pop(context, true);
-    }
   }
 }
 

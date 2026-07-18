@@ -6,6 +6,9 @@ import '../../../../core/widgets/adaptive_components.dart';
 import '../../data/models/garment.dart';
 import '../../data/repositories/garment_repository.dart';
 import '../widgets/garment_components.dart';
+import '../widgets/garment_form_dialog.dart';
+import 'garment_detail_screen.dart';
+import '../../../../shared/widgets/page_action_button.dart';
 
 enum ViewMode { grid, list }
 
@@ -110,6 +113,31 @@ class _GarmentsLibraryScreenState extends State<GarmentsLibraryScreen>
     // Implement stats sheet
   }
 
+  void _showAddDialog() async {
+    final result = await showDialog<Garment>(
+      context: context,
+      builder: (context) => const GarmentFormDialog(),
+    );
+
+    if (result != null) {
+      await _repository.createGarment(result);
+      _loadGarments();
+    }
+  }
+
+  void _navigateToDetail(Garment garment) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => GarmentDetailScreen(garment: garment),
+      ),
+    );
+    
+    if (result == true) {
+      _loadGarments();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return IchitoScaffold(
@@ -124,16 +152,15 @@ class _GarmentsLibraryScreenState extends State<GarmentsLibraryScreen>
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.add, color: theme.textPrimary),
-            onPressed: () {
-              // navigateTo('/garments/new');
-            },
-          ),
-          IconButton(
             icon: Icon(Icons.bar_chart_outlined, color: theme.textPrimary),
             onPressed: _showStats,
           ),
         ],
+      ),
+      pageActionButton: PageActionButton(
+        label: lang.t('add_garment'),
+        icon: Icons.checkroom_outlined,
+        onPressed: _showAddDialog,
       ),
       body: Column(
         children: [
@@ -319,9 +346,7 @@ class _GarmentsLibraryScreenState extends State<GarmentsLibraryScreen>
           final g = _filteredGarments[index];
           return GarmentListTile(
             garment: g,
-            onTap: () {
-              // navigateTo('/garments/detail', arguments: g.id);
-            },
+            onTap: () => _navigateToDetail(g),
           );
         },
       );
@@ -339,9 +364,7 @@ class _GarmentsLibraryScreenState extends State<GarmentsLibraryScreen>
           final g = _filteredGarments[index];
           return GarmentCard(
             garment: g,
-            onTap: () {
-              // navigateTo('/garments/detail', arguments: g.id);
-            },
+            onTap: () => _navigateToDetail(g),
           );
         },
       );
