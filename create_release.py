@@ -2,10 +2,10 @@ import requests
 import json
 import os
 
-github_token = "REMOVED_TOKEN"
-codeberg_token = "019604c7a08745d2cbf037de7d2294abeaaa9ab8"
+github_token = os.environ.get("GITHUB_TOKEN")
+codeberg_token = os.environ.get("CODEBERG_TOKEN")
 
-with open("release_notes_2.0.0.md", "r") as f:
+with open("release_notes_3.5.0.md", "r") as f:
     notes = f.read()
 
 # GitHub Release
@@ -15,8 +15,8 @@ gh_headers = {
     "Accept": "application/vnd.github+json"
 }
 gh_data = {
-    "tag_name": "v2.0.0",
-    "name": "ICHITO v2.0.0",
+    "tag_name": "v3.5.0",
+    "name": "ICHITO v3.5.0",
     "body": notes,
     "draft": False,
     "prerelease": False
@@ -52,8 +52,8 @@ cb_headers = {
     "Content-Type": "application/json"
 }
 cb_data = {
-    "tag_name": "v2.0.0",
-    "name": "ICHITO v2.0.0",
+    "tag_name": "v3.5.0",
+    "name": "ICHITO v3.5.0",
     "body": notes,
     "draft": False,
     "prerelease": False
