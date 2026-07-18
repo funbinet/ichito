@@ -124,6 +124,20 @@ class OrderRepository {
     return await db.delete('orders', where: 'id = ?', whereArgs: [id]);
   }
 
+  Future<List<Order>> getByCustomer(String customerId) async {
+    final db = await _dbHelper.database;
+    final result = await db.rawQuery('''
+      SELECT o.*, c.name as customerName, g.name as garmentName
+      FROM orders o
+      JOIN customers c ON o.customer_id = c.id
+      JOIN garments g ON o.garment_id = g.id
+      WHERE o.customer_id = ?
+      ORDER BY o.due_date DESC
+    ''', [customerId]);
+    return result.map((map) => Order.fromMap(map)).toList();
+  }
+
+
   // --- Payments ---
   Future<String> addPayment(Payment payment) async {
     final db = await _dbHelper.database;

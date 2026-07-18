@@ -58,6 +58,7 @@ class _AppearanceSettingsScreenState extends State<AppearanceSettingsScreen> wit
   @override
   Widget build(BuildContext context) {
     return IchitoScaffold(
+      showRadialMenu: false,
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
         title: Text('Appearance', style: headingStyle.copyWith(fontSize: 18)),

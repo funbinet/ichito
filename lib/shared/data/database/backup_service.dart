@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:intl/intl.dart';
 
 import 'database_helper.dart';
 
@@ -33,14 +33,13 @@ class BackupService {
       // Create the zip file
       final zipEncoder = ZipEncoder();
       final zipBytes = zipEncoder.encode(archive);
-      if (zipBytes == null) throw Exception('Failed to encode zip');
       
       final zipFile = File(zipPath);
-      await zipFile.writeAsBytes(zipBytes);
+      await zipFile.writeAsBytes(zipBytes!);
 
       // Share the file
       await Share.shareXFiles(
-        [XFile(zipFile.path)], 
+        [XFile(zipFile.path)],
         text: 'ICHITO Backup $dateStr',
       );
 
@@ -53,7 +52,7 @@ class BackupService {
 
   Future<bool> importBackup() async {
     try {
-      final result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['zip'],
       );

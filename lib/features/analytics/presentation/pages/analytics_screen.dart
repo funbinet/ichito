@@ -4,6 +4,7 @@ import '../../../../shared/mixins/theme_aware_mixin.dart';
 import '../../../../core/widgets/ichito_scaffold.dart';
 import '../../../orders/data/repositories/order_repository.dart';
 import '../../../orders/data/models/order.dart';
+import '../../../../shared/services/export_service.dart';
 
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});
@@ -90,17 +91,35 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with ThemeAwareMixin 
           IconButton(
             icon: const Icon(Icons.picture_as_pdf_outlined),
             tooltip: 'Export PDF',
-            onPressed: () {
-              // Trigger PDF Export
+            onPressed: () async {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Generating PDF Report...')));
+              await ExportService.exportStatsToPDF(
+                title: 'Analytics Report',
+                fileNamePrefix: 'analytics_report',
+                stats: {
+                  'Total Revenue': lang.formatCurrency(_totalRevenue, showSymbol: true),
+                  'Pending Balances': lang.formatCurrency(_pendingBalances, showSymbol: true),
+                  'Total Orders': _totalOrders.toString(),
+                  'Completed Orders': _completedOrders.toString(),
+                },
+              );
             },
           ),
           IconButton(
             icon: const Icon(Icons.table_chart_outlined),
             tooltip: 'Export CSV',
-            onPressed: () {
-              // Trigger CSV Export
+            onPressed: () async {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Exporting CSV...')));
+              await ExportService.exportStatsToCSV(
+                title: 'Analytics Report',
+                fileNamePrefix: 'analytics_report',
+                stats: {
+                  'Total Revenue': _totalRevenue.toStringAsFixed(2),
+                  'Pending Balances': _pendingBalances.toStringAsFixed(2),
+                  'Total Orders': _totalOrders.toString(),
+                  'Completed Orders': _completedOrders.toString(),
+                },
+              );
             },
           ),
         ],

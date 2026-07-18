@@ -17,6 +17,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> with Th
     final appState = Provider.of<AppStateProvider>(context);
 
     return IchitoScaffold(
+      showRadialMenu: false,
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
         title: Text('Security', style: headingStyle.copyWith(fontSize: 18)),

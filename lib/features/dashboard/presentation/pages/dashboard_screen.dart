@@ -10,6 +10,7 @@ import '../../../orders/data/models/order.dart';
 import '../widgets/welcome_header.dart';
 import '../widgets/dashboard_components.dart';
 import '../widgets/stat_card.dart';
+import '../../../../shared/services/export_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -71,17 +72,28 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
   }
 
   Future<void> _exportToPDF() async {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('Dashboard stats exported to PDF', style: TextStyle(color: theme.onAccent)),
-      backgroundColor: theme.accentColor,
-    ));
+    final lang = Provider.of<LanguageProvider>(context, listen: false);
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Generating PDF Report...')));
+    await ExportService.exportStatsToPDF(
+      title: 'Dashboard Overview',
+      fileNamePrefix: 'dashboard_stats',
+      stats: {
+        'Active Orders': _activeOrdersCount.toString(),
+        'Monthly Revenue': lang.formatCurrency(_monthlyRevenue, showSymbol: true),
+      },
+    );
   }
 
   Future<void> _exportToCSV() async {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('Dashboard stats exported to CSV', style: TextStyle(color: theme.onAccent)),
-      backgroundColor: theme.accentColor,
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Exporting CSV...')));
+    await ExportService.exportStatsToCSV(
+      title: 'Dashboard Overview',
+      fileNamePrefix: 'dashboard_stats',
+      stats: {
+        'Active Orders': _activeOrdersCount.toString(),
+        'Monthly Revenue': _monthlyRevenue.toStringAsFixed(2),
+      },
+    );
   }
 
   @override

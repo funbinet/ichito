@@ -5,6 +5,8 @@ import '../../../../core/widgets/ichito_scaffold.dart';
 import '../../data/models/order.dart';
 import '../../data/repositories/order_repository.dart';
 import '../../../../core/widgets/adaptive_components.dart';
+import '../../../../shared/widgets/page_action_button.dart';
+import 'order_detail_screen.dart';
 
 class OrderListScreen extends StatefulWidget {
   const OrderListScreen({super.key});
@@ -83,6 +85,11 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
+      ),
+      pageActionButton: PageActionButton(
+        label: 'New Order',
+        icon: Icons.add_shopping_cart_outlined,
+        onPressed: () => navigateTo('/order_wizard'),
       ),
       body: Column(
         children: [
@@ -170,9 +177,14 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
           elevation: theme.cardShadow != null ? 2 : 0,
           child: InkWell(
             borderRadius: BorderRadius.circular(16),
-            onTap: () {
-              // TODO: navigate to OrderDetailScreen
-              // navigateTo('/order_detail', arguments: order.id);
+            onTap: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => OrderDetailScreen(orderId: order.id!),
+                ),
+              );
+              if (result == true) _loadOrders();
             },
             child: Padding(
               padding: const EdgeInsets.all(16.0),

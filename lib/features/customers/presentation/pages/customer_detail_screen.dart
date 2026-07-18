@@ -11,7 +11,7 @@ import '../../data/repositories/customer_repository.dart';
 import '../../../orders/data/models/order.dart';
 import '../../../orders/data/repositories/order_repository.dart';
 import 'customer_form_screen.dart';
-import 'widgets/customer_components.dart';
+import '../widgets/customer_components.dart';
 import '../../../dashboard/presentation/widgets/dashboard_components.dart';
 import '../../../../shared/widgets/auth_delete_dialog.dart';
 import '../../../security/services/security_service.dart';

@@ -62,6 +62,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> with Them
     final profile = Provider.of<ProfileProvider>(context);
 
     return IchitoScaffold(
+      showRadialMenu: false,
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
         title: Text('Profile', style: headingStyle.copyWith(fontSize: 18)),

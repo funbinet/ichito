@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:provider/provider.dart';
-import 'dart:io';
 import '../../../../shared/providers/theme_provider.dart';
 import '../../data/models/customer.dart';
 
@@ -101,7 +101,7 @@ class CustomerCard extends StatelessWidget {
               radius: 28,
               backgroundColor: theme.accentLight,
               backgroundImage: customer.photoPath != null
-                ? FileImage(File(customer.photoPath!))
+                ? MemoryImage(base64Decode(customer.photoPath!))
                 : null,
               child: customer.photoPath == null
                 ? Text(
@@ -185,7 +185,7 @@ class CustomerListTile extends StatelessWidget {
               radius: 24,
               backgroundColor: theme.accentLight,
               backgroundImage: customer.photoPath != null
-                ? FileImage(File(customer.photoPath!)) : null,
+                ? MemoryImage(base64Decode(customer.photoPath!)) : null,
               child: customer.photoPath == null
                 ? Text(customer.initials,
                     style: TextStyle(color: theme.accentColor, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily))

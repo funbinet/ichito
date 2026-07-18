@@ -139,6 +139,7 @@ class _ChamaNoteEditorState extends State<ChamaNoteEditor> with ThemeAwareMixin 
     double totalCollected = _contributions.values.fold(0, (sum, val) => sum + val);
 
     return IchitoScaffold(
+      showRadialMenu: false,
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,

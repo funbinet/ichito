@@ -60,6 +60,7 @@ class _DesignDetailScreenState extends State<DesignDetailScreen> with ThemeAware
   @override
   Widget build(BuildContext context) {
     return IchitoScaffold(
+      showRadialMenu: false,
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,

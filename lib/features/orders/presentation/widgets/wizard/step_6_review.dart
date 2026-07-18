@@ -8,6 +8,7 @@ import '../../../../customers/data/repositories/customer_repository.dart';
 import '../../../../garments/data/repositories/garment_repository.dart';
 import '../../../data/models/order.dart';
 import '../../../data/repositories/order_repository.dart';
+import '../../pages/order_detail_screen.dart';
 
 class Step6Review extends StatefulWidget {
   final String customerId;
@@ -99,6 +100,7 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
       );
 
       final orderId = await repo.createOrder(order);
+      String createdOrderId = orderId;
 
       if (widget.deposit > 0) {
         await repo.addPayment(Payment(
@@ -111,7 +113,7 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
       }
 
       if (mounted) {
-        _showSuccessDialog();
+        _showSuccessDialog(orderId);
       }
     } catch (e) {
       if (mounted) {
@@ -122,7 +124,7 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
     }
   }
 
-  void _showSuccessDialog() {
+  void _showSuccessDialog(String orderId) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -158,8 +160,13 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
                     text: 'View Order',
                     onPressed: () {
                       Navigator.pop(ctx);
-                      // TODO: navigate to Order Detail
                       Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => OrderDetailScreen(orderId: orderId),
+                        ),
+                      );
                     },
                   ),
                 ),

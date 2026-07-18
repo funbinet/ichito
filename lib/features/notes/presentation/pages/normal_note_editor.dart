@@ -62,6 +62,7 @@ class _NormalNoteEditorState extends State<NormalNoteEditor> with ThemeAwareMixi
   @override
   Widget build(BuildContext context) {
     return IchitoScaffold(
+      showRadialMenu: false,
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,

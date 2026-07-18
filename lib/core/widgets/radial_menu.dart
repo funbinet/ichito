@@ -94,9 +94,9 @@ class _RadialMenuState extends State<RadialMenu>
     return Expanded(
       child: InkWell(
         onTap: () => _navigateTo(item.route),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -112,9 +112,9 @@ class _RadialMenuState extends State<RadialMenu>
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 9,
-                  color: theme.textSecondary,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 10,
+                  color: theme.textPrimary,
+                  fontWeight: FontWeight.w600,
                   fontFamily: theme.fontFamily,
                 ),
               ),
@@ -126,8 +126,10 @@ class _RadialMenuState extends State<RadialMenu>
   }
 
   Widget _buildGridPanel() {
+    final List<RadialMenuItem> allItems = [..._topRowItems, ..._bottomRowItems];
+    
     return Positioned(
-      bottom: 16, // Align bottom of container with the screen bottom to encompass the FAB
+      bottom: 90, // Position panel above the FAB
       left: 16,
       right: 16,
       child: FadeTransition(
@@ -153,28 +155,14 @@ class _RadialMenuState extends State<RadialMenu>
                 )
               ] : null,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: _topRowItems.map((item) => _buildGridItem(item)).toList(),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildGridItem(_bottomRowItems[0]),
-                    _buildGridItem(_bottomRowItems[1]),
-                    // Empty space for the FAB to sit over
-                    const Expanded(flex: 2, child: SizedBox(height: 50)),
-                    _buildGridItem(_bottomRowItems[2]),
-                    _buildGridItem(_bottomRowItems[3]),
-                  ],
-                ),
-              ],
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 8,
+              runSpacing: 12,
+              children: allItems.map((item) => SizedBox(
+                width: MediaQuery.of(context).size.width / 4.5,
+                child: _buildGridItem(item),
+              )).toList(),
             ),
           ),
         ),

@@ -6,9 +6,12 @@ import '../../../../shared/mixins/navigation_mixin.dart';
 import '../../../../shared/providers/language_provider.dart';
 import '../../../../shared/widgets/page_action_button.dart';
 import '../../../../core/widgets/ichito_scaffold.dart';
+import '../../../../core/widgets/adaptive_components.dart';
 import '../../data/models/customer.dart';
 import '../../data/repositories/customer_repository.dart';
 import '../widgets/customer_components.dart';
+import 'customer_detail_screen.dart';
+import 'customer_form_screen.dart';
 
 enum ViewMode { grid, list }
 enum SortOption { name, orders, spent, recent }
