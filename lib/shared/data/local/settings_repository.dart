@@ -17,6 +17,7 @@ class SettingsRepository {
   static const String _defaultLaborCostKey = 'defaultLaborCost';
   static const String _appLockEnabledKey = 'appLockEnabled';
   static const String _appPinKey = 'appPin';
+  static const String _measurementSchemaKey = 'measurementSchema';
 
   Box get _box => Hive.box(_boxName);
 
@@ -36,6 +37,12 @@ class SettingsRepository {
 
   bool getAppLockEnabled() => _box.get(_appLockEnabledKey, defaultValue: false);
   String? getAppPin() => _box.get(_appPinKey);
+  
+  List<String> getMeasurementSchema() {
+    final list = _box.get(_measurementSchemaKey);
+    if (list == null) return [];
+    return List<String>.from(list);
+  }
 
   // Write Methods
   Future<void> setThemeMode(String mode) async => await _box.put(_themeModeKey, mode);
@@ -53,4 +60,5 @@ class SettingsRepository {
 
   Future<void> setAppLockEnabled(bool enabled) async => await _box.put(_appLockEnabledKey, enabled);
   Future<void> setAppPin(String pin) async => await _box.put(_appPinKey, pin);
+  Future<void> setMeasurementSchema(List<String> schema) async => await _box.put(_measurementSchemaKey, schema);
 }

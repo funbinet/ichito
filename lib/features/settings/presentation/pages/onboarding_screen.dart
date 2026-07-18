@@ -7,6 +7,11 @@ import '../../../../shared/providers/language_provider.dart';
 import '../../../../shared/providers/app_state_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../../../garments/data/models/garment.dart';
+import '../../../garments/data/repositories/garment_repository.dart';
+import '../../../fabrics/data/models/fabric.dart';
+import '../../../fabrics/data/repositories/fabric_repository.dart';
+
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -16,17 +21,28 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixin, NavigationMixin {
   final SettingsRepository _settings = SettingsRepository();
+  final GarmentRepository _garmentRepo = GarmentRepository();
+  final FabricRepository _fabricRepo = FabricRepository();
+
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  static const int _totalPages = 5;
+  static const int _totalPages = 8; // Increased to 8
 
-  // Controllers
+  // Controllers - Basic Details
   final _businessNameCtrl = TextEditingController();
   final _locationCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _laborCostCtrl = TextEditingController(text: '1500');
   
+  // Controllers - Setup
+  final _measurementCtrl = TextEditingController();
+  final _garmentNameCtrl = TextEditingController();
+  final _garmentPriceCtrl = TextEditingController();
+  final _fabricNameCtrl = TextEditingController();
+  final _fabricPriceCtrl = TextEditingController();
+
+  // State Variables
   String _selectedCurrency = 'KES';
   String _selectedUnit = 'cm';
   String _selectedDateFormat = 'DD/MM/YYYY';
@@ -34,7 +50,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
   bool _enableAppLock = false;
   String _pin = '';
 
+  // Dynamic Data Lists
+  final List<String> _measurements = ['Chest', 'Waist', 'Hips', 'Shoulder', 'Length'];
+  final List<Garment> _garments = [];
+  final List<Fabric> _fabrics = [];
+
   void _nextPage() {
+    if (_currentPage == 6 && _garments.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please add at least one garment to continue.')));
+      return;
+    }
+    if (_currentPage == 7 && _fabrics.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please add at least one fabric to complete.')));
+      return;
+    }
+
     if (_currentPage < _totalPages - 1) {
       _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
     } else {
@@ -43,9 +73,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
   }
 
   Future<void> _completeOnboarding() async {
+    // 1. Basic Details
     final name = _businessNameCtrl.text.trim();
     if (name.isNotEmpty) await _settings.setBusinessName(name);
-    
     await _settings.setBusinessLocation(_locationCtrl.text.trim());
     await _settings.setBusinessPhone(_phoneCtrl.text.trim());
     await _settings.setBusinessEmail(_emailCtrl.text.trim());
@@ -53,16 +83,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
     final labor = double.tryParse(_laborCostCtrl.text.trim());
     if (labor != null) await _settings.setDefaultLaborCost(labor);
 
+    // 2. Preferences
     await _settings.setCurrency(_selectedCurrency);
     await _settings.setMeasurementUnit(_selectedUnit);
     await _settings.setDateFormat(_selectedDateFormat);
     await _settings.setLanguage(_selectedLanguage == AppLanguage.english ? 'english' : 'sheng');
     
+    // 3. Security
     if (_enableAppLock && _pin.length >= 4) {
       await _settings.setAppLockEnabled(true);
       await _settings.setAppPin(_pin);
     }
 
+    // 4. Data Setup
+    await _settings.setMeasurementSchema(_measurements);
+    
+    for (var garment in _garments) {
+      await _garmentRepo.createGarment(garment);
+    }
+    
+    for (var fabric in _fabrics) {
+      await _fabricRepo.addFabric(fabric);
+    }
+
+    // 5. Finalize
     await _settings.setOnboardingComplete(true);
     
     if (mounted) {
@@ -85,6 +129,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
     _phoneCtrl.dispose();
     _emailCtrl.dispose();
     _laborCostCtrl.dispose();
+    _measurementCtrl.dispose();
+    _garmentNameCtrl.dispose();
+    _garmentPriceCtrl.dispose();
+    _fabricNameCtrl.dispose();
+    _fabricPriceCtrl.dispose();
     super.dispose();
   }
 
@@ -106,47 +155,56 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
                   _buildContactPage(),
                   _buildPreferencesPage(),
                   _buildSecurityPage(),
+                  _buildMeasurementSetupPage(),
+                  _buildGarmentSetupPage(),
+                  _buildFabricSetupPage(),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if (_currentPage > 0)
-                    TextButton(
-                      onPressed: () => _pageController.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut),
-                      child: Text('Back', style: TextStyle(color: theme.textSecondary)),
-                    )
-                  else
-                    const SizedBox(width: 64),
-                  
-                  Row(
-                    children: List.generate(_totalPages, (index) => Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _currentPage == index ? theme.accentColor : theme.textSecondary.withOpacity(0.3),
-                      ),
-                    )),
-                  ),
-                  
-                  AdaptiveButton(
-                    text: _currentPage == _totalPages - 1 ? 'Get Started' : 'Next',
-                    onPressed: _nextPage,
-                  ),
-                ],
-              ),
-            ),
+            _buildBottomNavigation(),
           ],
         ),
       ),
     );
   }
 
+  Widget _buildBottomNavigation() {
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (_currentPage > 0)
+            TextButton(
+              onPressed: () => _pageController.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut),
+              child: Text('Back', style: TextStyle(color: theme.textSecondary)),
+            )
+          else
+            const SizedBox(width: 64),
+          
+          Row(
+            children: List.generate(_totalPages, (index) => Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              width: 6,
+              height: 6,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _currentPage == index ? theme.accentColor : theme.textSecondary.withOpacity(0.3),
+              ),
+            )),
+          ),
+          
+          AdaptiveButton(
+            text: _currentPage == _totalPages - 1 ? 'Complete' : 'Next',
+            onPressed: _nextPage,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- PAGES 1 TO 5 (Existing) ---
+  
   Widget _buildWelcomePage() {
     return Center(
       child: Padding(
@@ -278,20 +336,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
             ],
             onChanged: (val) => setState(() => _selectedUnit = val ?? 'cm'),
           ),
-          const SizedBox(height: 16),
-          Text('Date Format', style: subtitleStyle),
-          DropdownButtonFormField<String>(
-            value: _selectedDateFormat,
-            dropdownColor: theme.cardColor,
-            style: bodyStyle,
-            decoration: InputDecoration(border: OutlineInputBorder(borderRadius: theme.cornerRadius)),
-            items: const [
-              DropdownMenuItem(value: 'DD/MM/YYYY', child: Text('DD/MM/YYYY')),
-              DropdownMenuItem(value: 'MM/DD/YYYY', child: Text('MM/DD/YYYY')),
-              DropdownMenuItem(value: 'YYYY-MM-DD', child: Text('YYYY-MM-DD')),
-            ],
-            onChanged: (val) => setState(() => _selectedDateFormat = val ?? 'DD/MM/YYYY'),
-          ),
         ],
       ),
     );
@@ -326,6 +370,213 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
               onChanged: (val) => _pin = val,
             ),
           ]
+        ],
+      ),
+    );
+  }
+
+  // --- PAGES 6 TO 8 (New Setup Pages) ---
+
+  Widget _buildMeasurementSetupPage() {
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 48),
+          Text('Standard Measurements', style: headingStyle),
+          const SizedBox(height: 8),
+          Text('Define the standard measurements you take for your customers.', style: subtitleStyle),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Expanded(
+                child: AdaptiveTextField(
+                  controller: _measurementCtrl,
+                  label: 'Add Measurement (e.g. Inseam)',
+                ),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: Icon(Icons.add_circle, color: theme.accentColor, size: 40),
+                onPressed: () {
+                  final text = _measurementCtrl.text.trim();
+                  if (text.isNotEmpty && !_measurements.contains(text)) {
+                    setState(() {
+                      _measurements.add(text);
+                      _measurementCtrl.clear();
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _measurements.length,
+              itemBuilder: (context, index) {
+                final m = _measurements[index];
+                return Card(
+                  color: theme.cardColor,
+                  child: ListTile(
+                    title: Text(m, style: bodyStyle),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.red),
+                      onPressed: () => setState(() => _measurements.removeAt(index)),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGarmentSetupPage() {
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 48),
+          Text('Garment Catalog', style: headingStyle),
+          const SizedBox(height: 8),
+          Text('Add at least one type of garment you sew.', style: subtitleStyle),
+          const SizedBox(height: 24),
+          AdaptiveTextField(
+            controller: _garmentNameCtrl,
+            label: 'Garment Name (e.g. Suit)',
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: AdaptiveTextField(
+                  controller: _garmentPriceCtrl,
+                  label: 'Base Labor Price',
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              const SizedBox(width: 8),
+              AdaptiveButton(
+                text: 'Add',
+                onPressed: () {
+                  final name = _garmentNameCtrl.text.trim();
+                  final price = double.tryParse(_garmentPriceCtrl.text.trim()) ?? 0.0;
+                  if (name.isNotEmpty) {
+                    setState(() {
+                      _garments.add(Garment(
+                        name: name,
+                        category: 'unisex',
+                        measurementFields: List.from(_measurements),
+                        defaultPrice: price,
+                        createdAt: DateTime.now(),
+                        updatedAt: DateTime.now(),
+                      ));
+                      _garmentNameCtrl.clear();
+                      _garmentPriceCtrl.clear();
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _garments.length,
+              itemBuilder: (context, index) {
+                final g = _garments[index];
+                return Card(
+                  color: theme.cardColor,
+                  child: ListTile(
+                    title: Text(g.name, style: bodyStyle),
+                    subtitle: Text('Price: \$${g.defaultPrice}', style: subtitleStyle),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.red),
+                      onPressed: () => setState(() => _garments.removeAt(index)),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFabricSetupPage() {
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 48),
+          Text('Fabric Inventory', style: headingStyle),
+          const SizedBox(height: 8),
+          Text('Add at least one fabric you use or sell.', style: subtitleStyle),
+          const SizedBox(height: 24),
+          AdaptiveTextField(
+            controller: _fabricNameCtrl,
+            label: 'Fabric Name (e.g. Silk)',
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: AdaptiveTextField(
+                  controller: _fabricPriceCtrl,
+                  label: 'Price per $_selectedUnit',
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              const SizedBox(width: 8),
+              AdaptiveButton(
+                text: 'Add',
+                onPressed: () {
+                  final name = _fabricNameCtrl.text.trim();
+                  final price = double.tryParse(_fabricPriceCtrl.text.trim()) ?? 0.0;
+                  if (name.isNotEmpty) {
+                    setState(() {
+                      _fabrics.add(Fabric(
+                        name: name,
+                        pricePerUnit: price,
+                        unit: _selectedUnit,
+                        createdAt: DateTime.now(),
+                        updatedAt: DateTime.now(),
+                      ));
+                      _fabricNameCtrl.clear();
+                      _fabricPriceCtrl.clear();
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _fabrics.length,
+              itemBuilder: (context, index) {
+                final f = _fabrics[index];
+                return Card(
+                  color: theme.cardColor,
+                  child: ListTile(
+                    title: Text(f.name, style: bodyStyle),
+                    subtitle: Text('Price: \$${f.pricePerUnit}/${f.unit}', style: subtitleStyle),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.red),
+                      onPressed: () => setState(() => _fabrics.removeAt(index)),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );

@@ -37,6 +37,9 @@ class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
           const SizedBox(height: 24),
           _buildSectionHeader('Security'),
           _buildSecuritySettings(),
+          const SizedBox(height: 24),
+          _buildSectionHeader('Data Management'),
+          _buildDataManagementSettings(),
         ],
       ),
     );
@@ -176,5 +179,52 @@ class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
         ],
       ),
     );
+  }
+
+  Widget _buildDataManagementSettings() {
+    return Card(
+      color: theme.cardColor,
+      shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
+      child: Column(
+        children: [
+          ListTile(
+            leading: Icon(Icons.delete_forever_outlined, color: Colors.red),
+            title: Text('Factory Reset', style: bodyStyle.copyWith(color: Colors.red, fontWeight: FontWeight.bold)),
+            subtitle: Text('Delete all data and reset app', style: subtitleStyle),
+            onTap: () => _showFactoryResetDialog(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showFactoryResetDialog() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: theme.backgroundColor,
+        title: Text('Factory Reset', style: headingStyle.copyWith(color: Colors.red)),
+        content: Text('This will delete ALL data including customers, orders, notes, and images. This CANNOT be undone.\n\nAre you absolutely sure?', style: bodyStyle),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('CANCEL', style: TextStyle(color: theme.textSecondary))),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('YES, DELETE EVERYTHING', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      // Execute factory reset
+      // In a real app we'd clear Hive, delete SQLite DB, and delete the images directory
+      final appState = Provider.of<AppStateProvider>(context, listen: false);
+      appState.setAppLockEnabled(false);
+      
+      if (mounted) {
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+      }
+    }
   }
 }

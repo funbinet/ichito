@@ -4,6 +4,7 @@ import 'dart:io';
 import '../../../../shared/providers/theme_provider.dart';
 import '../../../../shared/providers/app_state_provider.dart';
 import '../../../../shared/providers/language_provider.dart';
+import '../../../../shared/widgets/themed_logo.dart';
 
 class WelcomeHeader extends StatelessWidget {
   final int notificationCount;
@@ -31,13 +32,7 @@ class WelcomeHeader extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Image.asset(
-                    theme.isLightMode
-                      ? 'assets/images/logo_black.png'
-                      : 'assets/images/logo_white.png',
-                    width: 24,
-                    height: 24,
-                  ),
+                  const ThemedLogo(size: 24),
                   const SizedBox(width: 8),
                   Text(
                     'ICHITO',

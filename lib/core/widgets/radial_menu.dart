@@ -4,6 +4,7 @@ import '../../shared/mixins/theme_aware_mixin.dart';
 import '../../shared/providers/language_provider.dart';
 import 'package:provider/provider.dart';
 import '../routes/route_generator.dart';
+import '../../shared/widgets/themed_logo.dart';
 
 class RadialMenuItem {
   final String label;
@@ -218,11 +219,9 @@ class _RadialMenuState extends State<RadialMenu>
             child: AnimatedRotation(
               turns: _isOpen ? 0.125 : 0,
               duration: const Duration(milliseconds: 300),
-              child: Image.asset(
-                theme.isLightMode ? 'assets/images/logo_white.png' : 'assets/images/logo_black.png',
-                width: 28,
-                height: 28,
-                color: theme.isLightMode ? Colors.white : Colors.black, // Force contrast
+              child: ThemedLogo(
+                size: 28,
+                color: theme.onAccent, // Ensures contrast against the FAB
               ),
             ),
           ),

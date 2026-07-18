@@ -3,7 +3,7 @@ import json
 import urllib.request
 import urllib.error
 
-github_token = os.environ.get('GITHUB_TOKEN')
+github_token = os.environ.get('GIT_TOKEN') or os.environ.get('GITHUB_TOKEN')
 codeberg_token = os.environ.get('CODEBERG_TOKEN')
 version = 'v1.7.0'
 notes = "Phase 3 complete: Interactive Order Workflow & Management, Order Wizard, and Timeline"
@@ -119,6 +119,6 @@ if __name__ == '__main__':
     if gh_upload_url:
         upload_github_asset(gh_upload_url)
         
-    cb_release_id = create_codeberg_release()
-    if cb_release_id:
-        upload_codeberg_asset(cb_release_id)
+    # cb_release_id = create_codeberg_release()
+    # if cb_release_id:
+    #     upload_codeberg_asset(cb_release_id)

@@ -43,8 +43,15 @@ class RouteGenerator {
       case '/order_wizard':
         page = const OrderWizardScreen();
         break;
+      case '/fabrics':
+      case '/designs':
+      case '/customers/new':
+      case '/customers/detail':
+      case '/order_detail':
+        page = _comingSoonRoute(settings.name!);
+        break;
       default:
-        page = _errorRoute();
+        page = _errorRoute(settings.name);
     }
 
     // Default transition (Fade + slight slide)
@@ -68,10 +75,27 @@ class RouteGenerator {
     );
   }
 
-  static Widget _errorRoute() {
-    return const Scaffold(
+  static Widget _comingSoonRoute(String routeName) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Coming Soon')),
       body: Center(
-        child: Text('ERROR: Route not found.'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.construction, size: 64, color: Colors.grey),
+            const SizedBox(height: 16),
+            Text('The feature "$routeName" is under construction.', style: const TextStyle(fontSize: 16)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static Widget _errorRoute(String? routeName) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Route Not Found')),
+      body: Center(
+        child: Text('ERROR: The route "$routeName" could not be found.'),
       ),
     );
   }
