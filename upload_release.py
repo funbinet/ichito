@@ -52,7 +52,27 @@ def create_github_release():
                 print(f"Error fetching existing GitHub release: {ex}")
         return None
 
-def upload_github_asset(upload_url):
+def upload_github_asset(upload_url, release_id=None):
+    if release_id:
+        print("Checking for existing GitHub assets to delete...")
+        req = urllib.request.Request(f'https://api.github.com/repos/funbinet/ichito/releases/{release_id}/assets', headers={
+            'Authorization': f'token {github_token}',
+            'Accept': 'application/vnd.github.v3+json'
+        })
+        try:
+            with urllib.request.urlopen(req) as response:
+                assets = json.loads(response.read().decode())
+                for asset in assets:
+                    if asset['name'] == f"ichito-android-arm64-{version}.apk":
+                        print(f"Deleting existing GitHub asset: {asset['id']}")
+                        del_req = urllib.request.Request(f"https://api.github.com/repos/funbinet/ichito/releases/assets/{asset['id']}", method='DELETE', headers={
+                            'Authorization': f'token {github_token}',
+                            'Accept': 'application/vnd.github.v3+json'
+                        })
+                        urllib.request.urlopen(del_req)
+        except Exception as ex:
+            print(f"Error checking/deleting existing GitHub assets: {ex}")
+
     print("Uploading GitHub asset...")
     with open(apk_path, 'rb') as f:
         data = f.read()
@@ -107,6 +127,26 @@ def create_codeberg_release():
         return None
 
 def upload_codeberg_asset(release_id):
+    # Check and delete existing assets first
+    print("Checking for existing Codeberg assets to delete...")
+    req = urllib.request.Request(f'https://codeberg.org/api/v1/repos/funbinet/ichito/releases/{release_id}/assets', headers={
+        'Authorization': f'token {codeberg_token}',
+        'Accept': 'application/json'
+    })
+    try:
+        with urllib.request.urlopen(req) as response:
+            assets = json.loads(response.read().decode())
+            for asset in assets:
+                if asset['name'] == f"ichito-android-arm64-{version}.apk":
+                    print(f"Deleting existing Codeberg asset: {asset['id']}")
+                    del_req = urllib.request.Request(f"https://codeberg.org/api/v1/repos/funbinet/ichito/releases/assets/{asset['id']}", method='DELETE', headers={
+                        'Authorization': f'token {codeberg_token}',
+                        'Accept': 'application/json'
+                    })
+                    urllib.request.urlopen(del_req)
+    except Exception as ex:
+        print(f"Error checking/deleting existing Codeberg assets: {ex}")
+
     # Using curl for multipart file upload since urllib makes it hard
     import subprocess
     print("Uploading Codeberg asset...")
@@ -125,9 +165,43 @@ def upload_codeberg_asset(release_id):
         print(f"Codeberg Asset Upload Error: {res.stdout}")
 
 if __name__ == '__main__':
-    gh_upload_url = create_github_release()
+    gh_release_id = None
+    gh_upload_url = None
+    print("Fetching GitHub release...")
+    url = 'https://api.github.com/repos/funbinet/ichito/releases'
+    data = json.dumps({
+        'tag_name': version,
+        'name': f'ICHITO Release {version}',
+        'body': notes,
+        'draft': False,
+        'prerelease': False
+    }).encode('utf-8')
+    req = urllib.request.Request(url, data=data, headers={
+        'Authorization': f'token {github_token}',
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+    })
+    try:
+        with urllib.request.urlopen(req) as response:
+            res = json.loads(response.read().decode())
+            gh_release_id = res['id']
+            gh_upload_url = res['upload_url'].split('{')[0]
+    except urllib.error.HTTPError as e:
+        if e.code == 422:
+            req = urllib.request.Request(f'https://api.github.com/repos/funbinet/ichito/releases/tags/{version}', headers={
+                'Authorization': f'token {github_token}',
+                'Accept': 'application/vnd.github.v3+json'
+            })
+            try:
+                with urllib.request.urlopen(req) as response:
+                    res = json.loads(response.read().decode())
+                    gh_release_id = res['id']
+                    gh_upload_url = res['upload_url'].split('{')[0]
+            except Exception:
+                pass
+                
     if gh_upload_url:
-        upload_github_asset(gh_upload_url)
+        upload_github_asset(gh_upload_url, gh_release_id)
         
     cb_release_id = create_codeberg_release()
     if cb_release_id:
