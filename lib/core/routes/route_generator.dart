@@ -4,10 +4,12 @@ import '../../features/customers/presentation/pages/customer_list_screen.dart';
 import '../../features/orders/presentation/pages/order_list_screen.dart';
 import '../../features/settings/presentation/pages/settings_screen.dart';
 import '../../features/settings/presentation/pages/onboarding_screen.dart';
+import '../../features/settings/presentation/pages/profile_screen.dart';
 import '../../features/notes/presentation/pages/notes_list_screen.dart';
 import '../../features/garments/presentation/pages/garments_library_screen.dart';
 import '../../features/analytics/presentation/pages/analytics_screen.dart';
 import '../../features/orders/presentation/pages/order_wizard_screen.dart';
+import '../../features/notifications/presentation/pages/notifications_screen.dart';
 import '../../shared/data/local/settings_repository.dart';
 
 class RouteGenerator {
@@ -42,6 +44,12 @@ class RouteGenerator {
         break;
       case '/order_wizard':
         page = const OrderWizardScreen();
+        break;
+      case '/profile':
+        page = const ProfileScreen();
+        break;
+      case '/notifications':
+        page = const NotificationsScreen();
         break;
       case '/fabrics':
       case '/designs':

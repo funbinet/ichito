@@ -1,29 +1,78 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 import 'shared/providers/theme_provider.dart';
 import 'shared/providers/language_provider.dart';
 import 'shared/providers/app_state_provider.dart';
+import 'shared/providers/profile_provider.dart';
+import 'shared/providers/notification_provider.dart';
 import 'shared/data/database/database_helper.dart';
+import 'shared/data/local/settings_repository.dart';
+import 'features/notifications/data/services/notification_service.dart';
 import 'core/routes/route_generator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Hive
-  await Hive.initFlutter();
-  await Hive.openBox('settings');
-  
-  // Initialize Database
+
+  // Initialize Database (creates/migrates tables)
   await DatabaseHelper.instance.database;
+
+  // Initialize Settings from SQLite
+  final settingsRepo = SettingsRepository();
+  await settingsRepo.initialize();
+
+  // Initialize Local Notifications
+  final notificationService = NotificationService();
+  await notificationService.initialize();
+
+  // Create providers
+  final themeProvider = ThemeProvider();
+  themeProvider.loadFromSettings(settingsRepo.getThemeMode());
+  // Load accent color if saved
+  final savedAccent = settingsRepo.getAccentColor();
+  if (savedAccent != null) {
+    themeProvider.setAccentColor(Color(savedAccent));
+  }
+
+  final languageProvider = LanguageProvider();
+  final savedLang = settingsRepo.getLanguage();
+  languageProvider.setLanguage(
+    savedLang == 'sheng' ? AppLanguage.sheng : AppLanguage.english,
+  );
+  languageProvider.setCurrency(settingsRepo.getCurrency());
+  languageProvider.setMeasurementUnit(settingsRepo.getMeasurementUnit());
+
+  final profileProvider = ProfileProvider();
+  await profileProvider.loadProfile();
+
+  final notificationProvider = NotificationProvider();
+  await notificationProvider.loadNotifications();
+
+  // Check for due orders and generate notifications
+  await notificationProvider.checkOrderDueDates();
+
+  // Show a push notification if there are unread notifications
+  if (notificationProvider.unreadCount > 0) {
+    final dueNotifications = notificationProvider.notifications
+        .where((n) => n.type == 'order_due' && !n.isRead)
+        .toList();
+    if (dueNotifications.isNotEmpty) {
+      final bodies = dueNotifications.take(5).map((n) => n.body).join('\n');
+      await notificationService.showOrdersDueSummary(
+        count: dueNotifications.length,
+        body: bodies,
+      );
+    }
+  }
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => LanguageProvider()),
-        ChangeNotifierProvider(create: (_) => AppStateProvider()),
+        ChangeNotifierProvider.value(value: themeProvider),
+        ChangeNotifierProvider.value(value: languageProvider),
+        ChangeNotifierProvider(create: (_) => AppStateProvider()..initialize()),
+        ChangeNotifierProvider.value(value: profileProvider),
+        ChangeNotifierProvider.value(value: notificationProvider),
       ],
       child: const IchitoApp(),
     ),
@@ -36,7 +85,7 @@ class IchitoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    
+
     return MaterialApp(
       title: 'ICHITO',
       debugShowCheckedModeBanner: false,

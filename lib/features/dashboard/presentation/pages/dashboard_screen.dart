@@ -4,6 +4,7 @@ import '../../../../shared/mixins/theme_aware_mixin.dart';
 import '../../../../shared/mixins/navigation_mixin.dart';
 import '../../../../core/widgets/ichito_scaffold.dart';
 import '../../../../shared/providers/language_provider.dart';
+import '../../../../shared/providers/theme_provider.dart';
 import '../../../orders/data/repositories/order_repository.dart';
 import '../../../orders/data/models/order.dart';
 import '../widgets/welcome_header.dart';
@@ -23,6 +24,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
   int _activeOrdersCount = 0;
   double _monthlyRevenue = 0.0;
   List<Order> _recentOrders = [];
+  List<Order> _upcomingDeadlines = [];
   bool _isLoading = true;
   int _currentStatPage = 0;
 
@@ -35,16 +37,35 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
   Future<void> _loadDashboardData() async {
     setState(() => _isLoading = true);
     
-    final orders = await _orderRepo.getAllOrders();
-    _activeOrdersCount = orders.where((o) => o.status != 'completed' && o.status != 'cancelled').length;
-    
-    _monthlyRevenue = orders
-        .where((o) => o.orderDate.month == DateTime.now().month)
-        .fold(0.0, (sum, o) => sum + o.paidAmount);
+    try {
+      final orders = await _orderRepo.getAllOrders();
+      _activeOrdersCount = orders.where((o) => o.status != 'completed' && o.status != 'cancelled').length;
+      
+      _monthlyRevenue = orders
+          .where((o) => o.orderDate.month == DateTime.now().month)
+          .fold(0.0, (sum, o) => sum + o.paidAmount);
 
-    // Sort by order date descending
-    orders.sort((a, b) => b.orderDate.compareTo(a.orderDate));
-    _recentOrders = orders.take(5).toList();
+      // Upcoming deadlines: active orders due within 7 days
+      final now = DateTime.now();
+      _upcomingDeadlines = orders
+          .where((o) => o.status != 'completed' && o.status != 'cancelled')
+          .where((o) {
+            final daysUntil = o.dueDate.difference(now).inDays;
+            return daysUntil <= 7;
+          })
+          .toList()
+        ..sort((a, b) => a.dueDate.compareTo(b.dueDate));
+
+      // Sort by order date descending for recent
+      orders.sort((a, b) => b.orderDate.compareTo(a.orderDate));
+      _recentOrders = orders.take(5).toList();
+    } catch (e) {
+      // Handle gracefully — tables might have no data yet
+      _activeOrdersCount = 0;
+      _monthlyRevenue = 0.0;
+      _recentOrders = [];
+      _upcomingDeadlines = [];
+    }
 
     setState(() => _isLoading = false);
   }
@@ -61,11 +82,8 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
               color: theme.accentColor,
               child: CustomScrollView(
                 slivers: [
-                  SliverToBoxAdapter(
-                    child: WelcomeHeader(
-                      notificationCount: 3, // Dummy for now
-                      onNotificationTap: () {},
-                    ),
+                  const SliverToBoxAdapter(
+                    child: WelcomeHeader(),
                   ),
                   SliverToBoxAdapter(
                     child: _buildStatisticsCarousel(),
@@ -76,6 +94,19 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
                   SliverToBoxAdapter(
                     child: _buildQuickActionGrid(),
                   ),
+                  // Upcoming Deadlines Section
+                  if (_upcomingDeadlines.isNotEmpty) ...[
+                    SliverToBoxAdapter(
+                      child: SectionHeader(
+                        title: 'Upcoming Deadlines',
+                        actionLabel: 'View All',
+                        onActionTap: () => navigateTo('/orders'),
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: _buildUpcomingDeadlines(),
+                    ),
+                  ],
                   SliverToBoxAdapter(
                     child: SectionHeader(
                       title: 'Recent Activity',
@@ -138,7 +169,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
     return Column(
       children: [
         SizedBox(
-          height: 140,
+          height: 165, // Increased from 140 for more vertical space
           child: PageView.builder(
             controller: PageController(viewportFraction: 0.85),
             onPageChanged: (index) => setState(() => _currentStatPage = index),
@@ -239,6 +270,100 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
             onTap: () => navigateTo('/settings'),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildUpcomingDeadlines() {
+    return SizedBox(
+      height: 90,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: _upcomingDeadlines.length,
+        itemBuilder: (context, index) {
+          final order = _upcomingDeadlines[index];
+          final daysLeft = order.dueDate.difference(DateTime.now()).inDays;
+          final isOverdue = daysLeft < 0;
+          final isToday = daysLeft == 0;
+
+          return GestureDetector(
+            onTap: () => navigateTo('/orders/detail', arguments: order.id),
+            child: Container(
+              width: 160,
+              margin: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: theme.cardColor,
+                borderRadius: theme.cornerRadius,
+                border: Border.all(
+                  color: isOverdue
+                      ? const Color(0xFFF44336).withOpacity(0.5)
+                      : isToday
+                          ? const Color(0xFFFF9800).withOpacity(0.5)
+                          : theme.accentColor.withOpacity(0.3),
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    order.orderNumber,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: theme.textPrimary,
+                      fontFamily: theme.fontFamily,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (order.customerName != null)
+                    Text(
+                      order.customerName!,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: theme.textSecondary,
+                        fontFamily: theme.fontFamily,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: isOverdue
+                          ? const Color(0xFFF44336).withOpacity(0.15)
+                          : isToday
+                              ? const Color(0xFFFF9800).withOpacity(0.15)
+                              : theme.accentColor.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      isOverdue
+                          ? '${-daysLeft}d overdue'
+                          : isToday
+                              ? 'Due today!'
+                              : '${daysLeft}d left',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: isOverdue
+                            ? const Color(0xFFF44336)
+                            : isToday
+                                ? const Color(0xFFFF9800)
+                                : theme.accentColor,
+                        fontFamily: theme.fontFamily,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

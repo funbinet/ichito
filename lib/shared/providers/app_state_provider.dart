@@ -11,25 +11,15 @@ class AppStateProvider extends ChangeNotifier {
   int _autoLockMinutes = 5;
   DateTime? _lastActiveTime;
 
-  String _userName = '';
-  String? _profilePhotoPath;
-
   bool get isFirstLaunch => _isFirstLaunch;
   bool get isLocked => _isLocked;
   bool get isAppLockEnabled => _isAppLockEnabled;
   bool get isBiometricEnabled => _isBiometricEnabled;
   int get autoLockMinutes => _autoLockMinutes;
-  
-  String get userName => _userName;
-  String? get profilePhotoPath => _profilePhotoPath;
 
   void initialize() {
     _isFirstLaunch = !_settings.isOnboardingComplete();
     _isAppLockEnabled = _settings.getAppLockEnabled();
-    _userName = _settings.getBusinessName();
-    
-    // We don't have biometric and autolock fully mapped yet,
-    // but this sets up the basics from hive.
     
     if (_isAppLockEnabled) {
       _isLocked = true;

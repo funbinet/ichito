@@ -1,10 +1,17 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
 import '../../../../shared/mixins/navigation_mixin.dart';
 import '../../../../core/widgets/adaptive_components.dart';
 import '../../../../shared/data/local/settings_repository.dart';
 import '../../../../shared/providers/language_provider.dart';
 import '../../../../shared/providers/app_state_provider.dart';
+import '../../../../shared/providers/profile_provider.dart';
+import '../../../../shared/providers/theme_provider.dart';
+import '../../../../shared/widgets/image_picker_dialog.dart';
+import '../../../../shared/widgets/image_crop_dialog.dart';
 import 'package:provider/provider.dart';
 
 import '../../../garments/data/models/garment.dart';
@@ -26,10 +33,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
 
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  static const int _totalPages = 8; // Increased to 8
+  static const int _totalPages = 8;
 
   // Controllers - Basic Details
   final _businessNameCtrl = TextEditingController();
+  final _ownerNameCtrl = TextEditingController();
   final _locationCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
@@ -49,6 +57,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
   AppLanguage _selectedLanguage = AppLanguage.english;
   bool _enableAppLock = false;
   String _pin = '';
+
+  // Profile photo as base64
+  String? _profilePhotoBase64;
 
   // Dynamic Data Lists
   final List<String> _measurements = ['Chest', 'Waist', 'Hips', 'Shoulder', 'Length'];
@@ -72,18 +83,42 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
     }
   }
 
-  Future<void> _completeOnboarding() async {
-    // 1. Basic Details
-    final name = _businessNameCtrl.text.trim();
-    if (name.isNotEmpty) await _settings.setBusinessName(name);
-    await _settings.setBusinessLocation(_locationCtrl.text.trim());
-    await _settings.setBusinessPhone(_phoneCtrl.text.trim());
-    await _settings.setBusinessEmail(_emailCtrl.text.trim());
-    
-    final labor = double.tryParse(_laborCostCtrl.text.trim());
-    if (labor != null) await _settings.setDefaultLaborCost(labor);
+  Future<void> _pickProfilePhoto() async {
+    final source = await ImagePickerDialog.show(context);
+    if (source == null) return;
 
-    // 2. Preferences
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: source == 'camera' ? ImageSource.camera : ImageSource.gallery,
+      maxWidth: 800,
+      maxHeight: 800,
+      imageQuality: 85,
+    );
+    if (pickedFile == null) return;
+
+    if (!mounted) return;
+    final croppedBytes = await ImageCropDialog.show(context, File(pickedFile.path));
+    if (croppedBytes == null) return;
+
+    setState(() {
+      _profilePhotoBase64 = base64Encode(croppedBytes);
+    });
+  }
+
+  Future<void> _completeOnboarding() async {
+    // 1. Save profile to SQLite via ProfileProvider
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    await profileProvider.saveProfile(
+      businessName: _businessNameCtrl.text.trim(),
+      ownerName: _ownerNameCtrl.text.trim(),
+      phone: _phoneCtrl.text.trim(),
+      email: _emailCtrl.text.trim(),
+      location: _locationCtrl.text.trim(),
+      defaultLaborCost: double.tryParse(_laborCostCtrl.text.trim()) ?? 1500.0,
+      profilePhoto: _profilePhotoBase64,
+    );
+
+    // 2. Save preferences to SQLite via SettingsRepository
     await _settings.setCurrency(_selectedCurrency);
     await _settings.setMeasurementUnit(_selectedUnit);
     await _settings.setDateFormat(_selectedDateFormat);
@@ -125,6 +160,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
   @override
   void dispose() {
     _businessNameCtrl.dispose();
+    _ownerNameCtrl.dispose();
     _locationCtrl.dispose();
     _phoneCtrl.dispose();
     _emailCtrl.dispose();
@@ -203,7 +239,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
     );
   }
 
-  // --- PAGES 1 TO 5 (Existing) ---
+  // --- PAGE 1: Welcome ---
   
   Widget _buildWelcomePage() {
     return Center(
@@ -224,29 +260,97 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
     );
   }
 
+  // --- PAGE 2: Business Details + Profile Photo ---
+
   Widget _buildBusinessDetailsPage() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 48),
+          const SizedBox(height: 32),
           Text('Business Details', style: headingStyle),
           const SizedBox(height: 8),
           Text('Let\'s setup your tailoring business profile.', style: subtitleStyle),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
+
+          // Profile Photo Avatar
+          Center(
+            child: GestureDetector(
+              onTap: _pickProfilePhoto,
+              child: Stack(
+                children: [
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: theme.accentColor, width: 2),
+                    ),
+                    child: CircleAvatar(
+                      radius: 48,
+                      backgroundColor: theme.accentLight,
+                      backgroundImage: _profilePhotoBase64 != null
+                          ? MemoryImage(base64Decode(_profilePhotoBase64!))
+                          : null,
+                      child: _profilePhotoBase64 == null
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.add_a_photo_outlined, color: theme.accentColor, size: 28),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Add Photo',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: theme.accentColor,
+                                    fontFamily: theme.fontFamily,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : null,
+                    ),
+                  ),
+                  if (_profilePhotoBase64 != null)
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: theme.accentColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: theme.backgroundColor, width: 2),
+                        ),
+                        child: Icon(Icons.edit, color: theme.onAccent, size: 14),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+
           AdaptiveTextField(
             controller: _businessNameCtrl,
             label: 'Shop / Business Name',
             prefixIcon: Icons.storefront_outlined,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
+          AdaptiveTextField(
+            controller: _ownerNameCtrl,
+            label: 'Owner Name',
+            prefixIcon: Icons.person_outlined,
+          ),
+          const SizedBox(height: 12),
           AdaptiveTextField(
             controller: _locationCtrl,
             label: 'Location / City',
             prefixIcon: Icons.location_on_outlined,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           AdaptiveTextField(
             controller: _laborCostCtrl,
             label: 'Default Labor Cost (Base Price)',
@@ -257,6 +361,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
       ),
     );
   }
+
+  // --- PAGE 3: Contact Info ---
 
   Widget _buildContactPage() {
     return SingleChildScrollView(
@@ -286,6 +392,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
       ),
     );
   }
+
+  // --- PAGE 4: Preferences ---
 
   Widget _buildPreferencesPage() {
     return SingleChildScrollView(
@@ -341,6 +449,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
     );
   }
 
+  // --- PAGE 5: Security ---
+
   Widget _buildSecurityPage() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24.0),
@@ -375,7 +485,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
     );
   }
 
-  // --- PAGES 6 TO 8 (New Setup Pages) ---
+  // --- PAGE 6: Measurement Setup ---
 
   Widget _buildMeasurementSetupPage() {
     return Padding(
@@ -434,6 +544,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
       ),
     );
   }
+
+  // --- PAGE 7: Garment Setup ---
 
   Widget _buildGarmentSetupPage() {
     return Padding(
@@ -508,6 +620,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
       ),
     );
   }
+
+  // --- PAGE 8: Fabric Setup ---
 
   Widget _buildFabricSetupPage() {
     return Padding(

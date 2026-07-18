@@ -5,6 +5,7 @@ import '../../../../shared/providers/theme_provider.dart';
 import '../../../../shared/providers/language_provider.dart';
 import '../../../../shared/providers/app_state_provider.dart';
 import '../../../../shared/data/local/settings_repository.dart';
+import '../../../../core/widgets/ichito_scaffold.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -18,15 +19,16 @@ class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return IchitoScaffold(
+      backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text(lang.t('Settings'), style: headingStyle),
+        title: Text(lang.t('Settings'), style: headingStyle.copyWith(fontSize: 18)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
         children: [
           _buildSectionHeader('Appearance'),
           _buildThemeSelector(),
@@ -58,7 +60,10 @@ class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
   Widget _buildThemeSelector() {
     return Card(
       color: theme.cardColor,
-      shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
+      shape: RoundedRectangleBorder(
+        borderRadius: theme.cornerRadius,
+        side: BorderSide(color: theme.accentColor.withOpacity(0.2)),
+      ),
       child: Column(
         children: AppThemeMode.values.map((mode) {
           return RadioListTile<AppThemeMode>(
@@ -89,7 +94,10 @@ class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
 
     return Card(
       color: theme.cardColor,
-      shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
+      shape: RoundedRectangleBorder(
+        borderRadius: theme.cornerRadius,
+        side: BorderSide(color: theme.accentColor.withOpacity(0.2)),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -103,7 +111,10 @@ class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
               children: colors.map((color) {
                 final isSelected = theme.accentColor.value == color.value;
                 return GestureDetector(
-                  onTap: () => theme.setAccentColor(color),
+                  onTap: () {
+                    theme.setAccentColor(color);
+                    _settings.setAccentColor(color.value);
+                  },
                   child: Container(
                     width: 40,
                     height: 40,
@@ -129,7 +140,10 @@ class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
   Widget _buildLanguageSelector() {
     return Card(
       color: theme.cardColor,
-      shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
+      shape: RoundedRectangleBorder(
+        borderRadius: theme.cornerRadius,
+        side: BorderSide(color: theme.accentColor.withOpacity(0.2)),
+      ),
       child: Column(
         children: AppLanguage.values.map((l) {
           return RadioListTile<AppLanguage>(
@@ -153,7 +167,10 @@ class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
     final appState = Provider.of<AppStateProvider>(context);
     return Card(
       color: theme.cardColor,
-      shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
+      shape: RoundedRectangleBorder(
+        borderRadius: theme.cornerRadius,
+        side: BorderSide(color: theme.accentColor.withOpacity(0.2)),
+      ),
       child: Column(
         children: [
           SwitchListTile(
@@ -184,7 +201,10 @@ class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
   Widget _buildDataManagementSettings() {
     return Card(
       color: theme.cardColor,
-      shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
+      shape: RoundedRectangleBorder(
+        borderRadius: theme.cornerRadius,
+        side: BorderSide(color: theme.accentColor.withOpacity(0.2)),
+      ),
       child: Column(
         children: [
           ListTile(
@@ -218,7 +238,6 @@ class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
 
     if (confirmed == true) {
       // Execute factory reset
-      // In a real app we'd clear Hive, delete SQLite DB, and delete the images directory
       final appState = Provider.of<AppStateProvider>(context, listen: false);
       appState.setAppLockEnabled(false);
       

@@ -30,7 +30,7 @@ class QuickActionTile extends StatelessWidget {
           color: theme.cardColor,
           borderRadius: theme.cornerRadius,
           boxShadow: theme.cardShadow != null ? [theme.cardShadow!] : null,
-          border: Border.all(color: theme.borderColor, width: 0.5),
+          border: Border.all(color: theme.accentColor.withOpacity(0.3), width: 1),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

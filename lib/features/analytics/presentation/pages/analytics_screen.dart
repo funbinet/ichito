@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
+import '../../../../core/widgets/ichito_scaffold.dart';
 import '../../../orders/data/repositories/order_repository.dart';
 import '../../../orders/data/models/order.dart';
 
@@ -79,7 +80,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with ThemeAwareMixin 
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return IchitoScaffold(
       appBar: AppBar(
         title: Text('Analytics & Reports', style: headingStyle),
         backgroundColor: theme.backgroundColor,
@@ -107,7 +108,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with ThemeAwareMixin 
       body: _isLoading
           ? Center(child: CircularProgressIndicator(color: theme.accentColor))
           : ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
               children: [
                 _buildSummaryCards(),
                 const SizedBox(height: 24),
@@ -166,7 +167,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with ThemeAwareMixin 
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: theme.cornerRadius,
-        border: Border.all(color: theme.borderColor),
+        border: Border.all(color: theme.accentColor.withOpacity(0.3), width: 1),
       ),
       child: LineChart(
         LineChartData(

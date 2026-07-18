@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
 import '../../../../shared/mixins/navigation_mixin.dart';
+import '../../../../core/widgets/ichito_scaffold.dart';
 import '../../data/models/order.dart';
 import '../../data/repositories/order_repository.dart';
 import '../../../../core/widgets/adaptive_components.dart';
@@ -75,7 +76,7 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return IchitoScaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
         title: Text(lang.t('orders'), style: headingStyle),
@@ -135,14 +136,6 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          navigateTo('/order_wizard');
-        },
-        backgroundColor: theme.accentColor,
-        foregroundColor: Colors.white,
-        child: const Icon(Icons.add_outlined),
-      ),
     );
   }
 
@@ -161,7 +154,7 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
 
   Widget _buildList() {
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
       itemCount: _filteredOrders.length,
       itemBuilder: (context, index) {
         final order = _filteredOrders[index];
@@ -172,7 +165,7 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
           margin: const EdgeInsets.only(bottom: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: isOverdue ? const BorderSide(color: Colors.red, width: 1) : BorderSide(color: theme.borderColor, width: 0.5),
+            side: isOverdue ? const BorderSide(color: Colors.red, width: 1) : BorderSide(color: theme.accentColor.withOpacity(0.3), width: 1),
           ),
           elevation: theme.cardShadow != null ? 2 : 0,
           child: InkWell(

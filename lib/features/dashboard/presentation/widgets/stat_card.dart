@@ -30,25 +30,28 @@ class StatCard extends StatelessWidget {
         color: theme.cardColor,
         borderRadius: theme.cornerRadius,
         boxShadow: theme.cardShadow != null ? [theme.cardShadow!] : null,
-        border: Border.all(color: theme.borderColor, width: 0.5),
+        border: Border.all(color: theme.accentColor.withOpacity(0.3), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, color: theme.accentColor, size: 28),
-          const SizedBox(height: 12),
+          const Spacer(),
           Text(title,
             style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
           const SizedBox(height: 4),
           Text(value,
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
               color: theme.textPrimary,
               fontFamily: theme.fontFamily,
-            )),
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
           if (trendPercentage != null) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Row(
               children: [
                 Icon(
@@ -61,15 +64,19 @@ class StatCard extends StatelessWidget {
                     : const Color(0xFFF44336),
                 ),
                 const SizedBox(width: 4),
-                Text(
-                  '${trendPositive ? "+" : ""}${trendPercentage!.toStringAsFixed(0)}%',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: trendPositive
-                      ? const Color(0xFF4CAF50)
-                      : const Color(0xFFF44336),
-                    fontFamily: theme.fontFamily,
+                Flexible(
+                  child: Text(
+                    '${trendPositive ? "+" : ""}${trendPercentage!.toStringAsFixed(0)}% this month',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: trendPositive
+                        ? const Color(0xFF4CAF50)
+                        : const Color(0xFFF44336),
+                      fontFamily: theme.fontFamily,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

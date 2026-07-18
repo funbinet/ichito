@@ -1,25 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'dart:io';
 import '../../../../shared/providers/theme_provider.dart';
-import '../../../../shared/providers/app_state_provider.dart';
+import '../../../../shared/providers/profile_provider.dart';
+import '../../../../shared/providers/notification_provider.dart';
 import '../../../../shared/providers/language_provider.dart';
 import '../../../../shared/widgets/themed_logo.dart';
 
 class WelcomeHeader extends StatelessWidget {
-  final int notificationCount;
-  final VoidCallback onNotificationTap;
-
-  const WelcomeHeader({
-    super.key,
-    required this.notificationCount,
-    required this.onNotificationTap,
-  });
+  const WelcomeHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
-    final appState = Provider.of<AppStateProvider>(context);
+    final profile = Provider.of<ProfileProvider>(context);
+    final notifProvider = Provider.of<NotificationProvider>(context);
     final language = Provider.of<LanguageProvider>(context);
     
     return Container(
@@ -48,7 +42,7 @@ class WelcomeHeader extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                '${language.t("greeting")}, ${appState.userName}',
+                '${language.t("greeting")}, ${profile.businessName.isNotEmpty ? profile.businessName : "Tailor"}',
                 style: TextStyle(
                   fontSize: 14,
                   color: theme.textSecondary,
@@ -60,7 +54,7 @@ class WelcomeHeader extends StatelessWidget {
           
           const Spacer(),
           
-          // Notification bell with badge
+          // Notification bell with dynamic badge
           Stack(
             children: [
               IconButton(
@@ -68,43 +62,51 @@ class WelcomeHeader extends StatelessWidget {
                   Icons.notifications_outlined,
                   color: theme.textSecondary,
                 ),
-                onPressed: onNotificationTap,
+                onPressed: () => Navigator.pushNamed(context, '/notifications'),
               ),
-              if (notificationCount > 0)
+              if (notifProvider.unreadCount > 0)
                 Positioned(
-                  right: 8,
-                  top: 8,
+                  right: 6,
+                  top: 6,
                   child: Container(
                     padding: const EdgeInsets.all(4),
+                    constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
                     decoration: BoxDecoration(
                       color: theme.accentColor,
                       shape: BoxShape.circle,
                     ),
                     child: Text(
-                      '$notificationCount',
+                      notifProvider.unreadCount > 99 ? '99+' : '${notifProvider.unreadCount}',
                       style: TextStyle(
                         color: theme.onAccent,
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),
             ],
           ),
           
-          // Profile avatar
+          // Profile avatar — navigates to /profile
           GestureDetector(
-            onTap: () => Navigator.pushNamed(context, '/settings'),
-            child: CircleAvatar(
-              radius: 18,
-              backgroundColor: theme.accentLight,
-              backgroundImage: appState.profilePhotoPath != null
-                ? FileImage(File(appState.profilePhotoPath!))
-                : null,
-              child: appState.profilePhotoPath == null
-                ? Icon(Icons.person_outlined, color: theme.accentColor, size: 20)
-                : null,
+            onTap: () => Navigator.pushNamed(context, '/profile'),
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: theme.accentColor.withOpacity(0.4), width: 1.5),
+              ),
+              child: CircleAvatar(
+                radius: 18,
+                backgroundColor: theme.accentLight,
+                backgroundImage: profile.profilePhotoBytes != null
+                  ? MemoryImage(profile.profilePhotoBytes!)
+                  : null,
+                child: profile.profilePhotoBytes == null
+                  ? Icon(Icons.person_outlined, color: theme.accentColor, size: 20)
+                  : null,
+              ),
             ),
           ),
         ],

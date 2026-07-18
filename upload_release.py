@@ -5,8 +5,12 @@ import urllib.error
 
 github_token = os.environ.get('GIT_TOKEN') or os.environ.get('GITHUB_TOKEN')
 codeberg_token = os.environ.get('CODEBERG_TOKEN')
-version = 'v1.7.0'
-notes = "Phase 3 complete: Interactive Order Workflow & Management, Order Wizard, and Timeline"
+version = 'v2.5.0'
+try:
+    with open('release_notes_2.5.0.md', 'r') as f:
+        notes = f.read()
+except Exception:
+    notes = "ICHITO Release v2.5.0"
 apk_path = 'build/app/outputs/flutter-apk/app-release.apk'
 
 def create_github_release():
@@ -40,9 +44,12 @@ def create_github_release():
                 'Authorization': f'token {github_token}',
                 'Accept': 'application/vnd.github.v3+json'
             })
-            with urllib.request.urlopen(req) as response:
-                res = json.loads(response.read().decode())
-                return res['upload_url'].split('{')[0]
+            try:
+                with urllib.request.urlopen(req) as response:
+                    res = json.loads(response.read().decode())
+                    return res['upload_url'].split('{')[0]
+            except Exception as ex:
+                print(f"Error fetching existing GitHub release: {ex}")
         return None
 
 def upload_github_asset(upload_url):
@@ -91,9 +98,12 @@ def create_codeberg_release():
                 'Authorization': f'token {codeberg_token}',
                 'Accept': 'application/json'
             })
-            with urllib.request.urlopen(req) as response:
-                res = json.loads(response.read().decode())
-                return res['id']
+            try:
+                with urllib.request.urlopen(req) as response:
+                    res = json.loads(response.read().decode())
+                    return res['id']
+            except Exception as ex:
+                print(f"Error fetching existing Codeberg release: {ex}")
         return None
 
 def upload_codeberg_asset(release_id):
@@ -119,6 +129,6 @@ if __name__ == '__main__':
     if gh_upload_url:
         upload_github_asset(gh_upload_url)
         
-    # cb_release_id = create_codeberg_release()
-    # if cb_release_id:
-    #     upload_codeberg_asset(cb_release_id)
+    cb_release_id = create_codeberg_release()
+    if cb_release_id:
+        upload_codeberg_asset(cb_release_id)

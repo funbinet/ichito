@@ -19,8 +19,9 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDB,
+      onUpgrade: _onUpgrade,
       onConfigure: _onConfigure,
     );
   }
@@ -167,8 +168,99 @@ class DatabaseHelper {
       )
     ''');
 
+    // 9. App Settings Table (key-value store, replaces Hive)
+    await db.execute('''
+      CREATE TABLE app_settings (
+        key TEXT PRIMARY KEY,
+        value TEXT
+      )
+    ''');
+
+    // 10. Business Profile Table (single row)
+    await db.execute('''
+      CREATE TABLE business_profile (
+        id INTEGER PRIMARY KEY DEFAULT 1,
+        business_name TEXT NOT NULL DEFAULT '',
+        owner_name TEXT NOT NULL DEFAULT '',
+        phone TEXT NOT NULL DEFAULT '',
+        email TEXT DEFAULT '',
+        location TEXT DEFAULT '',
+        default_labor_cost REAL DEFAULT 1500.0,
+        profile_photo TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    ''');
+
+    // 11. Notifications Table
+    await db.execute('''
+      CREATE TABLE notifications (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        body TEXT NOT NULL,
+        type TEXT NOT NULL,
+        reference_id TEXT,
+        is_read INTEGER DEFAULT 0,
+        created_at TEXT NOT NULL
+      )
+    ''');
+
     // Create Triggers for auto-updating usage_count
     await _createTriggers(db);
+  }
+
+  Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      // Add new tables for v2
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS app_settings (
+          key TEXT PRIMARY KEY,
+          value TEXT
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS business_profile (
+          id INTEGER PRIMARY KEY DEFAULT 1,
+          business_name TEXT NOT NULL DEFAULT '',
+          owner_name TEXT NOT NULL DEFAULT '',
+          phone TEXT NOT NULL DEFAULT '',
+          email TEXT DEFAULT '',
+          location TEXT DEFAULT '',
+          default_labor_cost REAL DEFAULT 1500.0,
+          profile_photo TEXT,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS notifications (
+          id TEXT PRIMARY KEY,
+          title TEXT NOT NULL,
+          body TEXT NOT NULL,
+          type TEXT NOT NULL,
+          reference_id TEXT,
+          is_read INTEGER DEFAULT 0,
+          created_at TEXT NOT NULL
+        )
+      ''');
+
+      // For existing users upgrading from v1, mark onboarding as complete
+      // since they already went through it. Also set sensible defaults.
+      await db.insert('app_settings', {'key': 'onboardingComplete', 'value': '1'},
+          conflictAlgorithm: ConflictAlgorithm.ignore);
+      await db.insert('app_settings', {'key': 'themeMode', 'value': 'amoledDark'},
+          conflictAlgorithm: ConflictAlgorithm.ignore);
+      await db.insert('app_settings', {'key': 'language', 'value': 'english'},
+          conflictAlgorithm: ConflictAlgorithm.ignore);
+      await db.insert('app_settings', {'key': 'currency', 'value': 'KES'},
+          conflictAlgorithm: ConflictAlgorithm.ignore);
+      await db.insert('app_settings', {'key': 'measurementUnit', 'value': 'cm'},
+          conflictAlgorithm: ConflictAlgorithm.ignore);
+      await db.insert('app_settings', {'key': 'dateFormat', 'value': 'DD/MM/YYYY'},
+          conflictAlgorithm: ConflictAlgorithm.ignore);
+    }
   }
 
   Future _createTriggers(Database db) async {
