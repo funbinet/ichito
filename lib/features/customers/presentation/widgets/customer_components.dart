@@ -63,11 +63,13 @@ class LoyaltyBadge extends StatelessWidget {
 class CustomerCard extends StatelessWidget {
   final Customer customer;
   final VoidCallback onTap;
+  final bool isSelected;
   
   const CustomerCard({
     super.key,
     required this.customer,
     required this.onTap,
+    this.isSelected = false,
   });
 
   void _showQuickActions(BuildContext context) {
@@ -84,10 +86,12 @@ class CustomerCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: theme.cardColor,
+          color: isSelected ? theme.accentColor.withOpacity(0.05) : theme.cardColor,
           borderRadius: theme.cornerRadius,
           boxShadow: theme.cardShadow != null ? [theme.cardShadow!] : null,
-          border: Border.all(color: theme.borderColor, width: 0.5),
+          border: isSelected 
+              ? Border.all(color: theme.accentColor, width: 2)
+              : Border.all(color: theme.borderColor, width: 0.5),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

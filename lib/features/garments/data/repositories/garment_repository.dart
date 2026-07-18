@@ -35,6 +35,19 @@ class GarmentRepository {
     return result.map((map) => Garment.fromMap(map)).toList();
   }
 
+  Future<List<Garment>> getAll() async {
+    return getAllGarments();
+  }
+
+  Future<Garment?> getById(String id) async {
+    final db = await _dbHelper.database;
+    final result = await db.query('garments', where: 'id = ?', whereArgs: [id]);
+    if (result.isNotEmpty) {
+      return Garment.fromMap(result.first);
+    }
+    return null;
+  }
+
   Future<int> deleteGarment(String id) async {
     final db = await _dbHelper.database;
     return await db.delete('garments', where: 'id = ?', whereArgs: [id]);

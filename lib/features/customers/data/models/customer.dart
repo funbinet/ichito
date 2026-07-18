@@ -37,6 +37,37 @@ class Customer {
     this.preferredGarments = const [],
   });
 
+  Customer copyWith({
+    String? id,
+    String? name,
+    String? phone,
+    String? email,
+    String? gender,
+    String? location,
+    String? photoPath,
+    Map<String, double>? measurements,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return Customer(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      email: email ?? this.email,
+      gender: gender ?? this.gender,
+      location: location ?? this.location,
+      photoPath: photoPath ?? this.photoPath,
+      measurements: measurements ?? this.measurements,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      totalOrders: this.totalOrders,
+      totalSpent: this.totalSpent,
+      averageOrderValue: this.averageOrderValue,
+      lastOrderDate: this.lastOrderDate,
+      preferredGarments: this.preferredGarments,
+    );
+  }
+
   String get initials {
     if (name.isEmpty) return '?';
     final parts = name.split(' ').where((p) => p.isNotEmpty).toList();

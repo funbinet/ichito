@@ -194,7 +194,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
             label: 'New Order',
             subtitle: 'Create',
             icon: Icons.add_shopping_cart_outlined,
-            onTap: () => navigateTo('/orders/new'),
+            onTap: () => navigateTo('/order_wizard'),
           ),
           QuickActionTile(
             label: 'Customers',

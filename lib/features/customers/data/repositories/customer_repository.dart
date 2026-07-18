@@ -51,6 +51,10 @@ class CustomerRepository {
     }).toList();
   }
 
+  Future<List<Customer>> getAll() async {
+    return getAllCustomers();
+  }
+
   Future<Customer?> getCustomerById(String id) async {
     final db = await _dbHelper.database;
     final result = await db.query(
@@ -63,6 +67,10 @@ class CustomerRepository {
       return Customer.fromMap(result.first);
     }
     return null;
+  }
+
+  Future<Customer?> getById(String id) async {
+    return getCustomerById(id);
   }
 
   Future<int> updateCustomer(Customer customer) async {

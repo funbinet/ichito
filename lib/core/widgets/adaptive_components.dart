@@ -48,7 +48,7 @@ class AdaptiveCard extends StatelessWidget {
 
 class AdaptiveButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool isPrimary;
   final IconData? icon;
 
@@ -71,8 +71,8 @@ class AdaptiveButton extends StatelessWidget {
     return TextButton(
       onPressed: onPressed,
       style: TextButton.styleFrom(
-        backgroundColor: backgroundColor,
-        foregroundColor: textColor,
+        backgroundColor: onPressed == null ? theme.cardColor : backgroundColor,
+        foregroundColor: onPressed == null ? theme.textSecondary : textColor,
         shape: RoundedRectangleBorder(
           borderRadius: theme.buttonRadius,
           side: borderSide,

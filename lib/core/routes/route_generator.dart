@@ -7,6 +7,7 @@ import '../../features/settings/presentation/pages/onboarding_screen.dart';
 import '../../features/notes/presentation/pages/notes_list_screen.dart';
 import '../../features/garments/presentation/pages/garments_library_screen.dart';
 import '../../features/analytics/presentation/pages/analytics_screen.dart';
+import '../../features/orders/presentation/pages/order_wizard_screen.dart';
 import '../../shared/data/local/settings_repository.dart';
 
 class RouteGenerator {
@@ -38,6 +39,9 @@ class RouteGenerator {
         break;
       case '/analytics':
         page = const AnalyticsScreen();
+        break;
+      case '/order_wizard':
+        page = const OrderWizardScreen();
         break;
       default:
         page = _errorRoute();

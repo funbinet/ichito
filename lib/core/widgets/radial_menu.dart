@@ -37,7 +37,7 @@ class _RadialMenuState extends State<RadialMenu>
     RadialMenuItem(
       label: 'New Order',
       icon: Icons.add_shopping_cart_outlined,
-      route: '/orders/new',
+      route: '/order_wizard',
       distance: 90,
       angle: -pi / 2, // Top
     ),

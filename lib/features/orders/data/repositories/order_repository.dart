@@ -7,6 +7,15 @@ class OrderRepository {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
   final Uuid _uuid = const Uuid();
 
+  Future<String> generateOrderNumber() async {
+    final db = await _dbHelper.database;
+    final year = DateTime.now().year;
+    final month = DateTime.now().month.toString().padLeft(2, '0');
+    final result = await db.rawQuery('SELECT COUNT(*) as count FROM orders WHERE strftime("%Y-%m", created_at) = ?', ['$year-$month']);
+    final count = Sqflite.firstIntValue(result) ?? 0;
+    return 'ICHITO-$year-$month-${(count + 1).toString().padLeft(3, '0')}';
+  }
+
   Future<String> createOrder(Order order) async {
     final db = await _dbHelper.database;
     final id = _uuid.v4();
@@ -105,6 +114,14 @@ class OrderRepository {
       ));
     }
     return count;
+  }
+
+  Future<int> deleteOrder(String id) async {
+    final db = await _dbHelper.database;
+    // We also should delete associated payments and status logs
+    await db.delete('payments', where: 'order_id = ?', whereArgs: [id]);
+    await db.delete('order_status_logs', where: 'order_id = ?', whereArgs: [id]);
+    return await db.delete('orders', where: 'id = ?', whereArgs: [id]);
   }
 
   // --- Payments ---
