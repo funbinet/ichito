@@ -102,6 +102,7 @@ class DesignCard extends StatelessWidget  {
           color: theme.accentColor.withOpacity(0.5),
         ),
       ),
+    );
   }
 }
 
@@ -235,10 +236,10 @@ class _DesignListTileState extends State<DesignListTile> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (widget.design.notes != null && widget.design.notes!.isNotEmpty)
-                            Text(widget.design.notes!, style: TextStyle(fontSize: 13, color: theme.textSecondary), maxLines: 2, overflow: TextOverflow.ellipsis)
+                          if (widget.design.description != null && widget.design.description!.isNotEmpty)
+                            Text(widget.design.description!, style: TextStyle(fontSize: 13, color: theme.textSecondary), maxLines: 2, overflow: TextOverflow.ellipsis)
                           else
-                            Text('No notes', style: TextStyle(fontSize: 13, color: theme.textSecondary, fontStyle: FontStyle.italic)),
+                            Text('No description', style: TextStyle(fontSize: 13, color: theme.textSecondary, fontStyle: FontStyle.italic)),
                         ],
                       ),
                     ),

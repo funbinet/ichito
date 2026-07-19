@@ -114,6 +114,7 @@ class FabricCard extends StatelessWidget  {
           color: theme.accentColor.withOpacity(0.5),
         ),
       ),
+    );
   }
 }
 
@@ -257,7 +258,7 @@ class _FabricListTileState extends State<FabricListTile> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Quantity: ${widget.fabric.quantity} ${widget.fabric.unit}', style: TextStyle(fontSize: 13, color: theme.textSecondary)),
+                        Text('Unit: ${widget.fabric.unit}', style: TextStyle(fontSize: 13, color: theme.textSecondary)),
                         if (widget.fabric.color != null) ...[
                           const SizedBox(height: 4),
                           Text('Color: ${widget.fabric.color}', style: TextStyle(fontSize: 13, color: theme.textSecondary)),

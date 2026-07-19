@@ -120,7 +120,7 @@ class _Step1ClientState extends State<Step1Client> with ThemeAwareMixin {
                     createdAt: DateTime.now(),
                     updatedAt: DateTime.now(),
                   );
-                  await _customerRepo.create(newCustomer);
+                  await _customerRepo.createCustomer(newCustomer);
                   Navigator.pop(context, true);
                 }
               },

@@ -117,7 +117,7 @@ class _Step4MaterialsState extends State<Step4Materials> with ThemeAwareMixin {
                     createdAt: DateTime.now(),
                     updatedAt: DateTime.now(),
                   );
-                  await _fabricRepo.addFabric(newFabric);
+                  await _fabricRepo.createFabric(newFabric);
                   Navigator.pop(context, true);
                 }
               },

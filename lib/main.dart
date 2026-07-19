@@ -9,6 +9,7 @@ import 'shared/providers/notification_provider.dart';
 import 'shared/data/database/database_helper.dart';
 import 'shared/data/local/settings_repository.dart';
 import 'features/notifications/data/services/notification_service.dart';
+import 'features/security/presentation/pages/pin_lock_screen.dart';
 import 'core/routes/route_generator.dart';
 
 void main() async {

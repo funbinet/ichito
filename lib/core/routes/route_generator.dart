@@ -13,6 +13,7 @@ import '../../features/orders/presentation/pages/order_wizard_screen.dart';
 import '../../features/notifications/presentation/pages/notifications_screen.dart';
 import '../../features/designs/presentation/pages/designs_list_screen.dart';
 import '../../features/designs/presentation/pages/design_detail_screen.dart';
+import '../../features/designs/data/models/design.dart';
 import '../../features/fabrics/presentation/pages/fabrics_list_screen.dart';
 import '../../features/settings/presentation/pages/sub_screens/profile_settings_screen.dart';
 import '../../features/settings/presentation/pages/sub_screens/appearance_settings_screen.dart';
@@ -112,18 +113,18 @@ class RouteGenerator {
         page = const FabricsListScreen();
         break;
       case '/designs/detail':
-        final int designId = settings.arguments as int;
-        page = DesignDetailScreen(designId: designId);
+        final Design design = settings.arguments as Design;
+        page = DesignDetailScreen(design: design);
         break;
       case '/customers/new':
         page = const CustomerFormScreen();
         break;
       case '/customers/detail':
-        final int customerId = settings.arguments as int;
+        final String customerId = settings.arguments as String;
         page = CustomerDetailScreen(customerId: customerId);
         break;
       case '/orders/detail':
-        final int orderId = settings.arguments as int;
+        final String orderId = settings.arguments as String;
         page = OrderDetailScreen(orderId: orderId);
         break;
       case '/designs/form':

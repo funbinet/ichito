@@ -140,6 +140,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
 
   @override
   Widget build(BuildContext context) {
+    final language = Provider.of<LanguageProvider>(context);
     return IchitoScaffold(
       backgroundColor: theme.backgroundColor,
       body: SafeArea(
