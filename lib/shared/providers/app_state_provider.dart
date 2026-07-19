@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 import '../data/local/settings_repository.dart';
+import '../data/database/database_helper.dart';
 
 class AppStateProvider extends ChangeNotifier {
   final SettingsRepository _settings = SettingsRepository();
@@ -9,6 +12,8 @@ class AppStateProvider extends ChangeNotifier {
   bool _isAppLockEnabled = false;
   bool _isBiometricEnabled = false;
   int _autoLockMinutes = 5;
+  bool _performanceMode = false;
+  bool _debugLogging = false;
   DateTime? _lastActiveTime;
 
   bool get isFirstLaunch => _isFirstLaunch;
@@ -16,12 +21,16 @@ class AppStateProvider extends ChangeNotifier {
   bool get isAppLockEnabled => _isAppLockEnabled;
   bool get isBiometricEnabled => _isBiometricEnabled;
   int get autoLockMinutes => _autoLockMinutes;
+  bool get performanceMode => _performanceMode;
+  bool get debugLogging => _debugLogging;
 
   void initialize() {
     _isFirstLaunch = !_settings.isOnboardingComplete();
     _isAppLockEnabled = _settings.getAppLockEnabled();
     _isBiometricEnabled = _settings.getBiometricEnabled();
     _autoLockMinutes = _settings.getAutoLockMinutes();
+    _performanceMode = _settings.getPerformanceMode();
+    _debugLogging = _settings.getDebugLogging();
     
     if (_isAppLockEnabled) {
       _isLocked = true;
@@ -57,6 +66,20 @@ class AppStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Enable/disable performance mode (reduces animations, shadows, etc.).
+  Future<void> setPerformanceMode(bool enabled) async {
+    _performanceMode = enabled;
+    await _settings.setPerformanceMode(enabled);
+    notifyListeners();
+  }
+
+  /// Enable/disable debug logging.
+  Future<void> setDebugLogging(bool enabled) async {
+    _debugLogging = enabled;
+    await _settings.setDebugLogging(enabled);
+    notifyListeners();
+  }
+
   void unlock() {
     _isLocked = false;
     _lastActiveTime = DateTime.now();
@@ -89,6 +112,37 @@ class AppStateProvider extends ChangeNotifier {
         _isLocked = true;
         notifyListeners();
       }
+    }
+  }
+
+  /// Factory reset: clears ALL data including database, all settings, and preferences.
+  /// This should only be called after user triple confirmation.
+  /// After reset, the app should navigate to splash/onboarding screen.
+  Future<void> factoryReset() async {
+    try {
+      // Clear all settings
+      await _settings.clearAll();
+      
+      // Close and delete database
+      await DatabaseHelper.instance.close();
+      final dbPath = await getDatabasesPath();
+      final path = join(dbPath, 'ichito.db');
+      await deleteDatabase(path);
+      
+      // Reset all in-memory state
+      _isFirstLaunch = true;
+      _isLocked = false;
+      _isAppLockEnabled = false;
+      _isBiometricEnabled = false;
+      _autoLockMinutes = 5;
+      _performanceMode = false;
+      _debugLogging = false;
+      _lastActiveTime = null;
+      
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error during factory reset: $e');
+      rethrow;
     }
   }
 }

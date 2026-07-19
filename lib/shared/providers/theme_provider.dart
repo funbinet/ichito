@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../data/local/settings_repository.dart';
 
 enum AppThemeMode { light, dark, amoledDark, system }
 enum CornerStyle {
@@ -8,19 +9,25 @@ enum CornerStyle {
 }
 
 class ThemeProvider extends ChangeNotifier {
+  final SettingsRepository? _settings;
+
   AppThemeMode _themeMode = AppThemeMode.system;
   Color _accentColor = const Color(0xFFFFD700); // Default Gold
   bool _useGradients = false;
+  int? _gradientId; // ID of selected gradient (null = no gradient)
   CornerStyle _cornerStyle = CornerStyle.rounded;
   String _fontFamily = 'Roboto';
   double _fontSize = 16.0;
   bool _enableShadows = true;
   double _shadowIntensity = 0.15;
 
+  ThemeProvider({SettingsRepository? settings}) : _settings = settings;
+
   // Getters
   AppThemeMode get themeMode => _themeMode;
   Color get accentColor => _accentColor;
   bool get useGradients => _useGradients;
+  int? get gradientId => _gradientId;
   CornerStyle get cornerStyle => _cornerStyle;
   String get fontFamily => _fontFamily;
   double get fontSize => _fontSize;
@@ -35,8 +42,11 @@ class ThemeProvider extends ChangeNotifier {
       _themeMode = AppThemeMode.dark;
     } else {
       _themeMode = AppThemeMode.amoledDark;
-      // Note: If you implement useGradients persistence in settings repository, load it here.
-      // _useGradients = _repository.getUseGradients();
+    }
+    // Load gradient preference from repository
+    if (_settings != null) {
+      _gradientId = _settings!.getGradientId();
+      _useGradients = _gradientId != null;
     }
     notifyListeners();
   }
@@ -153,6 +163,18 @@ class ThemeProvider extends ChangeNotifier {
   void setUseGradients(bool value) {
     if (_useGradients != value) {
       _useGradients = value;
+      notifyListeners();
+    }
+  }
+
+  /// Sets gradient ID and persists to settings.
+  Future<void> setGradientId(int? gradientId) async {
+    if (_gradientId != gradientId) {
+      _gradientId = gradientId;
+      _useGradients = gradientId != null;
+      if (_settings != null) {
+        await _settings!.setGradientId(gradientId);
+      }
       notifyListeners();
     }
   } 

@@ -15,6 +15,13 @@ import '../../features/fabrics/presentation/pages/fabrics_list_screen.dart';
 import '../../features/settings/presentation/pages/sub_screens/profile_settings_screen.dart';
 import '../../features/settings/presentation/pages/sub_screens/appearance_settings_screen.dart';
 import '../../features/settings/presentation/pages/sub_screens/security_settings_screen.dart';
+import '../../features/settings/presentation/pages/sub_screens/language_settings_screen.dart';
+import '../../features/settings/presentation/pages/sub_screens/preferences_settings_screen.dart';
+import '../../features/settings/presentation/pages/sub_screens/business_settings_screen.dart';
+import '../../features/settings/presentation/pages/sub_screens/storage_settings_screen.dart';
+import '../../features/settings/presentation/pages/sub_screens/advanced_settings_screen.dart';
+import '../../features/settings/presentation/pages/sub_screens/help_screen.dart';
+import '../../features/settings/presentation/pages/sub_screens/about_screen.dart';
 import '../../features/security/presentation/pages/pin_lock_screen.dart';
 import '../../features/security/presentation/pages/pin_setup_screen.dart';
 import '../../shared/data/local/settings_repository.dart';
@@ -54,6 +61,27 @@ class RouteGenerator {
         break;
       case '/settings/security':
         page = const SecuritySettingsScreen();
+        break;
+      case '/settings/language':
+        page = const LanguageSettingsScreen();
+        break;
+      case '/settings/preferences':
+        page = const PreferencesSettingsScreen();
+        break;
+      case '/settings/business':
+        page = const BusinessSettingsScreen();
+        break;
+      case '/settings/storage':
+        page = const StorageSettingsScreen();
+        break;
+      case '/settings/advanced':
+        page = const AdvancedSettingsScreen();
+        break;
+      case '/settings/help':
+        page = const HelpScreen();
+        break;
+      case '/settings/about':
+        page = const AboutScreen();
         break;
       case '/setup_pin':
         page = const PinSetupScreen();

@@ -2,14 +2,18 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../data/database/profile_repository.dart';
+import '../data/local/settings_repository.dart';
 
 /// Provider that manages the business profile state.
 /// 
 /// Loads profile data from SQLite on initialization and provides
-/// synchronous access to all profile fields. All writes persist to SQLite.
+/// synchronous access to all profile fields. All writes persist to SQLite
+/// and SettingsRepository where applicable.
 class ProfileProvider extends ChangeNotifier {
   final ProfileRepository _repo = ProfileRepository();
+  final SettingsRepository _settings = SettingsRepository();
 
+  // Profile fields (from database)
   String _businessName = '';
   String _ownerName = '';
   String _phone = '';
@@ -19,7 +23,11 @@ class ProfileProvider extends ChangeNotifier {
   String? _profilePhotoBase64;
   Uint8List? _profilePhotoBytes;
 
-  // Getters
+  // Business settings (from repository)
+  double _taxRate = 0.0;
+  String _orderPrefix = 'ICHITO';
+
+  // Getters - Profile
   String get businessName => _businessName;
   String get ownerName => _ownerName;
   String get phone => _phone;
@@ -27,6 +35,10 @@ class ProfileProvider extends ChangeNotifier {
   String get location => _location;
   double get defaultLaborCost => _defaultLaborCost;
   String? get profilePhotoBase64 => _profilePhotoBase64;
+  
+  // Getters - Business Settings
+  double get taxRate => _taxRate;
+  String get orderPrefix => _orderPrefix;
   
   /// Returns the decoded profile photo bytes for use with Image.memory().
   /// Cached to avoid repeated decoding.
@@ -39,7 +51,7 @@ class ProfileProvider extends ChangeNotifier {
   /// Whether a profile has been created (has at least a business name).
   bool get hasProfile => _businessName.isNotEmpty;
 
-  /// Load the profile from SQLite. Call once during app startup.
+  /// Load the profile from SQLite and settings. Call once during app startup.
   Future<void> loadProfile() async {
     final data = await _repo.getProfile();
     if (data != null) {
@@ -52,6 +64,11 @@ class ProfileProvider extends ChangeNotifier {
       _profilePhotoBase64 = data['profile_photo'];
       _profilePhotoBytes = null; // Reset cached bytes
     }
+    
+    // Load business settings from repository
+    _taxRate = _settings.getTaxRate();
+    _orderPrefix = _settings.getOrderPrefix();
+    
     notifyListeners();
   }
 
@@ -102,5 +119,19 @@ class ProfileProvider extends ChangeNotifier {
     _profilePhotoBytes = null;
     notifyListeners();
     await _repo.updateProfilePhoto(null);
+  }
+
+  /// Set tax rate (persists to settings repository).
+  Future<void> setTaxRate(double rate) async {
+    _taxRate = rate;
+    notifyListeners();
+    await _settings.setTaxRate(rate);
+  }
+
+  /// Set order prefix (persists to settings repository).
+  Future<void> setOrderPrefix(String prefix) async {
+    _orderPrefix = prefix;
+    notifyListeners();
+    await _settings.setOrderPrefix(prefix);
   }
 }
