@@ -8,6 +8,9 @@ import '../../../../core/widgets/adaptive_components.dart';
 import '../../../../shared/widgets/page_action_button.dart';
 import 'order_detail_screen.dart';
 
+enum ViewMode { grid, list }
+enum OrderSortOption { newest, oldest, dueSoon }
+
 class OrderListScreen extends StatefulWidget {
   const OrderListScreen({super.key});
 
@@ -22,6 +25,8 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
   bool _isLoading = true;
   String _searchQuery = '';
   String _selectedStatus = 'All'; // All, pending, in_progress, trial, completed
+  ViewMode _viewMode = ViewMode.list;
+  OrderSortOption _sortOption = OrderSortOption.newest;
 
   final List<String> _statusFilters = ['All', 'pending', 'in_progress', 'trial', 'completed', 'cancelled'];
 
@@ -49,7 +54,7 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
   }
 
   void _applyFilters() {
-    _filteredOrders = _allOrders.where((o) {
+    List<Order> temp = _allOrders.where((o) {
       final matchesSearch = o.orderNumber.toLowerCase().contains(_searchQuery) ||
           (o.customerName != null && o.customerName!.toLowerCase().contains(_searchQuery));
           
@@ -58,6 +63,19 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
       if (_selectedStatus == 'All') return true;
       return o.status == _selectedStatus;
     }).toList();
+
+    temp.sort((a, b) {
+      switch (_sortOption) {
+        case OrderSortOption.newest:
+          return b.createdAt.compareTo(a.createdAt);
+        case OrderSortOption.oldest:
+          return a.createdAt.compareTo(b.createdAt);
+        case OrderSortOption.dueSoon:
+          return a.dueDate.compareTo(b.dueDate);
+      }
+    });
+
+    _filteredOrders = temp;
   }
 
   Color _getStatusColor(String status) {
@@ -134,6 +152,7 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
               }).toList(),
             ),
           ),
+          _buildViewControls(),
           Expanded(
             child: _isLoading 
               ? Center(child: CircularProgressIndicator(color: theme.accentColor))
@@ -159,106 +178,200 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
     );
   }
 
-  Widget _buildList() {
-    return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-      itemCount: _filteredOrders.length,
-      itemBuilder: (context, index) {
-        final order = _filteredOrders[index];
-        final isOverdue = order.isOverdue;
-        
-        return Card(
-          color: theme.cardColor,
-          margin: const EdgeInsets.only(bottom: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: isOverdue ? const BorderSide(color: Colors.red, width: 1) : BorderSide(color: theme.accentColor.withOpacity(0.3), width: 1),
+  Widget _buildViewControls() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          Text('View:', style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+          const SizedBox(width: 8),
+          IconButton(
+            icon: Icon(
+              Icons.grid_view_outlined,
+              color: _viewMode == ViewMode.grid ? theme.accentColor : theme.textSecondary,
+            ),
+            onPressed: () => setState(() => _viewMode = ViewMode.grid),
+            iconSize: 20,
+            constraints: const BoxConstraints(),
+            padding: const EdgeInsets.all(4),
           ),
-          elevation: theme.cardShadow != null ? 2 : 0,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(16),
-            onTap: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => OrderDetailScreen(orderId: order.id!),
-                ),
-              );
-              if (result == true) _loadOrders();
+          IconButton(
+            icon: Icon(
+              Icons.view_list_outlined,
+              color: _viewMode == ViewMode.list ? theme.accentColor : theme.textSecondary,
+            ),
+            onPressed: () => setState(() => _viewMode = ViewMode.list),
+            iconSize: 20,
+            constraints: const BoxConstraints(),
+            padding: const EdgeInsets.all(4),
+          ),
+          const Spacer(),
+          Text('Sort: ', style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+          DropdownButton<OrderSortOption>(
+            value: _sortOption,
+            underline: const SizedBox(),
+            icon: Icon(Icons.keyboard_arrow_down, size: 16, color: theme.textSecondary),
+            style: TextStyle(fontSize: 12, color: theme.textPrimary, fontFamily: theme.fontFamily),
+            dropdownColor: theme.cardColor,
+            items: const [
+              DropdownMenuItem(value: OrderSortOption.newest, child: Text('Newest')),
+              DropdownMenuItem(value: OrderSortOption.oldest, child: Text('Oldest')),
+              DropdownMenuItem(value: OrderSortOption.dueSoon, child: Text('Due Soon')),
+            ],
+            onChanged: (option) {
+              if (option != null) {
+                setState(() {
+                  _sortOption = option;
+                  _applyFilters();
+                });
+              }
             },
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildList() {
+    if (_viewMode == ViewMode.list) {
+      return ListView.builder(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+        itemCount: _filteredOrders.length,
+        itemBuilder: (context, index) {
+          final order = _filteredOrders[index];
+          return _buildOrderCard(order);
+        },
+      );
+    } else {
+      return GridView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.85,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+        ),
+        itemCount: _filteredOrders.length,
+        itemBuilder: (context, index) {
+          final order = _filteredOrders[index];
+          return _buildOrderCard(order);
+        },
+      );
+    }
+  }
+
+  Widget _buildOrderCard(Order order) {
+    final isOverdue = order.isOverdue;
+    
+    return Card(
+      color: theme.cardColor,
+      margin: _viewMode == ViewMode.list ? const EdgeInsets.only(bottom: 12) : EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: isOverdue ? const BorderSide(color: Colors.red, width: 1) : BorderSide(color: theme.accentColor.withOpacity(0.3), width: 1),
+      ),
+      elevation: theme.cardShadow != null ? 2 : 0,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => OrderDetailScreen(orderId: order.id!),
+            ),
+          );
+          if (result == true) _loadOrders();
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(order.orderNumber, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: _getStatusColor(order.status).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          _formatStatusLabel(order.status),
-                          style: TextStyle(color: _getStatusColor(order.status), fontSize: 12, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily),
-                        ),
+                  Text(order.orderNumber, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                  if (_viewMode == ViewMode.list)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(order.status).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Icon(Icons.person_outline, size: 16, color: theme.textSecondary),
-                      const SizedBox(width: 8),
-                      Text(order.customerName ?? 'Unknown', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(Icons.checkroom_outlined, size: 16, color: theme.textSecondary),
-                      const SizedBox(width: 8),
-                      Text(order.garmentName ?? 'Unknown', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  const Divider(),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Due Date', style: TextStyle(color: theme.textSecondary, fontSize: 12, fontFamily: theme.fontFamily)),
-                          Text(lang.formatDate(order.dueDate), style: TextStyle(color: isOverdue ? Colors.red : theme.textPrimary, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily)),
-                        ],
+                      child: Text(
+                        _formatStatusLabel(order.status),
+                        style: TextStyle(color: _getStatusColor(order.status), fontSize: 12, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text('Balance', style: TextStyle(color: theme.textSecondary, fontSize: 12, fontFamily: theme.fontFamily)),
-                          Text(
-                            lang.formatCurrency(order.balance),
-                            style: TextStyle(
-                              color: order.isFullyPaid ? Colors.green : theme.textPrimary,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: theme.fontFamily,
-                            ),
-                          ),
-                        ],
+                    ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              if (_viewMode == ViewMode.grid)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  margin: const EdgeInsets.only(bottom: 8),
+                  decoration: BoxDecoration(
+                    color: _getStatusColor(order.status).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    _formatStatusLabel(order.status),
+                    style: TextStyle(color: _getStatusColor(order.status), fontSize: 12, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily),
+                  ),
+                ),
+              Row(
+                children: [
+                  Icon(Icons.person_outline, size: 16, color: theme.textSecondary),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(order.customerName ?? 'Unknown', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Icon(Icons.checkroom_outlined, size: 16, color: theme.textSecondary),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(order.garmentName ?? 'Unknown', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              const Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Due Date', style: TextStyle(color: theme.textSecondary, fontSize: 10, fontFamily: theme.fontFamily)),
+                      Text(lang.formatDate(order.dueDate), style: TextStyle(color: isOverdue ? Colors.red : theme.textPrimary, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily, fontSize: 12)),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text('Balance', style: TextStyle(color: theme.textSecondary, fontSize: 10, fontFamily: theme.fontFamily)),
+                      Text(
+                        lang.formatCurrency(order.balance),
+                        style: TextStyle(
+                          color: order.isFullyPaid ? Colors.green : theme.textPrimary,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: theme.fontFamily,
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
-            ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

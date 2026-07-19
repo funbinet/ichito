@@ -15,10 +15,7 @@ import '../../../../shared/widgets/image_crop_dialog.dart';
 import 'package:provider/provider.dart';
 import '../../../security/services/security_service.dart';
 
-import '../../../garments/data/models/garment.dart';
-import '../../../garments/data/repositories/garment_repository.dart';
-import '../../../fabrics/data/models/fabric.dart';
-import '../../../fabrics/data/repositories/fabric_repository.dart';
+// Removed garment and fabric imports as they are moved to Order Wizard
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -29,12 +26,10 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixin, NavigationMixin {
   final SettingsRepository _settings = SettingsRepository();
-  final GarmentRepository _garmentRepo = GarmentRepository();
-  final FabricRepository _fabricRepo = FabricRepository();
 
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  static const int _totalPages = 8;
+  static const int _totalPages = 5;
 
   // Controllers - Basic Details
   final _businessNameCtrl = TextEditingController();
@@ -44,12 +39,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
   final _emailCtrl = TextEditingController();
   final _laborCostCtrl = TextEditingController(text: '1500');
   
-  // Controllers - Setup
-  final _measurementCtrl = TextEditingController();
-  final _garmentNameCtrl = TextEditingController();
-  final _garmentPriceCtrl = TextEditingController();
-  final _fabricNameCtrl = TextEditingController();
-  final _fabricPriceCtrl = TextEditingController();
+  // No garment/fabric setup controllers in onboarding anymore
 
   // State Variables
   String _selectedCurrency = 'KES';
@@ -62,20 +52,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
   // Profile photo as base64
   String? _profilePhotoBase64;
 
-  // Dynamic Data Lists
-  final List<String> _measurements = ['Chest', 'Waist', 'Hips', 'Shoulder', 'Length'];
-  final List<Garment> _garments = [];
-  final List<Fabric> _fabrics = [];
+  // No dynamic data lists for measurements/garments/fabrics in onboarding
 
   void _nextPage() {
-    if (_currentPage == 6 && _garments.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please add at least one garment to continue.')));
-      return;
-    }
-    if (_currentPage == 7 && _fabrics.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please add at least one fabric to complete.')));
-      return;
-    }
 
     if (_currentPage < _totalPages - 1) {
       _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
@@ -132,18 +111,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
       await _settings.setAppLockEnabled(true);
     }
 
-    // 4. Data Setup
-    await _settings.setMeasurementSchema(_measurements);
-    
-    for (var garment in _garments) {
-      await _garmentRepo.createGarment(garment);
-    }
-    
-    for (var fabric in _fabrics) {
-      await _fabricRepo.addFabric(fabric);
-    }
-
-    // 5. Finalize
+    // 4. Finalize
     await _settings.setOnboardingComplete(true);
     
     if (mounted) {
@@ -167,11 +135,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
     _phoneCtrl.dispose();
     _emailCtrl.dispose();
     _laborCostCtrl.dispose();
-    _measurementCtrl.dispose();
-    _garmentNameCtrl.dispose();
-    _garmentPriceCtrl.dispose();
-    _fabricNameCtrl.dispose();
-    _fabricPriceCtrl.dispose();
     super.dispose();
   }
 
@@ -193,9 +156,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
                   _buildContactPage(),
                   _buildPreferencesPage(),
                   _buildSecurityPage(),
-                  _buildMeasurementSetupPage(),
-                  _buildGarmentSetupPage(),
-                  _buildFabricSetupPage(),
                 ],
               ),
             ),
@@ -502,214 +462,5 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
     );
   }
 
-  // --- PAGE 6: Measurement Setup ---
-
-  Widget _buildMeasurementSetupPage() {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 48),
-          Text('Standard Measurements', style: headingStyle),
-          const SizedBox(height: 8),
-          Text('Define the standard measurements you take for your customers.', style: subtitleStyle),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(
-                child: AdaptiveTextField(
-                  controller: _measurementCtrl,
-                  label: 'Add Measurement (e.g. Inseam)',
-                ),
-              ),
-              const SizedBox(width: 8),
-              IconButton(
-                icon: Icon(Icons.add_circle, color: theme.accentColor, size: 40),
-                onPressed: () {
-                  final text = _measurementCtrl.text.trim();
-                  if (text.isNotEmpty && !_measurements.contains(text)) {
-                    setState(() {
-                      _measurements.add(text);
-                      _measurementCtrl.clear();
-                    });
-                  }
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _measurements.length,
-              itemBuilder: (context, index) {
-                final m = _measurements[index];
-                return Card(
-                  color: theme.cardColor,
-                  child: ListTile(
-                    title: Text(m, style: bodyStyle),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Colors.red),
-                      onPressed: () => setState(() => _measurements.removeAt(index)),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // --- PAGE 7: Garment Setup ---
-
-  Widget _buildGarmentSetupPage() {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 48),
-          Text('Garment Catalog', style: headingStyle),
-          const SizedBox(height: 8),
-          Text('Add at least one type of garment you sew.', style: subtitleStyle),
-          const SizedBox(height: 24),
-          AdaptiveTextField(
-            controller: _garmentNameCtrl,
-            label: 'Garment Name (e.g. Suit)',
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: AdaptiveTextField(
-                  controller: _garmentPriceCtrl,
-                  label: 'Base Labor Price',
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-              const SizedBox(width: 8),
-              AdaptiveButton(
-                text: 'Add',
-                onPressed: () {
-                  final name = _garmentNameCtrl.text.trim();
-                  final price = double.tryParse(_garmentPriceCtrl.text.trim()) ?? 0.0;
-                  if (name.isNotEmpty) {
-                    setState(() {
-                      _garments.add(Garment(
-                        name: name,
-                        category: 'unisex',
-                        measurementFields: List.from(_measurements),
-                        defaultPrice: price,
-                        createdAt: DateTime.now(),
-                        updatedAt: DateTime.now(),
-                      ));
-                      _garmentNameCtrl.clear();
-                      _garmentPriceCtrl.clear();
-                    });
-                  }
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _garments.length,
-              itemBuilder: (context, index) {
-                final g = _garments[index];
-                return Card(
-                  color: theme.cardColor,
-                  child: ListTile(
-                    title: Text(g.name, style: bodyStyle),
-                    subtitle: Text('Price: \$${g.defaultPrice}', style: subtitleStyle),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Colors.red),
-                      onPressed: () => setState(() => _garments.removeAt(index)),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // --- PAGE 8: Fabric Setup ---
-
-  Widget _buildFabricSetupPage() {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 48),
-          Text('Fabric Inventory', style: headingStyle),
-          const SizedBox(height: 8),
-          Text('Add at least one fabric you use or sell.', style: subtitleStyle),
-          const SizedBox(height: 24),
-          AdaptiveTextField(
-            controller: _fabricNameCtrl,
-            label: 'Fabric Name (e.g. Silk)',
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: AdaptiveTextField(
-                  controller: _fabricPriceCtrl,
-                  label: 'Price per $_selectedUnit',
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-              const SizedBox(width: 8),
-              AdaptiveButton(
-                text: 'Add',
-                onPressed: () {
-                  final name = _fabricNameCtrl.text.trim();
-                  final price = double.tryParse(_fabricPriceCtrl.text.trim()) ?? 0.0;
-                  if (name.isNotEmpty) {
-                    setState(() {
-                      _fabrics.add(Fabric(
-                        name: name,
-                        pricePerUnit: price,
-                        unit: _selectedUnit,
-                        createdAt: DateTime.now(),
-                        updatedAt: DateTime.now(),
-                      ));
-                      _fabricNameCtrl.clear();
-                      _fabricPriceCtrl.clear();
-                    });
-                  }
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _fabrics.length,
-              itemBuilder: (context, index) {
-                final f = _fabrics[index];
-                return Card(
-                  color: theme.cardColor,
-                  child: ListTile(
-                    title: Text(f.name, style: bodyStyle),
-                    subtitle: Text('Price: \$${f.pricePerUnit}/${f.unit}', style: subtitleStyle),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Colors.red),
-                      onPressed: () => setState(() => _fabrics.removeAt(index)),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Garment, Fabric, and Measurement setup moved to Order Wizard
 }

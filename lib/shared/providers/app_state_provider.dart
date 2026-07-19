@@ -11,7 +11,7 @@ class AppStateProvider extends ChangeNotifier {
   bool _isLocked = false;
   bool _isAppLockEnabled = false;
   bool _isBiometricEnabled = false;
-  int _autoLockMinutes = 5;
+  int _autoLockSeconds = 300; // default 5m
   bool _performanceMode = false;
   bool _debugLogging = false;
   DateTime? _lastActiveTime;
@@ -20,7 +20,7 @@ class AppStateProvider extends ChangeNotifier {
   bool get isLocked => _isLocked;
   bool get isAppLockEnabled => _isAppLockEnabled;
   bool get isBiometricEnabled => _isBiometricEnabled;
-  int get autoLockMinutes => _autoLockMinutes;
+  int get autoLockSeconds => _autoLockSeconds;
   bool get performanceMode => _performanceMode;
   bool get debugLogging => _debugLogging;
 
@@ -28,7 +28,7 @@ class AppStateProvider extends ChangeNotifier {
     _isFirstLaunch = !_settings.isOnboardingComplete();
     _isAppLockEnabled = _settings.getAppLockEnabled();
     _isBiometricEnabled = _settings.getBiometricEnabled();
-    _autoLockMinutes = _settings.getAutoLockMinutes();
+    _autoLockSeconds = _settings.getAutoLockSeconds();
     _performanceMode = _settings.getPerformanceMode();
     _debugLogging = _settings.getDebugLogging();
     
@@ -60,9 +60,9 @@ class AppStateProvider extends ChangeNotifier {
     }
   }
 
-  void setAutoLockMinutes(int minutes) {
-    _autoLockMinutes = minutes;
-    _settings.setAutoLockMinutes(minutes);
+  void setAutoLockSeconds(int seconds) {
+    _autoLockSeconds = seconds;
+    _settings.setAutoLockSeconds(seconds);
     notifyListeners();
   }
 
@@ -102,13 +102,13 @@ class AppStateProvider extends ChangeNotifier {
   }
 
   void _checkAutoLock() {
-    if (!_isAppLockEnabled || _autoLockMinutes < 0) return;
+    if (!_isAppLockEnabled || _autoLockSeconds < 0) return;
     
     if (_lastActiveTime != null) {
       final now = DateTime.now();
       final difference = now.difference(_lastActiveTime!);
       
-      if (difference.inMinutes >= _autoLockMinutes) {
+      if (difference.inSeconds >= _autoLockSeconds) {
         _isLocked = true;
         notifyListeners();
       }
@@ -134,7 +134,7 @@ class AppStateProvider extends ChangeNotifier {
       _isLocked = false;
       _isAppLockEnabled = false;
       _isBiometricEnabled = false;
-      _autoLockMinutes = 5;
+      _autoLockSeconds = 300;
       _performanceMode = false;
       _debugLogging = false;
       _lastActiveTime = null;

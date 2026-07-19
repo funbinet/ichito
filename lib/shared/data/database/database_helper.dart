@@ -26,7 +26,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
       onConfigure: _onConfigure,
@@ -47,6 +47,7 @@ class DatabaseHelper {
         phone TEXT NOT NULL,
         email TEXT,
         gender TEXT NOT NULL,
+        role TEXT DEFAULT 'regular',
         location TEXT,
         photo_path TEXT,
         measurements TEXT, -- JSON
@@ -267,6 +268,9 @@ class DatabaseHelper {
           conflictAlgorithm: ConflictAlgorithm.ignore);
       await db.insert('app_settings', {'key': 'dateFormat', 'value': 'DD/MM/YYYY'},
           conflictAlgorithm: ConflictAlgorithm.ignore);
+    }
+    if (oldVersion < 3) {
+      await db.execute('ALTER TABLE customers ADD COLUMN role TEXT DEFAULT "regular"');
     }
   }
 

@@ -71,6 +71,74 @@ class _Step1ClientState extends State<Step1Client> with ThemeAwareMixin {
     });
   }
 
+  Future<void> _showAddClientDialog() async {
+    final nameCtrl = TextEditingController();
+    final phoneCtrl = TextEditingController();
+    final genderCtrl = TextEditingController(text: 'Unisex');
+    final formKey = GlobalKey<FormState>();
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: theme.cardColor,
+          title: Text('Add New Client', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AdaptiveTextField(
+                  controller: nameCtrl,
+                  label: 'Full Name',
+                  validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                ),
+                AdaptiveTextField(
+                  controller: phoneCtrl,
+                  label: 'Phone Number',
+                  keyboardType: TextInputType.phone,
+                ),
+                AdaptiveTextField(
+                  controller: genderCtrl,
+                  label: 'Gender (Men/Women/Unisex)',
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (formKey.currentState!.validate()) {
+                  final newCustomer = Customer(
+                    name: nameCtrl.text.trim(),
+                    phone: phoneCtrl.text.trim(),
+                    gender: genderCtrl.text.trim(),
+                    createdAt: DateTime.now(),
+                    updatedAt: DateTime.now(),
+                  );
+                  await _customerRepo.create(newCustomer);
+                  Navigator.pop(context, true);
+                }
+              },
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result == true) {
+      await _loadCustomers();
+      if (_customers.isNotEmpty) {
+        widget.onCustomerSelected(_customers.last.id!);
+      }
+    }
+  }
+
   void _applyFilters() {
     _filteredCustomers = _customers.where((c) {
       final matchesSearch = c.name.toLowerCase().contains(_searchQuery) ||
@@ -188,9 +256,7 @@ class _Step1ClientState extends State<Step1Client> with ThemeAwareMixin {
           const SizedBox(height: 16),
           AdaptiveButton(
             text: '+ Add New Client',
-            onPressed: () {
-              // TODO: Open customer form dialog
-            },
+            onPressed: _showAddClientDialog,
             isPrimary: false,
           ),
           const SizedBox(height: 16),

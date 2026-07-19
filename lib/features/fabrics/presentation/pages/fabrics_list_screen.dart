@@ -10,6 +10,8 @@ import '../../data/models/fabric.dart';
 import '../../data/repositories/fabric_repository.dart';
 import 'fabric_detail_screen.dart';
 
+enum ViewMode { grid, list }
+
 class FabricsListScreen extends StatefulWidget {
   const FabricsListScreen({super.key});
 
@@ -22,6 +24,7 @@ class _FabricsListScreenState extends State<FabricsListScreen> with ThemeAwareMi
   List<Fabric> _fabrics = [];
   bool _isLoading = true;
   String _searchQuery = '';
+  ViewMode _viewMode = ViewMode.grid;
 
   @override
   void initState() {
@@ -92,12 +95,46 @@ class _FabricsListScreenState extends State<FabricsListScreen> with ThemeAwareMi
       body: Column(
         children: [
           _buildSearchBar(),
+          _buildViewControls(),
           Expanded(
             child: _isLoading
                 ? Center(child: CircularProgressIndicator(color: theme.accentColor))
                 : _fabrics.isEmpty
                     ? _buildEmptyState()
-                    : _buildGrid(),
+                    : _buildFabricList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildViewControls() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text('View:', style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+          const SizedBox(width: 8),
+          IconButton(
+            icon: Icon(
+              Icons.grid_view_outlined,
+              color: _viewMode == ViewMode.grid ? theme.accentColor : theme.textSecondary,
+            ),
+            onPressed: () => setState(() => _viewMode = ViewMode.grid),
+            iconSize: 20,
+            constraints: const BoxConstraints(),
+            padding: const EdgeInsets.all(4),
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.view_list_outlined,
+              color: _viewMode == ViewMode.list ? theme.accentColor : theme.textSecondary,
+            ),
+            onPressed: () => setState(() => _viewMode = ViewMode.list),
+            iconSize: 20,
+            constraints: const BoxConstraints(),
+            padding: const EdgeInsets.all(4),
           ),
         ],
       ),
@@ -152,22 +189,35 @@ class _FabricsListScreenState extends State<FabricsListScreen> with ThemeAwareMi
     );
   }
 
-  Widget _buildGrid() {
-    return GridView.builder(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 180),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.85,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-      ),
-      itemCount: _fabrics.length,
-      itemBuilder: (context, index) {
-        return FabricCard(
-          fabric: _fabrics[index],
-          onTap: () => _navigateToDetail(_fabrics[index]),
-        );
-      },
-    );
+  Widget _buildFabricList() {
+    if (_viewMode == ViewMode.list) {
+      return ListView.builder(
+        padding: const EdgeInsets.only(bottom: 180),
+        itemCount: _fabrics.length,
+        itemBuilder: (context, index) {
+          return FabricListTile(
+            fabric: _fabrics[index],
+            onTap: () => _navigateToDetail(_fabrics[index]),
+          );
+        },
+      );
+    } else {
+      return GridView.builder(
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 180),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.85,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+        ),
+        itemCount: _fabrics.length,
+        itemBuilder: (context, index) {
+          return FabricCard(
+            fabric: _fabrics[index],
+            onTap: () => _navigateToDetail(_fabrics[index]),
+          );
+        },
+      );
+    }
   }
 }

@@ -79,8 +79,30 @@ void main() async {
   );
 }
 
-class IchitoApp extends StatelessWidget {
+class IchitoApp extends StatefulWidget {
   const IchitoApp({super.key});
+
+  @override
+  State<IchitoApp> createState() => _IchitoAppState();
+}
+
+class _IchitoAppState extends State<IchitoApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    Provider.of<AppStateProvider>(context, listen: false).updateLifecycleState(state);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +123,17 @@ class IchitoApp extends StatelessWidget {
       ),
       initialRoute: '/',
       onGenerateRoute: RouteGenerator.generateRoute,
+      builder: (context, child) {
+        final appState = Provider.of<AppStateProvider>(context);
+        if (appState.isLocked) {
+          return Scaffold(
+            body: PinLockScreen(
+              onUnlocked: () => appState.unlock(),
+            ),
+          );
+        }
+        return child!;
+      },
     );
   }
 }

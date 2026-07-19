@@ -26,8 +26,6 @@ class RadialMenu extends StatefulWidget {
 class _RadialMenuState extends State<RadialMenu>
     with SingleTickerProviderStateMixin, ThemeAwareMixin {
   late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-  late Animation<double> _fadeAnimation;
   bool _isOpen = false;
 
   final List<RadialMenuItem> _topRowItems = [
@@ -35,13 +33,16 @@ class _RadialMenuState extends State<RadialMenu>
     RadialMenuItem(labelKey: 'customers', icon: Icons.people_outlined, route: '/customers'),
     RadialMenuItem(labelKey: 'orders', icon: Icons.shopping_bag_outlined, route: '/orders'),
     RadialMenuItem(labelKey: 'garments', icon: Icons.checkroom_outlined, route: '/garments'),
+  ];
+
+  final List<RadialMenuItem> _middleRowItems = [
     RadialMenuItem(labelKey: 'fabrics', icon: Icons.texture_outlined, route: '/fabrics'),
     RadialMenuItem(labelKey: 'designs', icon: Icons.palette_outlined, route: '/designs'),
     RadialMenuItem(labelKey: 'statistics', icon: Icons.bar_chart_outlined, route: '/analytics'),
+    RadialMenuItem(labelKey: 'notes', icon: Icons.note_outlined, route: '/notes'),
   ];
 
   final List<RadialMenuItem> _bottomRowItems = [
-    RadialMenuItem(labelKey: 'notes', icon: Icons.note_outlined, route: '/notes'),
     RadialMenuItem(labelKey: 'profile', icon: Icons.person_outlined, route: '/profile'),
     RadialMenuItem(labelKey: 'notifications', icon: Icons.notifications_outlined, route: '/notifications'),
     RadialMenuItem(labelKey: 'settings', icon: Icons.settings_outlined, route: '/settings'),
@@ -52,17 +53,7 @@ class _RadialMenuState extends State<RadialMenu>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-    
-    _scaleAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutBack,
-    );
-    
-    _fadeAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
+      duration: const Duration(milliseconds: 500),
     );
   }
 
@@ -83,42 +74,67 @@ class _RadialMenuState extends State<RadialMenu>
 
   void _navigateTo(String route) {
     _toggle();
-    Future.delayed(const Duration(milliseconds: 200), () {
+    Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) {
         Navigator.pushNamed(context, route);
       }
     });
   }
 
-  Widget _buildGridItem(RadialMenuItem item) {
+  Widget _buildGridItem(RadialMenuItem item, int index, int totalItems) {
+    // Staggered animation computation
+    final double start = (index / totalItems) * 0.5;
+    final double end = start + 0.5;
+    final Animation<double> itemScale = CurvedAnimation(
+      parent: _controller,
+      curve: Interval(start, end, curve: Curves.easeOutBack),
+    );
+    final Animation<double> itemOpacity = CurvedAnimation(
+      parent: _controller,
+      curve: Interval(start, end, curve: Curves.easeIn),
+    );
+
     return Expanded(
-      child: InkWell(
-        onTap: () => _navigateTo(item.route),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                item.icon,
-                color: theme.textPrimary.withOpacity(0.8),
-                size: 24,
+      child: ScaleTransition(
+        scale: itemScale,
+        child: FadeTransition(
+          opacity: itemOpacity,
+          child: InkWell(
+            onTap: () => _navigateTo(item.route),
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: theme.accentLight.withOpacity(0.05),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      item.icon,
+                      color: theme.accentColor,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    lang.t(item.labelKey),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: theme.textPrimary,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: theme.fontFamily,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 6),
-              Text(
-                lang.t(item.labelKey),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 10,
-                  color: theme.textPrimary,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: theme.fontFamily,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -126,19 +142,34 @@ class _RadialMenuState extends State<RadialMenu>
   }
 
   Widget _buildGridPanel() {
-    final List<RadialMenuItem> allItems = [..._topRowItems, ..._bottomRowItems];
-    
+    final List<RadialMenuItem> allItems = [
+      ..._topRowItems,
+      ..._middleRowItems,
+      ..._bottomRowItems
+    ];
+    final totalItems = allItems.length;
+
+    // Background animation
+    final bgOpacity = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.0, 0.4, curve: Curves.easeInOut),
+    );
+    final bgScale = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.0, 0.6, curve: Curves.easeOutCubic),
+    );
+
     return Positioned(
-      bottom: 90, // Position panel above the FAB
+      bottom: 90, 
       left: 16,
       right: 16,
       child: FadeTransition(
-        opacity: _fadeAnimation,
+        opacity: bgOpacity,
         child: ScaleTransition(
-          scale: _scaleAnimation,
+          scale: bgScale,
           alignment: Alignment.bottomCenter,
           child: Container(
-            padding: const EdgeInsets.only(top: 12, left: 8, right: 8, bottom: 8),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: theme.cardColor,
               borderRadius: BorderRadius.circular(24),
@@ -155,14 +186,24 @@ class _RadialMenuState extends State<RadialMenu>
                 )
               ] : null,
             ),
-            child: Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 8,
-              runSpacing: 12,
-              children: allItems.map((item) => SizedBox(
-                width: MediaQuery.of(context).size.width / 4.5,
-                child: _buildGridItem(item),
-              )).toList(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: _topRowItems.asMap().entries.map((e) => _buildGridItem(e.value, e.key, totalItems)).toList(),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: _middleRowItems.asMap().entries.map((e) => _buildGridItem(e.value, e.key + _topRowItems.length, totalItems)).toList(),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: _bottomRowItems.asMap().entries.map((e) => _buildGridItem(e.value, e.key + _topRowItems.length + _middleRowItems.length, totalItems)).toList(),
+                ),
+              ],
             ),
           ),
         ),
@@ -190,7 +231,7 @@ class _RadialMenuState extends State<RadialMenu>
         if (_isOpen) _buildGridPanel(),
         
         Positioned(
-          bottom: 24, // Slightly raised so it visually centers in the bottom row's empty space
+          bottom: 24,
           child: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,

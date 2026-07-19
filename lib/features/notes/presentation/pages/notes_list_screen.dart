@@ -14,6 +14,7 @@ import '../../../../shared/widgets/page_action_button.dart';
 import '../../../../shared/widgets/auth_delete_dialog.dart';
 import '../../../security/services/security_service.dart';
 
+enum ViewMode { grid, list }
 enum NoteSortOption { newest, oldest, titleAsc, titleDesc }
 
 class NoteFilter {
@@ -37,6 +38,7 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
   
   final TextEditingController _searchController = TextEditingController();
   NoteSortOption _sortOption = NoteSortOption.newest;
+  ViewMode _viewMode = ViewMode.list;
   
   final List<NoteFilter> _filters = [
     NoteFilter('All', 'all'),
@@ -235,6 +237,29 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
+          Text('View:', style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+          const SizedBox(width: 8),
+          IconButton(
+            icon: Icon(
+              Icons.grid_view_outlined,
+              color: _viewMode == ViewMode.grid ? theme.accentColor : theme.textSecondary,
+            ),
+            onPressed: () => setState(() => _viewMode = ViewMode.grid),
+            iconSize: 20,
+            constraints: const BoxConstraints(),
+            padding: const EdgeInsets.all(4),
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.view_list_outlined,
+              color: _viewMode == ViewMode.list ? theme.accentColor : theme.textSecondary,
+            ),
+            onPressed: () => setState(() => _viewMode = ViewMode.list),
+            iconSize: 20,
+            constraints: const BoxConstraints(),
+            padding: const EdgeInsets.all(4),
+          ),
+          const Spacer(),
           Text('Sort: ', style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
           DropdownButton<NoteSortOption>(
             value: _sortOption,
@@ -274,36 +299,60 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
   }
 
   Widget _buildNotesList() {
-    return ListView.builder(
-      itemCount: _filteredNotes.length,
-      itemBuilder: (context, index) {
-        final note = _filteredNotes[index];
-        return NoteCard(
-          note: note,
-          onTap: () => _navigateToEditor(note.type, note),
-          onLongPress: () {
-            showModalBottomSheet(
-              context: context,
-              backgroundColor: theme.backgroundColor,
-              builder: (context) => SafeArea(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.delete, color: Colors.red),
-                      title: const Text('Delete Note', style: TextStyle(color: Colors.red)),
-                      onTap: () {
-                        Navigator.pop(context);
-                        _deleteNoteWithAuth(note);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
+    if (_viewMode == ViewMode.list) {
+      return ListView.builder(
+        itemCount: _filteredNotes.length,
+        itemBuilder: (context, index) {
+          final note = _filteredNotes[index];
+          return NoteCard(
+            note: note,
+            onTap: () => _navigateToEditor(note.type, note),
+            onLongPress: () => _showDeleteOptions(note),
+          );
+        },
+      );
+    } else {
+      return GridView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.85,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+        ),
+        itemCount: _filteredNotes.length,
+        itemBuilder: (context, index) {
+          final note = _filteredNotes[index];
+          // We wrap NoteCard to make it fit Grid better or just use it.
+          return NoteCard(
+            note: note,
+            onTap: () => _navigateToEditor(note.type, note),
+            onLongPress: () => _showDeleteOptions(note),
+          );
+        },
+      );
+    }
+  }
+
+  void _showDeleteOptions(Note note) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: theme.backgroundColor,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('Delete Note', style: TextStyle(color: Colors.red)),
+              onTap: () {
+                Navigator.pop(context);
+                _deleteNoteWithAuth(note);
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

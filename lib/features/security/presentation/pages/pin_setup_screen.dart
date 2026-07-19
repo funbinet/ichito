@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
 import '../../../../core/widgets/ichito_scaffold.dart';
 import '../../services/security_service.dart';
+import 'package:provider/provider.dart';
+import '../../../../shared/providers/app_state_provider.dart';
 
 class PinSetupScreen extends StatefulWidget {
   const PinSetupScreen({super.key});
@@ -66,6 +68,12 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
   Future<void> _verifySetup() async {
     if (_firstInput == _secondInput) {
       await _securityService.setPin(_firstInput);
+      if (await _securityService.canUseBiometrics()) {
+        final useBiometrics = await _securityService.authenticateWithBiometrics('Enable Biometrics for quicker access');
+        if (useBiometrics && mounted) {
+          Provider.of<AppStateProvider>(context, listen: false).setBiometricEnabled(true);
+        }
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PIN setup successfully!', style: TextStyle(color: theme.onAccent)), backgroundColor: theme.accentColor));
         Navigator.pop(context);
@@ -90,6 +98,12 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
     
     if (p1 == p2) {
       await _securityService.setPin(p1);
+      if (await _securityService.canUseBiometrics()) {
+        final useBiometrics = await _securityService.authenticateWithBiometrics('Enable Biometrics for quicker access');
+        if (useBiometrics && mounted) {
+          Provider.of<AppStateProvider>(context, listen: false).setBiometricEnabled(true);
+        }
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Password setup successfully!', style: TextStyle(color: theme.onAccent)), backgroundColor: theme.accentColor));
         Navigator.pop(context);

@@ -303,10 +303,10 @@ class _CustomerListScreenState extends State<CustomerListScreen> with ThemeAware
       return GridView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
+          crossAxisCount: 2,
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
-          childAspectRatio: 0.75,
+          childAspectRatio: 0.85,
         ),
         itemCount: _filteredCustomers.length,
         itemBuilder: (context, index) {

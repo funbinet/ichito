@@ -154,9 +154,6 @@ class _AppearanceSettingsScreenState extends State<AppearanceSettingsScreen> wit
     final styles = [
       CornerStyle.rounded,
       CornerStyle.sharp,
-      CornerStyle.pill,
-      CornerStyle.beveled,
-      CornerStyle.soft,
     ];
 
     return Card(

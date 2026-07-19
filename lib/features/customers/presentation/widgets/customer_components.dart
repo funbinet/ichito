@@ -72,79 +72,103 @@ class CustomerCard extends StatelessWidget {
     this.isSelected = false,
   });
 
-  void _showQuickActions(BuildContext context) {
-    // Implement popup menu here
+  void _showImagePreview(BuildContext context, String base64Image) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: InteractiveViewer(
+          child: Image.memory(base64Decode(base64Image), fit: BoxFit.contain),
+        ),
+      ),
+    );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
     
     return GestureDetector(
       onTap: onTap,
-      onLongPress: () => _showQuickActions(context),
       child: Container(
-        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: isSelected ? theme.accentColor.withOpacity(0.05) : theme.cardColor,
           borderRadius: theme.cornerRadius,
           boxShadow: theme.cardShadow != null ? [theme.cardShadow!] : null,
           border: isSelected 
               ? Border.all(color: theme.accentColor, width: 2)
-              : Border.all(color: theme.borderColor, width: 0.5),
+              : Border.all(color: theme.borderColor, width: 1),
         ),
+        clipBehavior: Clip.antiAlias,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Avatar
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: theme.accentLight,
-              backgroundImage: customer.photoPath != null
-                ? MemoryImage(base64Decode(customer.photoPath!))
-                : null,
-              child: customer.photoPath == null
-                ? Text(
-                    customer.initials,
-                    style: TextStyle(
-                      color: theme.accentColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      fontFamily: theme.fontFamily,
-                    ),
-                  )
-                : null,
-            ),
-            const SizedBox(height: 8),
-            // Name
-            Text(
-              customer.name,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: theme.textPrimary,
-                fontFamily: theme.fontFamily,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 4),
-            // Orders + loyalty
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.star_outlined, size: 14, color: theme.accentColor),
-                const SizedBox(width: 2),
-                Text(
-                  '${customer.totalOrders}',
-                  style: TextStyle(fontSize: 11, color: theme.textSecondary, fontFamily: theme.fontFamily),
+            // Image Area
+            Expanded(
+              flex: 3,
+              child: GestureDetector(
+                onTap: customer.photoPath != null 
+                    ? () => _showImagePreview(context, customer.photoPath!) 
+                    : onTap,
+                child: Container(
+                  color: theme.accentLight.withOpacity(0.3),
+                  child: customer.photoPath != null
+                      ? Image.memory(
+                          base64Decode(customer.photoPath!),
+                          fit: BoxFit.cover,
+                        )
+                      : Center(
+                          child: Text(
+                            customer.initials,
+                            style: TextStyle(
+                              color: theme.accentColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                              fontFamily: theme.fontFamily,
+                            ),
+                          ),
+                        ),
                 ),
-              ],
+              ),
             ),
-            const SizedBox(height: 4),
-            // Loyalty badge
-            LoyaltyBadge(status: customer.loyaltyStatus),
+            // Details Area
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      customer.name,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: theme.textPrimary,
+                        fontFamily: theme.fontFamily,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.shopping_bag_outlined, size: 12, color: theme.textSecondary),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${customer.totalOrders} Orders',
+                          style: TextStyle(fontSize: 11, color: theme.textSecondary, fontFamily: theme.fontFamily),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    LoyaltyBadge(status: customer.loyaltyStatus),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -152,7 +176,7 @@ class CustomerCard extends StatelessWidget {
   }
 }
 
-class CustomerListTile extends StatelessWidget {
+class CustomerListTile extends StatefulWidget {
   final Customer customer;
   final VoidCallback onTap;
   
@@ -162,65 +186,164 @@ class CustomerListTile extends StatelessWidget {
     required this.onTap,
   });
 
-  void _showQuickActions(BuildContext context) {
-    // Implement popup menu here
+  @override
+  State<CustomerListTile> createState() => _CustomerListTileState();
+}
+
+class _CustomerListTileState extends State<CustomerListTile> {
+  bool _isExpanded = false;
+
+  void _showImagePreview(BuildContext context, String base64Image) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: InteractiveViewer(
+          child: Image.memory(base64Decode(base64Image), fit: BoxFit.contain),
+        ),
+      ),
+    );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
     
-    return InkWell(
-      onTap: onTap,
-      onLongPress: () => _showQuickActions(context),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: theme.borderColor, width: 0.5)),
-        ),
-        child: Row(
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      color: theme.cardColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: theme.cornerRadius,
+        side: BorderSide(color: theme.borderColor, width: 1),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            _isExpanded = !_isExpanded;
+          });
+        },
+        child: Column(
           children: [
-            // Avatar
-            CircleAvatar(
-              radius: 24,
-              backgroundColor: theme.accentLight,
-              backgroundImage: customer.photoPath != null
-                ? MemoryImage(base64Decode(customer.photoPath!)) : null,
-              child: customer.photoPath == null
-                ? Text(customer.initials,
-                    style: TextStyle(color: theme.accentColor, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily))
-                : null,
-            ),
-            const SizedBox(width: 12),
-            // Info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
                 children: [
-                  Text(customer.name,
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                  const SizedBox(height: 2),
-                  Row(
+                  // Image/Avatar
+                  GestureDetector(
+                    onTap: widget.customer.photoPath != null 
+                        ? () => _showImagePreview(context, widget.customer.photoPath!) 
+                        : null,
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: theme.accentLight.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: theme.borderColor, width: 1),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: widget.customer.photoPath != null
+                          ? Image.memory(
+                              base64Decode(widget.customer.photoPath!),
+                              fit: BoxFit.cover,
+                            )
+                          : Center(
+                              child: Text(
+                                widget.customer.initials,
+                                style: TextStyle(
+                                  color: theme.accentColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  fontFamily: theme.fontFamily,
+                                ),
+                              ),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  // Info
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.customer.name,
+                          style: TextStyle(
+                            fontSize: 16, 
+                            fontWeight: FontWeight.w600, 
+                            color: theme.textPrimary, 
+                            fontFamily: theme.fontFamily
+                          )
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(Icons.phone_outlined, size: 14, color: theme.textSecondary),
+                            const SizedBox(width: 4),
+                            Text(
+                              widget.customer.phone,
+                              style: TextStyle(
+                                fontSize: 13, 
+                                color: theme.textSecondary, 
+                                fontFamily: theme.fontFamily
+                              )
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Loyalty
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Icon(Icons.phone_outlined, size: 14, color: theme.textSecondary),
-                      const SizedBox(width: 4),
-                      Text(customer.phone,
-                        style: TextStyle(fontSize: 13, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+                      LoyaltyBadge(status: widget.customer.loyaltyStatus),
+                      const SizedBox(height: 8),
+                      Icon(
+                        _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                        color: theme.textSecondary,
+                      ),
                     ],
                   ),
                 ],
               ),
             ),
-            // Loyalty + orders
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                LoyaltyBadge(status: customer.loyaltyStatus),
-                const SizedBox(height: 4),
-                Text('${customer.totalOrders} orders',
-                  style: TextStyle(fontSize: 11, color: theme.textSecondary, fontFamily: theme.fontFamily)),
-              ],
-            ),
+            if (_isExpanded)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: theme.backgroundColor.withOpacity(0.5),
+                  border: Border(top: BorderSide(color: theme.borderColor)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Total Orders: ${widget.customer.totalOrders}', style: TextStyle(fontSize: 13, color: theme.textSecondary)),
+                        const SizedBox(height: 4),
+                        Text('Role: ${widget.customer.role}', style: TextStyle(fontSize: 13, color: theme.textSecondary)),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: widget.onTap, // onTap passed from parent means view details
+                          icon: Icon(Icons.edit_outlined, size: 16, color: theme.accentColor),
+                          label: Text('Edit/View', style: TextStyle(color: theme.accentColor)),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: theme.accentColor),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),

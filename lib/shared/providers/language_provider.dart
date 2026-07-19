@@ -14,6 +14,7 @@ class TranslationMaps {
     'search': 'Search...',
     'home': 'Home',
     'welcome_back': 'Welcome back,',
+    'greeting': 'Hello',
     'quick_actions': 'Quick Actions',
     'recent_orders': 'Recent Orders',
     'add': 'Add',
@@ -22,6 +23,7 @@ class TranslationMaps {
     // Clients
     'customers': 'Clients',
     'add_customer': 'Add Client',
+    'client_details': 'Client Details',
     'vip': 'VIP',
     'regular': 'Regular',
     
@@ -96,14 +98,16 @@ class TranslationMaps {
     'search': 'Saka...',
     'home': 'Base',
     'welcome_back': 'Karibu tena,',
+    'greeting': 'Sasa',
     'quick_actions': 'Zako za Chap',
     'recent_orders': 'Kazi Ziko',
     'add': 'Weka',
     'create': 'Tengeneza',
     
-    // Customers
+    // Customers (Clients)
     'customers': 'Wateja',
-    'add_customer': 'Mteja Mpyia',
+    'add_customer': 'Mteja Mpya',
+    'client_details': 'Detail za Mteja',
     'vip': 'Oga',
     'regular': 'Wetu',
     
@@ -157,7 +161,7 @@ class TranslationMaps {
     
     // Notifications
     'notifications': 'Ujumbe',
-    'profile': 'Mimi',
+    'profile': 'Profili',
     
     // Form fields
     'name': 'Jina',

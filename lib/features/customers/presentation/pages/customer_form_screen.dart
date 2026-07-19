@@ -29,6 +29,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
   late TextEditingController _locationController;
   
   String _selectedGender = 'female';
+  String _selectedRole = 'regular';
   String? _photoPath;
   
   // Measurement controllers
@@ -44,6 +45,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
     
     if (widget.customer != null) {
       _selectedGender = widget.customer!.gender;
+      _selectedRole = widget.customer!.role;
       _photoPath = widget.customer!.photoPath;
       
       // Initialize existing measurements
@@ -131,6 +133,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
       phone: _phoneController.text.trim(),
       email: _emailController.text.trim(),
       gender: _selectedGender,
+      role: _selectedRole,
       location: _locationController.text.trim(),
       photoPath: _photoPath,
       measurements: measurements.isEmpty ? null : measurements,
@@ -301,6 +304,41 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
                       },
                     ),
                   ),
+                ),
+              ),
+              
+              Padding(
+                padding: const EdgeInsets.only(left: 16, top: 16, bottom: 8),
+                child: Text('Role / Status', style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: DropdownButtonFormField<String>(
+                  value: _selectedRole,
+                  dropdownColor: theme.cardColor,
+                  style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(borderRadius: theme.cornerRadius),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: theme.cornerRadius,
+                      borderSide: BorderSide(color: theme.borderColor),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: theme.cornerRadius,
+                      borderSide: BorderSide(color: theme.accentColor, width: 2),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                  items: const [
+                    DropdownMenuItem(value: 'regular', child: Text('Regular')),
+                    DropdownMenuItem(value: 'vip', child: Text('VIP')),
+                    DropdownMenuItem(value: 'loyal', child: Text('Loyal')),
+                  ],
+                  onChanged: (val) {
+                    if (val != null) {
+                      setState(() => _selectedRole = val);
+                    }
+                  },
                 ),
               ),
               

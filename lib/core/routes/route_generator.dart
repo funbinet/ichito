@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../features/dashboard/presentation/pages/dashboard_screen.dart';
 import '../../features/customers/presentation/pages/customer_list_screen.dart';
 import '../../features/orders/presentation/pages/order_list_screen.dart';
+import '../../features/orders/presentation/pages/order_detail_screen.dart';
 import '../../features/settings/presentation/pages/settings_screen.dart';
 import '../../features/settings/presentation/pages/onboarding_screen.dart';
 import '../../features/settings/presentation/pages/profile_screen.dart';
@@ -11,6 +12,7 @@ import '../../features/analytics/presentation/pages/analytics_screen.dart';
 import '../../features/orders/presentation/pages/order_wizard_screen.dart';
 import '../../features/notifications/presentation/pages/notifications_screen.dart';
 import '../../features/designs/presentation/pages/designs_list_screen.dart';
+import '../../features/designs/presentation/pages/design_detail_screen.dart';
 import '../../features/fabrics/presentation/pages/fabrics_list_screen.dart';
 import '../../features/settings/presentation/pages/sub_screens/profile_settings_screen.dart';
 import '../../features/settings/presentation/pages/sub_screens/appearance_settings_screen.dart';
@@ -24,6 +26,8 @@ import '../../features/settings/presentation/pages/sub_screens/help_screen.dart'
 import '../../features/settings/presentation/pages/sub_screens/about_screen.dart';
 import '../../features/security/presentation/pages/pin_lock_screen.dart';
 import '../../features/security/presentation/pages/pin_setup_screen.dart';
+import '../../features/customers/presentation/pages/customer_form_screen.dart';
+import '../../features/customers/presentation/pages/customer_detail_screen.dart';
 import '../../shared/data/local/settings_repository.dart';
 
 class RouteGenerator {
@@ -108,6 +112,20 @@ class RouteGenerator {
         page = const FabricsListScreen();
         break;
       case '/designs/detail':
+        final int designId = settings.arguments as int;
+        page = DesignDetailScreen(designId: designId);
+        break;
+      case '/customers/new':
+        page = const CustomerFormScreen();
+        break;
+      case '/customers/detail':
+        final int customerId = settings.arguments as int;
+        page = CustomerDetailScreen(customerId: customerId);
+        break;
+      case '/orders/detail':
+        final int orderId = settings.arguments as int;
+        page = OrderDetailScreen(orderId: orderId);
+        break;
       case '/designs/form':
       case '/garments/detail':
       case '/garments/form':
@@ -117,8 +135,6 @@ class RouteGenerator {
       case '/settings/pin-setup':
       case '/settings/security-key':
       case '/lock':
-      case '/customers/new':
-      case '/customers/detail':
       case '/order_detail':
         page = _comingSoonRoute(settings.name!);
         break;

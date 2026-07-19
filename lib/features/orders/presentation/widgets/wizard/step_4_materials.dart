@@ -66,6 +66,79 @@ class _Step4MaterialsState extends State<Step4Materials> with ThemeAwareMixin {
     }
   }
 
+  Future<void> _showAddFabricDialog() async {
+    final nameCtrl = TextEditingController();
+    final priceCtrl = TextEditingController(text: '0');
+    final unitCtrl = TextEditingController(text: 'm');
+    final formKey = GlobalKey<FormState>();
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: theme.cardColor,
+          title: Text('Add New Fabric', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
+          content: Form(
+            key: formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AdaptiveTextField(
+                    controller: nameCtrl,
+                    label: 'Fabric Name',
+                    validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                  ),
+                  AdaptiveTextField(
+                    controller: priceCtrl,
+                    label: 'Price Per Unit',
+                    keyboardType: TextInputType.number,
+                  ),
+                  AdaptiveTextField(
+                    controller: unitCtrl,
+                    label: 'Unit (e.g. m, yard, piece)',
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (formKey.currentState!.validate()) {
+                  final newFabric = Fabric(
+                    name: nameCtrl.text.trim(),
+                    pricePerUnit: double.tryParse(priceCtrl.text) ?? 0.0,
+                    unit: unitCtrl.text.trim(),
+                    createdAt: DateTime.now(),
+                    updatedAt: DateTime.now(),
+                  );
+                  await _fabricRepo.addFabric(newFabric);
+                  Navigator.pop(context, true);
+                }
+              },
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result == true) {
+      final fabrics = await _fabricRepo.getAll();
+      setState(() {
+        _fabrics = fabrics;
+      });
+      if (_fabrics.isNotEmpty) {
+        setState(() => _currentFabricId = _fabrics.last.id!);
+      }
+    }
+  }
+
   void _saveAndNext() {
     widget.onMaterialsSelected(_currentFabricId, _currentDesignId);
     widget.onNext();
@@ -96,7 +169,22 @@ class _Step4MaterialsState extends State<Step4Materials> with ThemeAwareMixin {
           ),
           const SizedBox(height: 16),
           
-          Text('Select Fabric', style: TextStyle(fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Select Fabric', style: TextStyle(fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+              TextButton.icon(
+                onPressed: _showAddFabricDialog,
+                icon: Icon(Icons.add, size: 16, color: theme.accentColor),
+                label: Text('Add New', style: TextStyle(fontSize: 12, color: theme.accentColor, fontFamily: theme.fontFamily)),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 8),
           _fabrics.isEmpty
             ? Center(child: Text('No fabrics in library.', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)))

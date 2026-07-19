@@ -93,7 +93,7 @@ class SettingsRepository {
   static const String _lockTypeKey = 'lockType';
   static const String _appPinKey = 'appPin';
   static const String _biometricEnabledKey = 'biometricEnabled';
-  static const String _autoLockMinutesKey = 'autoLockMinutes';
+  static const String _autoLockSecondsKey = 'autoLockSeconds';
   static const String _encryptionEnabledKey = 'encryptionEnabled';
 
   // Preferences
@@ -156,7 +156,7 @@ class SettingsRepository {
   String getLockType() => _getString(_lockTypeKey, 'pin');
   String? getAppPin() => _cache[_appPinKey];
   bool getBiometricEnabled() => _getBool(_biometricEnabledKey, false);
-  int getAutoLockMinutes() => _getInt(_autoLockMinutesKey, 5);
+  int getAutoLockSeconds() => _getInt(_autoLockSecondsKey, 300);
   bool getEncryptionEnabled() => _getBool(_encryptionEnabledKey, false);
 
   // Preferences
@@ -216,7 +216,7 @@ class SettingsRepository {
   Future<void> setLockType(String type) => _set(_lockTypeKey, type);
   Future<void> setAppPin(String pin) => _set(_appPinKey, pin);
   Future<void> setBiometricEnabled(bool enabled) => _set(_biometricEnabledKey, enabled ? '1' : '0');
-  Future<void> setAutoLockMinutes(int minutes) => _set(_autoLockMinutesKey, minutes.toString());
+  Future<void> setAutoLockSeconds(int seconds) => _set(_autoLockSecondsKey, seconds.toString());
   Future<void> setEncryptionEnabled(bool enabled) =>
       _set(_encryptionEnabledKey, enabled ? '1' : '0');
 

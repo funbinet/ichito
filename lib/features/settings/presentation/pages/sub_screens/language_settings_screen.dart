@@ -35,6 +35,12 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
     _settings.setMeasurementUnit(_selectedUnit);
     _settings.setDateFormat(_selectedDateFormat);
 
+    final langProv = Provider.of<LanguageProvider>(context, listen: false);
+    langProv.setLanguage(_selectedLanguage == 'sheng' ? AppLanguage.sheng : AppLanguage.english);
+    langProv.setCurrency(_selectedCurrency);
+    langProv.setMeasurementUnit(_selectedUnit);
+    langProv.setDateFormat(_selectedDateFormat);
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Language & Format settings saved')),
     );

@@ -11,6 +11,7 @@ import '../widgets/welcome_header.dart';
 import '../widgets/dashboard_components.dart';
 import '../widgets/stat_card.dart';
 import '../../../../shared/services/export_service.dart';
+import '../../../customers/data/repositories/customer_repository.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -21,9 +22,16 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin, NavigationMixin {
   final OrderRepository _orderRepo = OrderRepository();
+  final CustomerRepository _customerRepo = CustomerRepository();
   
   int _activeOrdersCount = 0;
   double _monthlyRevenue = 0.0;
+  int _activeClientsCount = 0;
+  String _topGarment = 'None';
+  
+  List<double> _ordersChartData = List.filled(7, 0);
+  List<double> _revenueChartData = List.filled(7, 0);
+  
   List<Order> _recentOrders = [];
   List<Order> _upcomingDeadlines = [];
   bool _isLoading = true;
@@ -40,19 +48,53 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
     
     try {
       final orders = await _orderRepo.getAllOrders();
+      final customers = await _customerRepo.getAllCustomers();
+      
+      _activeClientsCount = customers.length;
+      
       _activeOrdersCount = orders.where((o) => o.status != 'completed' && o.status != 'cancelled').length;
       
+      final now = DateTime.now();
       _monthlyRevenue = orders
-          .where((o) => o.orderDate.month == DateTime.now().month)
+          .where((o) => o.orderDate.month == now.month && o.orderDate.year == now.year)
           .fold(0.0, (sum, o) => sum + o.paidAmount);
 
+      // Calculate Top Garment
+      final garmentCounts = <String, int>{};
+      for (var o in orders) {
+        if (o.garmentName != null && o.garmentName!.isNotEmpty) {
+          garmentCounts[o.garmentName!] = (garmentCounts[o.garmentName!] ?? 0) + 1;
+        }
+      }
+      if (garmentCounts.isNotEmpty) {
+        var top = garmentCounts.entries.reduce((a, b) => a.value > b.value ? a : b);
+        _topGarment = top.key;
+      } else {
+        _topGarment = 'None';
+      }
+
+      // Generate Chart Data (past 7 days)
+      List<double> dailyOrders = List.filled(7, 0);
+      List<double> dailyRevenue = List.filled(7, 0);
+      for (int i = 0; i < 7; i++) {
+        final date = now.subtract(Duration(days: 6 - i));
+        final dayOrders = orders.where((o) => 
+            o.orderDate.year == date.year && 
+            o.orderDate.month == date.month && 
+            o.orderDate.day == date.day);
+            
+        dailyOrders[i] = dayOrders.length.toDouble();
+        dailyRevenue[i] = dayOrders.fold(0.0, (sum, o) => sum + o.paidAmount);
+      }
+      _ordersChartData = dailyOrders;
+      _revenueChartData = dailyRevenue;
+
       // Upcoming deadlines: active orders due within 7 days
-      final now = DateTime.now();
       _upcomingDeadlines = orders
           .where((o) => o.status != 'completed' && o.status != 'cancelled')
           .where((o) {
             final daysUntil = o.dueDate.difference(now).inDays;
-            return daysUntil <= 7;
+            return daysUntil <= 7 && daysUntil >= 0;
           })
           .toList()
         ..sort((a, b) => a.dueDate.compareTo(b.dueDate));
@@ -108,17 +150,17 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
               color: theme.accentColor,
               child: CustomScrollView(
                 slivers: [
-                  const SliverToBoxAdapter(
-                    child: WelcomeHeader(),
+                  SliverToBoxAdapter(
+                    child: WelcomeHeader(
+                      onExportCSV: _exportToCSV,
+                      onExportPDF: _exportToPDF,
+                    ),
                   ),
                   SliverToBoxAdapter(
                     child: _buildStatisticsCarousel(),
                   ),
-                  SliverToBoxAdapter(
-                    child: _buildExportActions(),
-                  ),
-                  SliverToBoxAdapter(
-                    child: const SizedBox(height: 16),
+                  const SliverToBoxAdapter(
+                    child: SizedBox(height: 16),
                   ),
                   SliverToBoxAdapter(
                     child: _buildQuickActionGrid(),
@@ -127,8 +169,8 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
                   if (_upcomingDeadlines.isNotEmpty) ...[
                     SliverToBoxAdapter(
                       child: SectionHeader(
-                        title: 'Upcoming Deadlines',
-                        actionLabel: 'View All',
+                        title: language.t('upcoming_deadlines') ?? 'Upcoming Deadlines',
+                        actionLabel: language.t('view_all'),
                         onActionTap: () => navigateTo('/orders'),
                       ),
                     ),
@@ -138,8 +180,8 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
                   ],
                   SliverToBoxAdapter(
                     child: SectionHeader(
-                      title: 'Recent Activity',
-                      actionLabel: 'View All',
+                      title: language.t('recent_activity') ?? 'Recent Activity',
+                      actionLabel: language.t('view_all'),
                       onActionTap: () => navigateTo('/orders'),
                     ),
                   ),
@@ -166,42 +208,47 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
 
   Widget _buildStatisticsCarousel() {
     final language = Provider.of<LanguageProvider>(context);
+    
+    // Check if chart data is all zeros
+    final bool hasOrderData = _ordersChartData.any((v) => v > 0);
+    final bool hasRevenueData = _revenueChartData.any((v) => v > 0);
+    
     final statCards = [
       ChartStatCard(
         icon: Icons.shopping_bag_outlined,
-        title: 'Orders This Month',
+        title: language.t('orders'), // 'Active Orders'
         value: '$_activeOrdersCount',
-        trendPercentage: 12.0,
+        trendPercentage: 0.0,
         trendPositive: true,
         chartType: ChartType.bar,
-        data: const [10, 15, 20, 18, 25, 22, 30],
+        data: hasOrderData ? _ordersChartData : const [0, 0, 0, 0, 0, 0, 0],
       ),
       ChartStatCard(
         icon: Icons.account_balance_wallet_outlined,
-        title: 'Revenue This Month',
+        title: language.t('total_amount'), // 'Revenue This Month' -> Using 'Total' for now or add new string
         value: language.formatCurrency(_monthlyRevenue, showSymbol: true),
-        trendPercentage: 8.5,
+        trendPercentage: 0.0,
         trendPositive: true,
         chartType: ChartType.line,
-        data: const [1000, 1500, 1200, 2000, 2500, 2200, 3000],
+        data: hasRevenueData ? _revenueChartData : const [0, 0, 0, 0, 0, 0, 0],
       ),
       ChartStatCard(
         icon: Icons.people_outlined,
-        title: 'Active Clients',
-        value: '24',
-        trendPercentage: 5.0,
+        title: language.t('customers'), // 'Active Clients'
+        value: '$_activeClientsCount',
+        trendPercentage: 0.0,
         trendPositive: true,
         chartType: ChartType.bar,
-        data: const [10, 12, 11, 15, 18, 20, 24],
+        data: const [0, 0, 0, 0, 0, 0, 0],
       ),
       ChartStatCard(
         icon: Icons.sell_outlined,
-        title: 'Top Garment',
-        value: 'Dresses',
-        trendPercentage: 15.0,
+        title: language.t('garments'), // 'Top Garment'
+        value: _topGarment,
+        trendPercentage: 0.0,
         trendPositive: true,
         chartType: ChartType.bar,
-        data: const [5, 8, 12, 10, 15, 20, 25],
+        data: const [0, 0, 0, 0, 0, 0, 0],
       ),
     ];
 
@@ -240,38 +287,10 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
     );
   }
 
-  Widget _buildExportActions() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          OutlinedButton.icon(
-            onPressed: _exportToCSV,
-            icon: Icon(Icons.table_chart_outlined, size: 16, color: theme.textSecondary),
-            label: Text('CSV', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: theme.borderColor),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-          ),
-          const SizedBox(width: 8),
-          ElevatedButton.icon(
-            onPressed: _exportToPDF,
-            icon: Icon(Icons.picture_as_pdf_outlined, size: 16, color: theme.onAccent),
-            label: Text('PDF', style: TextStyle(fontFamily: theme.fontFamily)),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: theme.accentColor,
-              foregroundColor: theme.onAccent,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   Widget _buildQuickActionGrid() {
+    final language = Provider.of<LanguageProvider>(context, listen: false);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GridView.count(
@@ -283,50 +302,50 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
         childAspectRatio: 0.80,
         children: [
           QuickActionTile(
-            label: 'New Order',
-            subtitle: 'Create',
+            label: language.t('new_order'),
+            subtitle: language.t('create'),
             icon: Icons.add_shopping_cart_outlined,
             onTap: () => navigateTo('/order_wizard'),
           ),
           QuickActionTile(
-            label: 'Clients',
-            subtitle: 'Manage',
+            label: language.t('customers'),
+            subtitle: language.t('add'),
             icon: Icons.people_outlined,
             onTap: () => navigateTo('/customers'),
           ),
           QuickActionTile(
-            label: 'Garments',
-            subtitle: 'Types',
+            label: language.t('garments'),
+            subtitle: language.t('view_all'),
             icon: Icons.checkroom_outlined,
             onTap: () => navigateTo('/garments'),
           ),
           QuickActionTile(
-            label: 'Fabrics',
-            subtitle: 'Library',
+            label: language.t('fabrics'),
+            subtitle: language.t('view_all'),
             icon: Icons.texture_outlined,
             onTap: () => navigateTo('/fabrics'),
           ),
           QuickActionTile(
-            label: 'Designs',
-            subtitle: 'Gallery',
+            label: language.t('designs'),
+            subtitle: language.t('view_all'),
             icon: Icons.palette_outlined,
             onTap: () => navigateTo('/designs'),
           ),
           QuickActionTile(
-            label: 'Notes',
-            subtitle: 'Tasks',
+            label: language.t('notes'),
+            subtitle: language.t('view_all'),
             icon: Icons.note_outlined,
             onTap: () => navigateTo('/notes'),
           ),
           QuickActionTile(
-            label: 'Statistics',
-            subtitle: 'View',
+            label: language.t('statistics'),
+            subtitle: language.t('view_all'),
             icon: Icons.bar_chart_outlined,
             onTap: () => navigateTo('/analytics'),
           ),
           QuickActionTile(
-            label: 'Settings',
-            subtitle: 'Configure',
+            label: language.t('settings'),
+            subtitle: language.t('view_all'),
             icon: Icons.settings_outlined,
             onTap: () => navigateTo('/settings'),
           ),

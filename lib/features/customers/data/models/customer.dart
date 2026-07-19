@@ -6,6 +6,7 @@ class Customer {
   final String phone;
   final String? email;
   final String gender;
+  final String role;
   final String? location;
   final String? photoPath;
   final Map<String, double>? measurements;
@@ -25,6 +26,7 @@ class Customer {
     required this.phone,
     this.email,
     required this.gender,
+    this.role = 'regular',
     this.location,
     this.photoPath,
     this.measurements,
@@ -43,6 +45,7 @@ class Customer {
     String? phone,
     String? email,
     String? gender,
+    String? role,
     String? location,
     String? photoPath,
     Map<String, double>? measurements,
@@ -55,6 +58,7 @@ class Customer {
       phone: phone ?? this.phone,
       email: email ?? this.email,
       gender: gender ?? this.gender,
+      role: role ?? this.role,
       location: location ?? this.location,
       photoPath: photoPath ?? this.photoPath,
       measurements: measurements ?? this.measurements,
@@ -78,10 +82,11 @@ class Customer {
   }
 
   String get loyaltyStatus {
+    if (role == 'vip' || role == 'VIP') return 'VIP';
     if (totalSpent > 50000) return 'VIP';
     if (totalSpent > 20000) return 'Regular';
     if (totalOrders > 3) return 'Loyal';
-    return 'New';
+    return role.isNotEmpty ? role[0].toUpperCase() + role.substring(1) : 'New';
   }
 
   Map<String, dynamic> toMap() {
@@ -91,6 +96,7 @@ class Customer {
       'phone': phone,
       'email': email,
       'gender': gender,
+      'role': role,
       'location': location,
       'photo_path': photoPath,
       'measurements': measurements != null ? jsonEncode(measurements) : null,
@@ -112,6 +118,7 @@ class Customer {
       phone: map['phone'] ?? '',
       email: map['email'],
       gender: map['gender'] ?? 'unisex',
+      role: map['role'] ?? 'regular',
       location: map['location'],
       photoPath: map['photo_path'],
       measurements: parsedMeasurements,

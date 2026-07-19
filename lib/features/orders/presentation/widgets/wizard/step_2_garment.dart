@@ -107,6 +107,88 @@ class _Step2GarmentState extends State<Step2Garment> with ThemeAwareMixin {
     });
   }
 
+  Future<void> _showAddGarmentDialog() async {
+    final nameCtrl = TextEditingController();
+    final priceCtrl = TextEditingController(text: '0');
+    final categoryCtrl = TextEditingController(text: 'Unisex');
+    final measurementsCtrl = TextEditingController(text: 'Chest, Waist, Length');
+    final formKey = GlobalKey<FormState>();
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: theme.cardColor,
+          title: Text('Add New Garment', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
+          content: Form(
+            key: formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AdaptiveTextField(
+                    controller: nameCtrl,
+                    label: 'Garment Name',
+                    validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                  ),
+                  AdaptiveTextField(
+                    controller: priceCtrl,
+                    label: 'Base Price',
+                    keyboardType: TextInputType.number,
+                  ),
+                  AdaptiveTextField(
+                    controller: categoryCtrl,
+                    label: 'Category (Men/Women/Unisex)',
+                  ),
+                  AdaptiveTextField(
+                    controller: measurementsCtrl,
+                    label: 'Measurement Fields (comma separated)',
+                    maxLines: 2,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (formKey.currentState!.validate()) {
+                  final meas = measurementsCtrl.text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+                  final newGarment = Garment(
+                    name: nameCtrl.text.trim(),
+                    category: categoryCtrl.text.trim(),
+                    defaultPrice: double.tryParse(priceCtrl.text) ?? 0.0,
+                    measurementFields: meas,
+                    createdAt: DateTime.now(),
+                    updatedAt: DateTime.now(),
+                  );
+                  await _garmentRepo.createGarment(newGarment);
+                  Navigator.pop(context, true);
+                }
+              },
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result == true) {
+      final garments = await _garmentRepo.getAll();
+      setState(() {
+        _garments = garments;
+        _applyFilters();
+      });
+      if (_garments.isNotEmpty) {
+        widget.onGarmentSelected(_garments.last.id!);
+      }
+    }
+  }
+
   void _applyFilters() {
     _filteredGarments = _garments.where((g) {
       final matchesSearch = g.name.toLowerCase().contains(_searchQuery);
@@ -256,9 +338,7 @@ class _Step2GarmentState extends State<Step2Garment> with ThemeAwareMixin {
           const SizedBox(height: 16),
           AdaptiveButton(
             text: '+ Add New Garment',
-            onPressed: () {
-              // TODO: Open Garment Form
-            },
+            onPressed: _showAddGarmentDialog,
             isPrimary: false,
           ),
           const SizedBox(height: 16),

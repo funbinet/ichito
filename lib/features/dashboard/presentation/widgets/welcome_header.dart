@@ -7,7 +7,14 @@ import '../../../../shared/providers/language_provider.dart';
 import '../../../../shared/widgets/themed_logo.dart';
 
 class WelcomeHeader extends StatelessWidget {
-  const WelcomeHeader({super.key});
+  final VoidCallback? onExportCSV;
+  final VoidCallback? onExportPDF;
+
+  const WelcomeHeader({
+    super.key, 
+    this.onExportCSV, 
+    this.onExportPDF,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +60,38 @@ class WelcomeHeader extends StatelessWidget {
           ),
           
           const Spacer(),
+          
+          // CSV Export
+          if (onExportCSV != null)
+            IconButton(
+              icon: Icon(Icons.table_chart_outlined, color: theme.textSecondary, size: 20),
+              onPressed: onExportCSV,
+              tooltip: 'Export CSV',
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+            ),
+          const SizedBox(width: 8),
+
+          // PDF Export
+          if (onExportPDF != null)
+            IconButton(
+              icon: Icon(Icons.picture_as_pdf_outlined, color: theme.textSecondary, size: 20),
+              onPressed: onExportPDF,
+              tooltip: 'Export PDF',
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+            ),
+          const SizedBox(width: 8),
+
+          // Settings
+          IconButton(
+            icon: Icon(Icons.settings_outlined, color: theme.textSecondary, size: 22),
+            onPressed: () => Navigator.pushNamed(context, '/settings'),
+            tooltip: 'Settings',
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+          ),
+          const SizedBox(width: 8),
           
           // Notification bell with dynamic badge
           Stack(

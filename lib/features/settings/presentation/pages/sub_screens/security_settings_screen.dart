@@ -71,6 +71,36 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> with Th
                       Navigator.pushNamed(context, '/setup_pin');
                     },
                   ),
+                  const Divider(height: 1),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Auto-Lock Timeout', style: bodyStyle),
+                        DropdownButton<int>(
+                          value: appState.autoLockSeconds,
+                          dropdownColor: theme.cardColor,
+                          style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily),
+                          underline: const SizedBox(),
+                          items: const [
+                            DropdownMenuItem(value: 5, child: Text('5 seconds')),
+                            DropdownMenuItem(value: 10, child: Text('10 seconds')),
+                            DropdownMenuItem(value: 20, child: Text('20 seconds')),
+                            DropdownMenuItem(value: 30, child: Text('30 seconds')),
+                            DropdownMenuItem(value: 60, child: Text('1 minute')),
+                            DropdownMenuItem(value: 300, child: Text('5 minutes')),
+                            DropdownMenuItem(value: -1, child: Text('Never')),
+                          ],
+                          onChanged: (val) {
+                            if (val != null) {
+                              appState.setAutoLockSeconds(val);
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ],
             ),

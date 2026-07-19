@@ -3,9 +3,7 @@ import '../data/local/settings_repository.dart';
 
 enum AppThemeMode { light, dark, amoledDark, system }
 enum CornerStyle {
-  rounded, sharp, pill, notched, teardrop,
-  beveled, asymmetric, cascading, soft, modern,
-  classic, playful, elegant, industrial, organic
+  rounded, sharp
 }
 
 class ThemeProvider extends ChangeNotifier {
@@ -103,35 +101,17 @@ class ThemeProvider extends ChangeNotifier {
   // Corner definitions
   BorderRadius get cornerRadius {
     switch (_cornerStyle) {
-      case CornerStyle.rounded: return BorderRadius.circular(12);
       case CornerStyle.sharp: return BorderRadius.zero;
-      case CornerStyle.pill: return BorderRadius.circular(50);
-      case CornerStyle.notched:
-        // Requires custom path/clipper for true notched, using beveled as fallback in BorderRadius
-        return BorderRadius.only(topLeft: Radius.circular(16), bottomRight: Radius.circular(16));
-      case CornerStyle.teardrop:
-        return BorderRadius.only(topLeft: Radius.circular(24), topRight: Radius.circular(24), bottomLeft: Radius.circular(24), bottomRight: Radius.circular(4));
-      case CornerStyle.beveled:
-        return BorderRadius.circular(12); // Best effort without CustomPainter
-      case CornerStyle.asymmetric:
-        return BorderRadius.only(topLeft: Radius.circular(24), bottomRight: Radius.circular(24));
-      case CornerStyle.cascading:
-        return BorderRadius.only(topLeft: Radius.circular(32), topRight: Radius.circular(16), bottomLeft: Radius.circular(16), bottomRight: Radius.circular(8));
-      case CornerStyle.soft: return BorderRadius.circular(16);
-      case CornerStyle.modern: return BorderRadius.circular(8);
-      case CornerStyle.classic: return BorderRadius.circular(4);
-      case CornerStyle.playful: return BorderRadius.circular(20);
-      case CornerStyle.elegant: return BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12));
-      case CornerStyle.industrial: return BorderRadius.zero;
-      case CornerStyle.organic: return BorderRadius.circular(24);
+      case CornerStyle.rounded:
+      default: return BorderRadius.circular(16);
     }
   }
 
   BorderRadius get buttonRadius {
     switch (_cornerStyle) {
-      case CornerStyle.pill: return BorderRadius.circular(50);
       case CornerStyle.sharp: return BorderRadius.zero;
-      default: return BorderRadius.circular(8);
+      case CornerStyle.rounded:
+      default: return BorderRadius.circular(12);
     }
   }
 
