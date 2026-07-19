@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
-import '../../../../shared/providers/language_provider.dart';
-import '../../../../shared/widgets/auth_delete_dialog.dart';
-import '../../../security/services/security_service.dart';
-import '../../../../shared/data/database/backup_service.dart';
 import '../../../../core/widgets/ichito_scaffold.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -15,23 +10,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
-
-  void _showFactoryResetDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AuthDeleteDialog(
-        itemName: 'ALL APP DATA',
-        securityService: SecurityService(),
-        onDelete: () async {
-          // Perform factory reset logic here
-          if (mounted) {
-            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-          }
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return IchitoScaffold(
@@ -46,114 +24,64 @@ class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
         padding: const EdgeInsets.all(16).copyWith(bottom: 120),
         children: [
           _buildSettingsTile(
-            title: 'Profile',
+            title: 'Profile Settings',
             subtitle: 'Personal & business information',
             icon: Icons.person_outline,
             onTap: () => Navigator.pushNamed(context, '/settings/profile'),
           ),
           _buildSettingsTile(
-            title: 'Appearance',
+            title: 'Appearance Settings',
             subtitle: 'Theme, colors, and gradients',
             icon: Icons.palette_outlined,
             onTap: () => Navigator.pushNamed(context, '/settings/appearance'),
           ),
           _buildSettingsTile(
-            title: 'Localization',
-            subtitle: 'Language and region settings',
+            title: 'Language & Format',
+            subtitle: 'Language, units, currency & dates',
             icon: Icons.language_outlined,
-            onTap: () {
-              // Show language selector dialog or navigate
-            },
+            onTap: () => Navigator.pushNamed(context, '/settings/language'),
           ),
           _buildSettingsTile(
-            title: 'Notifications',
-            subtitle: 'Alerts and push notifications',
-            icon: Icons.notifications_outlined,
-            onTap: () {
-              Navigator.pushNamed(context, '/notifications');
-            },
-          ),
-          _buildSettingsTile(
-            title: 'Security',
+            title: 'Security Settings',
             subtitle: 'App lock, biometrics, PIN',
             icon: Icons.security_outlined,
             onTap: () => Navigator.pushNamed(context, '/settings/security'),
           ),
           _buildSettingsTile(
-            title: 'Backup Data',
-            subtitle: 'Export a local .zip backup',
-            icon: Icons.cloud_download_outlined,
-            onTap: () async {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Preparing backup...')));
-              final result = await BackupService().exportBackup();
-              if (result != null && mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Backup ready to share')));
-              } else if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Backup failed')));
-              }
-            },
+            title: 'Preferences Settings',
+            subtitle: 'Display, interaction & default sort',
+            icon: Icons.tune_outlined,
+            onTap: () => Navigator.pushNamed(context, '/settings/preferences'),
           ),
           _buildSettingsTile(
-            title: 'Restore Data',
-            subtitle: 'Import a local .zip backup',
-            icon: Icons.restore_outlined,
-            onTap: () async {
-              final confirm = await showDialog<bool>(
-                context: context,
-                builder: (ctx) => AlertDialog(
-                  backgroundColor: theme.cardColor,
-                  title: Text('Restore Backup?', style: TextStyle(color: theme.textPrimary)),
-                  content: Text('This will overwrite all current data. This action cannot be undone.', 
-                    style: TextStyle(color: theme.textSecondary)),
-                  actions: [
-                    TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-                    TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Restore', style: TextStyle(color: Colors.red))),
-                  ],
-                ),
-              );
-
-              if (confirm == true && mounted) {
-                final success = await BackupService().importBackup();
-                if (success && mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Restore successful. Restarting app...')));
-                  // Restart to reload state
-                  Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-                } else if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Restore failed')));
-                }
-              }
-            },
+            title: 'Business Settings',
+            subtitle: 'Financials, tax & order prefixes',
+            icon: Icons.business_outlined,
+            onTap: () => Navigator.pushNamed(context, '/settings/business'),
           ),
           _buildSettingsTile(
-            title: 'Feedback',
-            subtitle: 'Report bugs or request features',
-            icon: Icons.feedback_outlined,
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feedback feature coming soon')));
-            },
+            title: 'Storage Management',
+            subtitle: 'Usage, backup, restore & cache',
+            icon: Icons.storage_outlined,
+            onTap: () => Navigator.pushNamed(context, '/settings/storage'),
           ),
           _buildSettingsTile(
-            title: 'Share App',
-            subtitle: 'Share ICHITO with friends',
-            icon: Icons.share_outlined,
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Share feature coming soon')));
-            },
+            title: 'Advanced Settings',
+            subtitle: 'Performance mode & debugging',
+            icon: Icons.build_outlined,
+            onTap: () => Navigator.pushNamed(context, '/settings/advanced'),
+          ),
+          _buildSettingsTile(
+            title: 'Help',
+            subtitle: 'User guide and support',
+            icon: Icons.help_outline,
+            onTap: () => Navigator.pushNamed(context, '/settings/help'),
           ),
           _buildSettingsTile(
             title: 'About',
-            subtitle: 'App version and information',
+            subtitle: 'Version info and legal',
             icon: Icons.info_outline,
-            onTap: () {},
-          ),
-          const SizedBox(height: 16),
-          _buildSettingsTile(
-            title: 'Factory Reset',
-            subtitle: 'Delete all data and reset app',
-            icon: Icons.delete_forever_outlined,
-            iconColor: Colors.red,
-            titleColor: Colors.red,
-            onTap: _showFactoryResetDialog,
+            onTap: () => Navigator.pushNamed(context, '/settings/about'),
           ),
         ],
       ),
