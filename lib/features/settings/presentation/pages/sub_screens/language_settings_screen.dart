@@ -42,7 +42,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
     langProv.setDateFormat(_selectedDateFormat);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Language & Format settings saved'.t(context))),
+      SnackBar(content: Text('Language & Format settings saved'.t(context))),
     );
     Navigator.pop(context);
   }

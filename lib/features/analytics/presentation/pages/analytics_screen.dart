@@ -93,7 +93,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with ThemeAwareMixin 
             icon: Icon(Icons.picture_as_pdf_outlined),
             tooltip: 'Export PDF'.t(context),
             onPressed: () async {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Generating PDF Report...'.t(context))));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Generating PDF Report...'.t(context))));
               await ExportService.exportStatsToPDF(
                 title: 'Analytics Report'.t(context),
                 fileNamePrefix: 'analytics_report',
@@ -110,7 +110,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with ThemeAwareMixin 
             icon: Icon(Icons.table_chart_outlined),
             tooltip: 'Export CSV'.t(context),
             onPressed: () async {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Exporting CSV...'.t(context))));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Exporting CSV...'.t(context))));
               await ExportService.exportStatsToCSV(
                 title: 'Analytics Report'.t(context),
                 fileNamePrefix: 'analytics_report',
