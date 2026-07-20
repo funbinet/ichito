@@ -113,7 +113,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with ThemeA
   
   Future<void> _updatePhoto() async {
     // Placeholder for photo update logic
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Photo update coming soon'.t(context))));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Photo update coming soon'.t(context))));
   }
 
   @override

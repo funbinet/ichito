@@ -283,7 +283,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: SegmentedButton<String>(
-                  segments: const [
+                  segments: [
                     ButtonSegment(value: 'male', label: Text('Male'.t(context)), icon: Icon(Icons.male)),
                     ButtonSegment(value: 'female', label: Text('Female'.t(context)), icon: Icon(Icons.female)),
                   ],
@@ -337,7 +337,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
                     ),
                     contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
-                  items: const [
+                  items: [
                     DropdownMenuItem(value: 'regular', child: Text('Regular'.t(context))),
                     DropdownMenuItem(value: 'vip', child: Text('VIP'.t(context))),
                     DropdownMenuItem(value: 'loyal', child: Text('Loyal'.t(context))),

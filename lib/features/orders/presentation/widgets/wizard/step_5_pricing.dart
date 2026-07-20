@@ -120,7 +120,7 @@ class _Step5PricingState extends State<Step5Pricing> with ThemeAwareMixin {
 
   void _saveAndNext() {
     if (_dueDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select a Due Date'.t(context))));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please select a Due Date'.t(context))));
       return;
     }
 

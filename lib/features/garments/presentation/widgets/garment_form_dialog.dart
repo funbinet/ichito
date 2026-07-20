@@ -117,7 +117,7 @@ class _GarmentFormDialogState extends State<GarmentFormDialog> with ThemeAwareMi
                   decoration: _inputDecoration(lang.t('category')),
                   dropdownColor: theme.cardColor,
                   style: TextStyle(color: theme.textPrimary),
-                  items: const [
+                  items: [
                     DropdownMenuItem(value: 'men', child: Text('Men'.t(context))),
                     DropdownMenuItem(value: 'women', child: Text('Women'.t(context))),
                     DropdownMenuItem(value: 'unisex', child: Text('Unisex'.t(context))),

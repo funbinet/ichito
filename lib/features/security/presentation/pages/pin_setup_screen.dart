@@ -93,7 +93,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
     
     if (p1.isEmpty || p1.length < 6) {
       setState(() => _isError = true);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password must be at least 6 characters'.t(context))));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Password must be at least 6 characters'.t(context))));
       return;
     }
     
@@ -111,7 +111,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
       }
     } else {
       setState(() => _isError = true);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Passwords do not match'.t(context))));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Passwords do not match'.t(context))));
     }
   }
 
