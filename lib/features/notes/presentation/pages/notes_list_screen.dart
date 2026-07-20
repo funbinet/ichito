@@ -268,7 +268,7 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
             icon: Icon(Icons.keyboard_arrow_down, size: 16, color: theme.textSecondary),
             style: TextStyle(fontSize: 12, color: theme.textPrimary, fontFamily: theme.fontFamily),
             dropdownColor: theme.cardColor,
-            items: const [
+            items: [
               DropdownMenuItem(value: NoteSortOption.newest, child: Text('Newest'.t(context))),
               DropdownMenuItem(value: NoteSortOption.oldest, child: Text('Oldest'.t(context))),
               DropdownMenuItem(value: NoteSortOption.titleAsc, child: Text('Title A-Z'.t(context))),

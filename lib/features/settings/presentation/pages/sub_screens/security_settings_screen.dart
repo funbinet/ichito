@@ -93,7 +93,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> with Th
                           dropdownColor: theme.cardColor,
                           style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily),
                           underline: SizedBox(),
-                          items: const [
+                          items: [
                             DropdownMenuItem(value: 5, child: Text('5 seconds'.t(context))),
                             DropdownMenuItem(value: 10, child: Text('10 seconds'.t(context))),
                             DropdownMenuItem(value: 20, child: Text('20 seconds'.t(context))),

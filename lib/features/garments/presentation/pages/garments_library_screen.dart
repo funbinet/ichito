@@ -302,7 +302,7 @@ class _GarmentsLibraryScreenState extends State<GarmentsLibraryScreen>
               fontFamily: theme.fontFamily,
             ),
             dropdownColor: theme.cardColor,
-            items: const [
+            items: [
               DropdownMenuItem(value: SortOption.name, child: Text('Name'.t(context))),
               DropdownMenuItem(
                 value: SortOption.used,
