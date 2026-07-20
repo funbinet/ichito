@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
 import '../../../../shared/mixins/navigation_mixin.dart';
@@ -184,7 +185,7 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
                 ? _buildEmptyState() 
                 : _buildNotesList(),
           ),
-          const SizedBox(height: 80), // Padding for RadialMenu
+          SizedBox(height: 80), // Padding for RadialMenu
         ],
       ),
     );
@@ -192,10 +193,10 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
 
   Widget _buildSearchBar() {
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      margin: EdgeInsets.fromLTRB(16, 8, 16, 12),
       child: AdaptiveTextField(
         label: '',
-        hint: 'Search notes...',
+        hint: 'Search notes...'.t(context),
         prefixIcon: Icons.search,
         controller: _searchController,
         onChanged: _onSearchChanged,
@@ -206,11 +207,11 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
   Widget _buildFilterChips() {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: _filters.map((filter) =>
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: EdgeInsets.only(right: 8),
             child: FilterChip(
               label: Text(filter.label, style: TextStyle(color: _activeFilter == filter ? theme.onAccent : theme.textPrimary, fontFamily: theme.fontFamily)),
               selected: _activeFilter == filter,
@@ -234,11 +235,11 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
 
   Widget _buildSortControls() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          Text('View:', style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
-          const SizedBox(width: 8),
+          Text('View:'.t(context), style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+          SizedBox(width: 8),
           IconButton(
             icon: Icon(
               Icons.grid_view_outlined,
@@ -246,8 +247,8 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
             ),
             onPressed: () => setState(() => _viewMode = ViewMode.grid),
             iconSize: 20,
-            constraints: const BoxConstraints(),
-            padding: const EdgeInsets.all(4),
+            constraints: BoxConstraints(),
+            padding: EdgeInsets.all(4),
           ),
           IconButton(
             icon: Icon(
@@ -256,22 +257,22 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
             ),
             onPressed: () => setState(() => _viewMode = ViewMode.list),
             iconSize: 20,
-            constraints: const BoxConstraints(),
-            padding: const EdgeInsets.all(4),
+            constraints: BoxConstraints(),
+            padding: EdgeInsets.all(4),
           ),
           const Spacer(),
-          Text('Sort: ', style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+          Text('Sort: '.t(context), style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
           DropdownButton<NoteSortOption>(
             value: _sortOption,
-            underline: const SizedBox(),
+            underline: SizedBox(),
             icon: Icon(Icons.keyboard_arrow_down, size: 16, color: theme.textSecondary),
             style: TextStyle(fontSize: 12, color: theme.textPrimary, fontFamily: theme.fontFamily),
             dropdownColor: theme.cardColor,
             items: const [
-              DropdownMenuItem(value: NoteSortOption.newest, child: Text('Newest')),
-              DropdownMenuItem(value: NoteSortOption.oldest, child: Text('Oldest')),
-              DropdownMenuItem(value: NoteSortOption.titleAsc, child: Text('Title A-Z')),
-              DropdownMenuItem(value: NoteSortOption.titleDesc, child: Text('Title Z-A')),
+              DropdownMenuItem(value: NoteSortOption.newest, child: Text('Newest'.t(context))),
+              DropdownMenuItem(value: NoteSortOption.oldest, child: Text('Oldest'.t(context))),
+              DropdownMenuItem(value: NoteSortOption.titleAsc, child: Text('Title A-Z'.t(context))),
+              DropdownMenuItem(value: NoteSortOption.titleDesc, child: Text('Title Z-A'.t(context))),
             ],
             onChanged: (option) {
               if (option != null) {
@@ -291,8 +292,8 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.note_outlined, size: 80, color: theme.textSecondary.withOpacity(0.5)),
-          const SizedBox(height: 16),
-          Text('No notes found', style: subtitleStyle),
+          SizedBox(height: 16),
+          Text('No notes found'.t(context), style: subtitleStyle),
         ],
       ),
     );
@@ -313,7 +314,7 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
       );
     } else {
       return GridView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           childAspectRatio: 0.85,
@@ -343,8 +344,8 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text('Delete Note', style: TextStyle(color: Colors.red)),
+              leading: Icon(Icons.delete, color: Colors.red),
+              title: Text('Delete Note'.t(context), style: TextStyle(color: Colors.red)),
               onTap: () {
                 Navigator.pop(context);
                 _deleteNoteWithAuth(note);

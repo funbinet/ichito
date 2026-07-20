@@ -2,6 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../shared/data/database/database_helper.dart';
 import '../models/note.dart';
+import '../../../../features/notifications/data/services/notification_service.dart';
 
 class NoteRepository {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
@@ -27,6 +28,7 @@ class NoteRepository {
       updatedAt: DateTime.now(),
     );
     await db.insert('notes', newNote.toMap());
+    await NotificationService().showModelNotification(action: 'Created', type: 'Note', name: note.title);
     return id;
   }
 
@@ -41,15 +43,26 @@ class NoteRepository {
     return result.map((map) => Note.fromMap(map)).toList();
   }
 
+  Future<Note?> getById(String id) async {
+    final db = await _dbHelper.database;
+    final result = await db.query('notes', where: 'id = ?', whereArgs: [id]);
+    return result.isNotEmpty ? Note.fromMap(result.first) : null;
+  }
+
   Future<int> updateNote(Note note) async {
     final db = await _dbHelper.database;
-    final map = note.toMap();
-    map['updated_at'] = DateTime.now().toIso8601String();
-    return await db.update('notes', map, where: 'id = ?', whereArgs: [note.id]);
+    final res = await db.update('notes', note.toMap(), where: 'id = ?', whereArgs: [note.id]);
+    await NotificationService().showModelNotification(action: 'Updated', type: 'Note', name: note.title);
+    return res;
   }
 
   Future<int> deleteNote(String id) async {
     final db = await _dbHelper.database;
-    return await db.delete('notes', where: 'id = ?', whereArgs: [id]);
+    final note = await getById(id);
+    final res = await db.delete('notes', where: 'id = ?', whereArgs: [id]);
+    if (note != null) {
+      await NotificationService().showModelNotification(action: 'Deleted', type: 'Note', name: note.title);
+    }
+    return res;
   }
 }

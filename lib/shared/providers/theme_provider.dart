@@ -45,6 +45,7 @@ class ThemeProvider extends ChangeNotifier {
     if (_settings != null) {
       _gradientId = _settings!.getGradientId();
       _useGradients = _gradientId != null;
+      _fontSize = _settings!.getFontSize();
     }
     notifyListeners();
   }
@@ -171,6 +172,9 @@ class ThemeProvider extends ChangeNotifier {
 
   void setFontSize(double size) {
     _fontSize = size;
+    if (_settings != null) {
+      _settings!.setFontSize(size);
+    }
     notifyListeners();
   }
 

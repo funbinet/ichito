@@ -8,10 +8,12 @@ import '../../../../shared/providers/theme_provider.dart';
 import '../../../orders/data/repositories/order_repository.dart';
 import '../../../orders/data/models/order.dart';
 import '../widgets/welcome_header.dart';
-import '../widgets/dashboard_components.dart';
 import '../widgets/stat_card.dart';
 import '../../../../shared/services/export_service.dart';
-import '../../../customers/data/repositories/customer_repository.dart';
+import '../../../../shared/providers/customer_provider.dart';
+import '../../../../shared/providers/order_provider.dart';
+import '../../../../shared/widgets/square_avatar.dart';
+import '../widgets/dashboard_components.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -21,119 +23,54 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin, NavigationMixin {
-  final OrderRepository _orderRepo = OrderRepository();
-  final CustomerRepository _customerRepo = CustomerRepository();
-  
-  int _activeOrdersCount = 0;
-  double _monthlyRevenue = 0.0;
-  int _activeClientsCount = 0;
-  String _topGarment = 'None';
-  
-  List<double> _ordersChartData = List.filled(7, 0);
-  List<double> _revenueChartData = List.filled(7, 0);
-  
-  List<Order> _recentOrders = [];
-  List<Order> _upcomingDeadlines = [];
-  bool _isLoading = true;
   int _currentStatPage = 0;
 
   @override
   void initState() {
     super.initState();
-    _loadDashboardData();
+    // Load data initially just in case, though main.dart already loads it
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<OrderProvider>(context, listen: false).loadOrders();
+      Provider.of<CustomerProvider>(context, listen: false).loadCustomers();
+    });
   }
 
-  Future<void> _loadDashboardData() async {
-    setState(() => _isLoading = true);
-    
-    try {
-      final orders = await _orderRepo.getAllOrders();
-      final customers = await _customerRepo.getAllCustomers();
-      
-      _activeClientsCount = customers.length;
-      
-      _activeOrdersCount = orders.where((o) => o.status != 'completed' && o.status != 'cancelled').length;
-      
-      final now = DateTime.now();
-      _monthlyRevenue = orders
-          .where((o) => o.orderDate.month == now.month && o.orderDate.year == now.year)
-          .fold(0.0, (sum, o) => sum + o.paidAmount);
-
-      // Calculate Top Garment
-      final garmentCounts = <String, int>{};
-      for (var o in orders) {
-        if (o.garmentName != null && o.garmentName!.isNotEmpty) {
-          garmentCounts[o.garmentName!] = (garmentCounts[o.garmentName!] ?? 0) + 1;
-        }
-      }
-      if (garmentCounts.isNotEmpty) {
-        var top = garmentCounts.entries.reduce((a, b) => a.value > b.value ? a : b);
-        _topGarment = top.key;
-      } else {
-        _topGarment = 'None';
-      }
-
-      // Generate Chart Data (past 7 days)
-      List<double> dailyOrders = List.filled(7, 0);
-      List<double> dailyRevenue = List.filled(7, 0);
-      for (int i = 0; i < 7; i++) {
-        final date = now.subtract(Duration(days: 6 - i));
-        final dayOrders = orders.where((o) => 
-            o.orderDate.year == date.year && 
-            o.orderDate.month == date.month && 
-            o.orderDate.day == date.day);
-            
-        dailyOrders[i] = dayOrders.length.toDouble();
-        dailyRevenue[i] = dayOrders.fold(0.0, (sum, o) => sum + o.paidAmount);
-      }
-      _ordersChartData = dailyOrders;
-      _revenueChartData = dailyRevenue;
-
-      // Upcoming deadlines: active orders due within 7 days
-      _upcomingDeadlines = orders
-          .where((o) => o.status != 'completed' && o.status != 'cancelled')
-          .where((o) {
-            final daysUntil = o.dueDate.difference(now).inDays;
-            return daysUntil <= 7 && daysUntil >= 0;
-          })
-          .toList()
-        ..sort((a, b) => a.dueDate.compareTo(b.dueDate));
-
-      // Sort by order date descending for recent
-      orders.sort((a, b) => b.orderDate.compareTo(a.orderDate));
-      _recentOrders = orders.take(5).toList();
-    } catch (e) {
-      // Handle gracefully — tables might have no data yet
-      _activeOrdersCount = 0;
-      _monthlyRevenue = 0.0;
-      _recentOrders = [];
-      _upcomingDeadlines = [];
-    }
-
-    setState(() => _isLoading = false);
-  }
 
   Future<void> _exportToPDF() async {
+    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    final activeOrdersCount = orderProvider.orders.length;
+    final now = DateTime.now();
+    final monthlyRevenue = orderProvider.orders
+        .where((o) => o.orderDate.month == now.month && o.orderDate.year == now.year)
+        .fold(0.0, (sum, o) => sum + o.paidAmount);
+
     final lang = Provider.of<LanguageProvider>(context, listen: false);
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Generating PDF Report...')));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Generating PDF Report...'.t(context))));
     await ExportService.exportStatsToPDF(
-      title: 'Dashboard Overview',
+      title: 'Dashboard Overview'.t(context),
       fileNamePrefix: 'dashboard_stats',
       stats: {
-        'Active Orders': _activeOrdersCount.toString(),
-        'Monthly Revenue': lang.formatCurrency(_monthlyRevenue, showSymbol: true),
+        'Active Orders': activeOrdersCount.toString(),
+        'Monthly Revenue': lang.formatCurrency(monthlyRevenue, showSymbol: true),
       },
     );
   }
 
   Future<void> _exportToCSV() async {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Exporting CSV...')));
+    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    final activeOrdersCount = orderProvider.orders.length;
+    final now = DateTime.now();
+    final monthlyRevenue = orderProvider.orders
+        .where((o) => o.orderDate.month == now.month && o.orderDate.year == now.year)
+        .fold(0.0, (sum, o) => sum + o.paidAmount);
+
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Exporting CSV...'.t(context))));
     await ExportService.exportStatsToCSV(
-      title: 'Dashboard Overview',
+      title: 'Dashboard Overview'.t(context),
       fileNamePrefix: 'dashboard_stats',
       stats: {
-        'Active Orders': _activeOrdersCount.toString(),
-        'Monthly Revenue': _monthlyRevenue.toStringAsFixed(2),
+        'Active Orders': activeOrdersCount.toString(),
+        'Monthly Revenue': monthlyRevenue.toStringAsFixed(2),
       },
     );
   }
@@ -141,13 +78,69 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
   @override
   Widget build(BuildContext context) {
     final language = Provider.of<LanguageProvider>(context);
+    final orderProvider = Provider.of<OrderProvider>(context);
+    final customerProvider = Provider.of<CustomerProvider>(context);
+
+    // Calculate dynamic stats
+    final orders = orderProvider.orders;
+    final customers = customerProvider.customers;
+    
+    final activeClientsCount = customers.length;
+    // Count ALL orders per user request
+    final activeOrdersCount = orders.length; 
+    
+    final now = DateTime.now();
+    final monthlyRevenue = orders
+        .where((o) => o.orderDate.month == now.month && o.orderDate.year == now.year)
+        .fold(0.0, (sum, o) => sum + o.paidAmount);
+
+    String topGarment = 'None';
+    final garmentCounts = <String, int>{};
+    for (var o in orders) {
+      if (o.garmentName != null && o.garmentName!.isNotEmpty) {
+        garmentCounts[o.garmentName!] = (garmentCounts[o.garmentName!] ?? 0) + 1;
+      }
+    }
+    if (garmentCounts.isNotEmpty) {
+      var top = garmentCounts.entries.reduce((a, b) => a.value > b.value ? a : b);
+      topGarment = top.key;
+    }
+
+    List<double> ordersChartData = List.filled(7, 0);
+    List<double> revenueChartData = List.filled(7, 0);
+    for (int i = 0; i < 7; i++) {
+      final date = now.subtract(Duration(days: 6 - i));
+      final dayOrders = orders.where((o) => 
+          o.orderDate.year == date.year && 
+          o.orderDate.month == date.month && 
+          o.orderDate.day == date.day);
+          
+      ordersChartData[i] = dayOrders.length.toDouble();
+      revenueChartData[i] = dayOrders.fold(0.0, (sum, o) => sum + o.paidAmount);
+    }
+
+    final upcomingDeadlines = orders
+        .where((o) => o.status != 'completed' && o.status != 'cancelled')
+        .where((o) {
+          final daysUntil = o.dueDate.difference(now).inDays;
+          return daysUntil <= 7 && daysUntil >= 0;
+        })
+        .toList()
+      ..sort((a, b) => a.dueDate.compareTo(b.dueDate));
+
+    final recentOrders = List<Order>.from(orders)
+      ..sort((a, b) => b.orderDate.compareTo(a.orderDate));
+    final displayRecentOrders = recentOrders.take(5).toList();
     return IchitoScaffold(
       backgroundColor: theme.backgroundColor,
       body: SafeArea(
-        child: _isLoading 
+        child: (orderProvider.isLoading && orders.isEmpty) || (customerProvider.isLoading && customers.isEmpty)
           ? Center(child: CircularProgressIndicator(color: theme.accentColor))
           : RefreshIndicator(
-              onRefresh: _loadDashboardData,
+              onRefresh: () async {
+                await orderProvider.loadOrders();
+                await customerProvider.loadCustomers();
+              },
               color: theme.accentColor,
               child: CustomScrollView(
                 slivers: [
@@ -158,7 +151,14 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
                     ),
                   ),
                   SliverToBoxAdapter(
-                    child: _buildStatisticsCarousel(),
+                    child: _buildStatisticsCarousel(
+                      activeOrdersCount: activeOrdersCount,
+                      monthlyRevenue: monthlyRevenue,
+                      activeClientsCount: activeClientsCount,
+                      topGarment: topGarment,
+                      ordersChartData: ordersChartData,
+                      revenueChartData: revenueChartData,
+                    ),
                   ),
                   const SliverToBoxAdapter(
                     child: SizedBox(height: 16),
@@ -167,7 +167,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
                     child: _buildQuickActionGrid(),
                   ),
                   // Upcoming Deadlines Section
-                  if (_upcomingDeadlines.isNotEmpty) ...[
+                  if (upcomingDeadlines.isNotEmpty) ...[
                     SliverToBoxAdapter(
                       child: SectionHeader(
                         title: language.t('upcoming_deadlines') ?? 'Upcoming Deadlines',
@@ -176,7 +176,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
                       ),
                     ),
                     SliverToBoxAdapter(
-                      child: _buildUpcomingDeadlines(),
+                      child: _buildUpcomingDeadlines(upcomingDeadlines),
                     ),
                   ],
                   SliverToBoxAdapter(
@@ -189,12 +189,12 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
                   SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
-                        if (_recentOrders.isEmpty) {
+                        if (displayRecentOrders.isEmpty) {
                           return _buildEmptyState();
                         }
-                        return ActivityFeedItem(order: _recentOrders[index]);
+                        return ActivityFeedItem(order: displayRecentOrders[index]);
                       },
-                      childCount: _recentOrders.isEmpty ? 1 : _recentOrders.length,
+                      childCount: displayRecentOrders.isEmpty ? 1 : displayRecentOrders.length,
                     ),
                   ),
                   const SliverToBoxAdapter(
@@ -207,36 +207,43 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
     );
   }
 
-  Widget _buildStatisticsCarousel() {
+  Widget _buildStatisticsCarousel({
+    required int activeOrdersCount,
+    required double monthlyRevenue,
+    required int activeClientsCount,
+    required String topGarment,
+    required List<double> ordersChartData,
+    required List<double> revenueChartData,
+  }) {
     final language = Provider.of<LanguageProvider>(context);
     
     // Check if chart data is all zeros
-    final bool hasOrderData = _ordersChartData.any((v) => v > 0);
-    final bool hasRevenueData = _revenueChartData.any((v) => v > 0);
+    final bool hasOrderData = ordersChartData.any((v) => v > 0);
+    final bool hasRevenueData = revenueChartData.any((v) => v > 0);
     
     final statCards = [
       ChartStatCard(
         icon: Icons.shopping_bag_outlined,
         title: language.t('orders'), // 'Active Orders'
-        value: '$_activeOrdersCount',
+        value: '$activeOrdersCount',
         trendPercentage: 0.0,
         trendPositive: true,
         chartType: ChartType.bar,
-        data: hasOrderData ? _ordersChartData : const [0, 0, 0, 0, 0, 0, 0],
+        data: hasOrderData ? ordersChartData : const [0, 0, 0, 0, 0, 0, 0],
       ),
       ChartStatCard(
         icon: Icons.account_balance_wallet_outlined,
-        title: language.t('total_amount'), // 'Revenue This Month' -> Using 'Total' for now or add new string
-        value: language.formatCurrency(_monthlyRevenue, showSymbol: true),
+        title: language.t('total_amount'), // 'Revenue This Month'
+        value: language.formatCurrency(monthlyRevenue, showSymbol: true),
         trendPercentage: 0.0,
         trendPositive: true,
         chartType: ChartType.line,
-        data: hasRevenueData ? _revenueChartData : const [0, 0, 0, 0, 0, 0, 0],
+        data: hasRevenueData ? revenueChartData : const [0, 0, 0, 0, 0, 0, 0],
       ),
       ChartStatCard(
         icon: Icons.people_outlined,
         title: language.t('customers'), // 'Active Clients'
-        value: '$_activeClientsCount',
+        value: '$activeClientsCount',
         trendPercentage: 0.0,
         trendPositive: true,
         chartType: ChartType.bar,
@@ -245,7 +252,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
       ChartStatCard(
         icon: Icons.sell_outlined,
         title: language.t('garments'), // 'Top Garment'
-        value: _topGarment,
+        value: topGarment,
         trendPercentage: 0.0,
         trendPositive: true,
         chartType: ChartType.bar,
@@ -266,7 +273,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
             },
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(
@@ -274,7 +281,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
             (index) => Container(
               width: 8,
               height: 8,
-              margin: const EdgeInsets.symmetric(horizontal: 4),
+              margin: EdgeInsets.symmetric(horizontal: 4),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: index == _currentStatPage
@@ -293,7 +300,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
   Widget _buildQuickActionGrid() {
     final language = Provider.of<LanguageProvider>(context, listen: false);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: GridView.count(
         crossAxisCount: 4,
         shrinkWrap: true,
@@ -355,15 +362,15 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
     );
   }
 
-  Widget _buildUpcomingDeadlines() {
+  Widget _buildUpcomingDeadlines(List<Order> upcomingDeadlines) {
     return SizedBox(
       height: 90,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: _upcomingDeadlines.length,
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        itemCount: upcomingDeadlines.length,
         itemBuilder: (context, index) {
-          final order = _upcomingDeadlines[index];
+          final order = upcomingDeadlines[index];
           final daysLeft = order.dueDate.difference(DateTime.now()).inDays;
           final isOverdue = daysLeft < 0;
           final isToday = daysLeft == 0;
@@ -372,8 +379,8 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
             onTap: () => navigateTo('/orders/detail', arguments: order.id),
             child: Container(
               width: 160,
-              margin: const EdgeInsets.only(right: 12),
-              padding: const EdgeInsets.all(12),
+              margin: EdgeInsets.only(right: 12),
+              padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: theme.cardColor,
                 borderRadius: theme.cornerRadius,
@@ -413,7 +420,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
                       overflow: TextOverflow.ellipsis,
                     ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
                       color: isOverdue
                           ? const Color(0xFFF44336).withOpacity(0.15)
@@ -452,14 +459,14 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
   Widget _buildEmptyState() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(48),
+        padding: EdgeInsets.all(48),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.precision_manufacturing_outlined, size: 64, color: theme.textSecondary.withOpacity(0.3)),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
-              'Welcome to ICHITO!',
+              'Welcome to ICHITO!'.t(context),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -468,9 +475,9 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
-              'Start by adding your first customer and creating an order.',
+              'Start by adding your first customer and creating an order.'.t(context),
               style: TextStyle(fontSize: 14, color: theme.textSecondary, fontFamily: theme.fontFamily),
               textAlign: TextAlign.center,
             ),

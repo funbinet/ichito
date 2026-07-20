@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/theme_provider.dart';
@@ -28,12 +29,12 @@ class ImagePickerDialog extends StatelessWidget {
         side: BorderSide(color: theme.accentColor.withOpacity(0.3), width: 1),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(24.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Choose Photo',
+              'Choose Photo'.t(context),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -41,42 +42,42 @@ class ImagePickerDialog extends StatelessWidget {
                 fontFamily: theme.fontFamily,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
-              'Select a source for your profile photo',
+              'Select a source for your profile photo'.t(context),
               style: TextStyle(
                 fontSize: 13,
                 color: theme.textSecondary,
                 fontFamily: theme.fontFamily,
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             Row(
               children: [
                 Expanded(
                   child: _OptionCard(
                     icon: Icons.camera_alt_outlined,
-                    label: 'Camera',
+                    label: 'Camera'.t(context),
                     onTap: () => Navigator.pop(context, 'camera'),
                     theme: theme,
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(
                   child: _OptionCard(
                     icon: Icons.photo_library_outlined,
-                    label: 'Gallery',
+                    label: 'Gallery'.t(context),
                     onTap: () => Navigator.pop(context, 'gallery'),
                     theme: theme,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             TextButton(
               onPressed: () => Navigator.pop(context, null),
               child: Text(
-                'Cancel',
+                'Cancel'.t(context),
                 style: TextStyle(
                   color: theme.textSecondary,
                   fontFamily: theme.fontFamily,
@@ -108,7 +109,7 @@ class _OptionCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+        padding: EdgeInsets.symmetric(vertical: 24, horizontal: 16),
         decoration: BoxDecoration(
           color: theme.accentLight,
           borderRadius: theme.cornerRadius,
@@ -126,7 +127,7 @@ class _OptionCard extends StatelessWidget {
               ),
               child: Icon(icon, color: theme.accentColor, size: 28),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Text(
               label,
               style: TextStyle(

@@ -94,7 +94,7 @@ class _DesignFormDialogState extends State<DesignFormDialog> with ThemeAwareMixi
       shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
       child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(24.0),
           child: Form(
             key: _formKey,
             child: Column(
@@ -111,7 +111,7 @@ class _DesignFormDialogState extends State<DesignFormDialog> with ThemeAwareMixi
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 
                 // Image Picker
                 Center(
@@ -137,7 +137,7 @@ class _DesignFormDialogState extends State<DesignFormDialog> with ThemeAwareMixi
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 
                 // Fields
                 TextFormField(
@@ -146,14 +146,14 @@ class _DesignFormDialogState extends State<DesignFormDialog> with ThemeAwareMixi
                   style: TextStyle(color: theme.textPrimary),
                   validator: (val) => val == null || val.isEmpty ? 'Required' : null,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 
                 TextFormField(
                   controller: _categoryController,
                   decoration: _inputDecoration(lang.t('category')),
                   style: TextStyle(color: theme.textPrimary),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 
                 TextFormField(
                   controller: _descriptionController,
@@ -161,7 +161,7 @@ class _DesignFormDialogState extends State<DesignFormDialog> with ThemeAwareMixi
                   style: TextStyle(color: theme.textPrimary),
                   maxLines: 3,
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
                 
                 // Buttons
                 Row(
@@ -174,7 +174,7 @@ class _DesignFormDialogState extends State<DesignFormDialog> with ThemeAwareMixi
                         style: TextStyle(color: theme.textSecondary),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: _isSaving ? null : _save,
                       style: ElevatedButton.styleFrom(
@@ -183,7 +183,7 @@ class _DesignFormDialogState extends State<DesignFormDialog> with ThemeAwareMixi
                         shape: RoundedRectangleBorder(borderRadius: theme.buttonRadius),
                       ),
                       child: _isSaving 
-                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                          ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
                           : Text(lang.t('save')),
                     ),
                   ],

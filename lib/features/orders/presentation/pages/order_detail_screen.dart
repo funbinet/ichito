@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
@@ -22,6 +23,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
   List<Payment> _payments = [];
   bool _isLoading = true;
   late TabController _tabController;
+  late TextEditingController _notesController;
+  bool _isEditingNotes = false;
 
   final List<String> _statusProgression = ['pending', 'in_progress', 'trial', 'completed'];
 
@@ -29,12 +32,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _notesController = TextEditingController();
     _loadData();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _notesController.dispose();
     super.dispose();
   }
 
@@ -42,18 +47,30 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
     setState(() => _isLoading = true);
     final order = await _repository.getOrderById(widget.orderId);
     final payments = await _repository.getPaymentsForOrder(widget.orderId);
-    if (mounted) {
-      setState(() {
-        _order = order;
-        _payments = payments;
-        _isLoading = false;
-      });
-    }
+      if (mounted) {
+        setState(() {
+          _order = order;
+          _payments = payments;
+          _isLoading = false;
+          _notesController.text = _order?.specialInstructions ?? '';
+        });
+      }
   }
 
   Future<void> _updateStatus(String newStatus) async {
     await _repository.updateOrderStatus(widget.orderId, newStatus);
     await _loadData();
+  }
+
+  Future<void> _saveNotes() async {
+    if (_order != null) {
+      final updatedOrder = _order!.copyWith(specialInstructions: _notesController.text);
+      await _repository.updateOrder(updatedOrder);
+      setState(() {
+        _isEditingNotes = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Notes updated successfully'.t(context))));
+    }
   }
 
   void _showAddPaymentDialog() {
@@ -74,8 +91,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('Record Payment', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                  const SizedBox(height: 16),
+                  Text('Record Payment'.t(context), style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                  SizedBox(height: 16),
                   TextField(
                     controller: controller,
                     keyboardType: TextInputType.number,
@@ -86,7 +103,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     value: method,
                     decoration: InputDecoration(
@@ -100,7 +117,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
                       if (val != null) setModalState(() => method = val);
                     },
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   AdaptiveButton(
                     text: 'Save Payment',
                     onPressed: () async {
@@ -118,7 +135,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
                       }
                     },
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                 ],
               ),
             );
@@ -145,14 +162,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
   }
 
   Widget _buildTimeline() {
-    if (_order == null) return const SizedBox.shrink();
+    if (_order == null) return SizedBox.shrink();
     
     // Simple horizontal timeline
     int currentIndex = _statusProgression.indexOf(_order!.status);
     if (currentIndex == -1) currentIndex = 4; // cancelled or something else
     
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+      padding: EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       color: theme.cardColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -180,13 +197,13 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
                           shape: BoxShape.circle,
                         ),
                         child: isCompleted && !isCurrent
-                            ? const Icon(Icons.check, size: 14, color: Colors.white)
+                            ? Icon(Icons.check, size: 14, color: Colors.white)
                             : null,
                       ),
                       Expanded(child: Container(height: 2, color: index == _statusProgression.length - 1 ? Colors.transparent : (isCompleted && !isCurrent ? theme.accentColor : theme.borderColor))),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     status == 'in_progress' ? 'In Progress' : status[0].toUpperCase() + status.substring(1),
                     style: TextStyle(
@@ -210,31 +227,31 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
     final dateFormat = DateFormat('dd/MM/yyyy');
     
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       children: [
-        Text('Client & Garment', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
-        const SizedBox(height: 8),
+        Text('Client & Garment'.t(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+        SizedBox(height: 8),
         Card(
           color: theme.cardColor,
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: theme.borderColor)),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Icon(Icons.person_outline, size: 20, color: theme.textSecondary),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text(_order!.customerName ?? 'Unknown', style: TextStyle(fontSize: 16, color: theme.textPrimary, fontFamily: theme.fontFamily)),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Row(
                   children: [
                     Icon(Icons.checkroom_outlined, size: 20, color: theme.textSecondary),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text(_order!.garmentName ?? 'Unknown', style: TextStyle(fontSize: 16, color: theme.textPrimary, fontFamily: theme.fontFamily)),
                   ],
                 ),
@@ -242,16 +259,16 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Due Date:', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
+                    Text('Due Date:'.t(context), style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
                     Text(dateFormat.format(_order!.dueDate), style: TextStyle(fontWeight: FontWeight.bold, color: _order!.isOverdue ? Colors.red : theme.textPrimary, fontFamily: theme.fontFamily)),
                   ],
                 ),
                 if (_order!.trialDate != null) ...[
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Trial Date:', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
+                      Text('Trial Date:'.t(context), style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
                       Text(dateFormat.format(_order!.trialDate!), style: TextStyle(fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
                     ],
                   ),
@@ -261,15 +278,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
           ),
         ),
         
-        const SizedBox(height: 24),
-        Text('Measurements', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
-        const SizedBox(height: 8),
+        SizedBox(height: 24),
+        Text('Measurements'.t(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+        SizedBox(height: 8),
         Card(
           color: theme.cardColor,
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: theme.borderColor)),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.0),
             child: Wrap(
               spacing: 16,
               runSpacing: 12,
@@ -287,21 +304,44 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
           ),
         ),
         
-        if (_order!.specialInstructions != null && _order!.specialInstructions!.isNotEmpty) ...[
-          const SizedBox(height: 24),
-          Text('Special Instructions', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
-          const SizedBox(height: 8),
-          Card(
-            color: theme.cardColor,
-            elevation: 0,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: theme.borderColor)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(_order!.specialInstructions!, style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
+        SizedBox(height: 24),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Special Instructions / Notes'.t(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+            IconButton(
+              icon: Icon(_isEditingNotes ? Icons.check : Icons.edit, color: theme.accentColor),
+              onPressed: () {
+                if (_isEditingNotes) {
+                  _saveNotes();
+                } else {
+                  setState(() => _isEditingNotes = true);
+                }
+              },
             ),
+          ],
+        ),
+        Card(
+          color: theme.cardColor,
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: theme.borderColor)),
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: _isEditingNotes
+                ? TextField(
+                    controller: _notesController,
+                    maxLines: null,
+                    style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily),
+                    decoration: InputDecoration(
+                      hintText: 'Enter notes here...'.t(context),
+                      hintStyle: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily),
+                      border: InputBorder.none,
+                    ),
+                  )
+                : Text(_order!.specialInstructions?.isNotEmpty == true ? _order!.specialInstructions! : 'No notes added.', style: TextStyle(color: theme.textSecondary, fontStyle: _order!.specialInstructions?.isNotEmpty == true ? FontStyle.normal : FontStyle.italic, fontFamily: theme.fontFamily)),
           ),
-        ],
-        const SizedBox(height: 32),
+        ),
+        SizedBox(height: 32),
       ],
     );
   }
@@ -309,40 +349,40 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
   Widget _buildFinancialsTab() {
     final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       children: [
-        Text('Financial Summary', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
-        const SizedBox(height: 8),
+        Text('Financial Summary'.t(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+        SizedBox(height: 8),
         Card(
           color: theme.cardColor,
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: theme.borderColor)),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.0),
             child: Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Total Amount', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
-                    Text('KES ${_order!.totalAmount.toStringAsFixed(0)}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                    Text('Total Amount'.t(context), style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
+                    Text('KES ${_order!.totalAmount.toStringAsFixed(0)}'.t(context), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.textPrimary, fontFamily: theme.fontFamily)),
                   ],
                 ),
                 const Divider(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Total Paid', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
-                    Text('KES ${_order!.paidAmount.toStringAsFixed(0)}', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                    Text('Total Paid'.t(context), style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
+                    Text('KES ${_order!.paidAmount.toStringAsFixed(0)}'.t(context), style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
                   ],
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Balance Due', style: TextStyle(fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                    Text('Balance Due'.t(context), style: TextStyle(fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
                     Text(
-                      'KES ${_order!.balance.toStringAsFixed(0)}',
+                      'KES ${_order!.balance.toStringAsFixed(0)}'.t(context),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -357,46 +397,46 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
           ),
         ),
         
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Payment History', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+            Text('Payment History'.t(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
             if (!_order!.isFullyPaid)
               TextButton.icon(
                 onPressed: _showAddPaymentDialog,
-                icon: const Icon(Icons.add, size: 16),
-                label: const Text('Record'),
+                icon: Icon(Icons.add, size: 16),
+                label: Text('Record'.t(context)),
                 style: TextButton.styleFrom(foregroundColor: theme.accentColor),
               ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         if (_payments.isEmpty)
           Center(
             child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Text('No payments recorded yet.', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
+              padding: EdgeInsets.all(32.0),
+              child: Text('No payments recorded yet.'.t(context), style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
             ),
           )
         else
           ..._payments.map((p) => Card(
             color: theme.cardColor,
             elevation: 0,
-            margin: const EdgeInsets.only(bottom: 8),
+            margin: EdgeInsets.only(bottom: 8),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: theme.borderColor)),
             child: ListTile(
               leading: Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(color: theme.accentColor.withOpacity(0.1), shape: BoxShape.circle),
                 child: Icon(p.method == 'cash' ? Icons.money : Icons.account_balance_wallet, color: theme.accentColor, size: 20),
               ),
-              title: Text('KES ${p.amount.toStringAsFixed(0)}', style: TextStyle(fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+              title: Text('KES ${p.amount.toStringAsFixed(0)}'.t(context), style: TextStyle(fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
               subtitle: Text(dateFormat.format(p.date), style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
               trailing: Text(p.method.toUpperCase(), style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: theme.textSecondary, fontFamily: theme.fontFamily)),
             ),
           )).toList(),
-        const SizedBox(height: 32),
+        SizedBox(height: 32),
       ],
     );
   }
@@ -410,7 +450,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
       return Scaffold(
         backgroundColor: theme.backgroundColor,
         appBar: AppBar(backgroundColor: theme.backgroundColor, elevation: 0),
-        body: Center(child: Text('Order not found', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily))),
+        body: Center(child: Text('Order not found'.t(context), style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily))),
       );
     }
 

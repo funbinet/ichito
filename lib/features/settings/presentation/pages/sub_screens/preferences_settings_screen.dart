@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../../shared/mixins/theme_aware_mixin.dart';
@@ -25,7 +26,7 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
     return Scaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Preferences', style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Preferences'.t(context), style: headingStyle.copyWith(fontSize: 18)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
@@ -33,19 +34,19 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
       body: Consumer<PreferencesProvider>(
         builder: (context, prefs, _) {
           return ListView(
-            padding: const EdgeInsets.all(16).copyWith(bottom: 120),
+            padding: EdgeInsets.all(16).copyWith(bottom: 120),
             children: [
               // Display Preferences
               SettingsTile(
-                title: 'Display Preferences',
+                title: 'Display Preferences'.t(context),
                 children: [
                   SettingsDropdown<String>(
-                    label: 'Default View',
+                    label: 'Default View'.t(context),
                     value: prefs.defaultView,
                     description: 'Grid or List view for entity lists',
                     items: [
-                      const DropdownMenuItem(value: 'grid', child: Text('Grid')),
-                      const DropdownMenuItem(value: 'list', child: Text('List')),
+                      const DropdownMenuItem(value: 'grid', child: Text('Grid'.t(context))),
+                      const DropdownMenuItem(value: 'list', child: Text('List'.t(context))),
                     ],
                     onChanged: (value) {
                       if (value != null) {
@@ -54,14 +55,14 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
                     },
                   ),
                   SettingsDropdown<int>(
-                    label: 'Grid Density',
+                    label: 'Grid Density'.t(context),
                     value: prefs.gridDensity,
                     description: 'Items per row in grid view',
                     items: [
-                      const DropdownMenuItem(value: 4, child: Text('4 items')),
-                      const DropdownMenuItem(value: 8, child: Text('8 items')),
-                      const DropdownMenuItem(value: 16, child: Text('16 items')),
-                      const DropdownMenuItem(value: 32, child: Text('32 items')),
+                      const DropdownMenuItem(value: 4, child: Text('4 items'.t(context))),
+                      const DropdownMenuItem(value: 8, child: Text('8 items'.t(context))),
+                      const DropdownMenuItem(value: 16, child: Text('16 items'.t(context))),
+                      const DropdownMenuItem(value: 32, child: Text('32 items'.t(context))),
                     ],
                     onChanged: (value) {
                       if (value != null) {
@@ -71,14 +72,14 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               // Note Settings
               SettingsTile(
-                title: 'Note Settings',
+                title: 'Note Settings'.t(context),
                 children: [
                   SettingsToggle(
-                    label: 'Auto-Save Notes',
+                    label: 'Auto-Save Notes'.t(context),
                     description: 'Automatically save notes after inactivity',
                     value: prefs.autoSaveNotes,
                     onChanged: (value) {
@@ -87,14 +88,14 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
                   ),
                   if (prefs.autoSaveNotes)
                     SettingsDropdown<int>(
-                      label: 'Auto-Save Interval',
+                      label: 'Auto-Save Interval'.t(context),
                       value: prefs.autoSaveIntervalSeconds,
                       description: 'Wait time before auto-saving',
                       items: [
-                        const DropdownMenuItem(value: 1, child: Text('1 second')),
-                        const DropdownMenuItem(value: 3, child: Text('3 seconds')),
-                        const DropdownMenuItem(value: 5, child: Text('5 seconds')),
-                        const DropdownMenuItem(value: 10, child: Text('10 seconds')),
+                        const DropdownMenuItem(value: 1, child: Text('1 second'.t(context))),
+                        const DropdownMenuItem(value: 3, child: Text('3 seconds'.t(context))),
+                        const DropdownMenuItem(value: 5, child: Text('5 seconds'.t(context))),
+                        const DropdownMenuItem(value: 10, child: Text('10 seconds'.t(context))),
                       ],
                       onChanged: (value) {
                         if (value != null) {
@@ -104,14 +105,14 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
                     ),
                 ],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               // Interaction Preferences
               SettingsTile(
-                title: 'Interaction Preferences',
+                title: 'Interaction Preferences'.t(context),
                 children: [
                   SettingsToggle(
-                    label: 'Haptic Feedback',
+                    label: 'Haptic Feedback'.t(context),
                     description: 'Vibration on button taps',
                     value: prefs.hapticFeedbackEnabled,
                     onChanged: (value) {
@@ -119,7 +120,7 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
                     },
                   ),
                   SettingsToggle(
-                    label: 'Confirm Deletions',
+                    label: 'Confirm Deletions'.t(context),
                     description: 'Show confirmation before deleting items',
                     value: prefs.confirmDeletions,
                     onChanged: (value) {
@@ -127,7 +128,7 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
                     },
                   ),
                   SettingsToggle(
-                    label: 'Show Full Order Numbers',
+                    label: 'Show Full Order Numbers'.t(context),
                     description: 'Display complete order ID on cards',
                     value: prefs.showOrderNumberOnCards,
                     onChanged: (value) {
@@ -136,20 +137,20 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               // Sort Preferences
               SettingsTile(
-                title: 'Default Sort Order',
+                title: 'Default Sort Order'.t(context),
                 children: [
                   SettingsDropdown<String>(
-                    label: 'Sort Customers By',
+                    label: 'Sort Customers By'.t(context),
                     value: prefs.defaultCustomerSort,
                     items: [
-                      const DropdownMenuItem(value: 'name', child: Text('Name')),
-                      const DropdownMenuItem(value: 'orders', child: Text('Number of Orders')),
-                      const DropdownMenuItem(value: 'spent', child: Text('Total Spent')),
-                      const DropdownMenuItem(value: 'recent', child: Text('Recently Added')),
+                      const DropdownMenuItem(value: 'name', child: Text('Name'.t(context))),
+                      const DropdownMenuItem(value: 'orders', child: Text('Number of Orders'.t(context))),
+                      const DropdownMenuItem(value: 'spent', child: Text('Total Spent'.t(context))),
+                      const DropdownMenuItem(value: 'recent', child: Text('Recently Added'.t(context))),
                     ],
                     onChanged: (value) {
                       if (value != null) {
@@ -158,13 +159,13 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
                     },
                   ),
                   SettingsDropdown<String>(
-                    label: 'Sort Orders By',
+                    label: 'Sort Orders By'.t(context),
                     value: prefs.defaultOrderSort,
                     items: [
-                      const DropdownMenuItem(value: 'date', child: Text('Date Created')),
-                      const DropdownMenuItem(value: 'due', child: Text('Due Date')),
-                      const DropdownMenuItem(value: 'amount', child: Text('Amount')),
-                      const DropdownMenuItem(value: 'status', child: Text('Status')),
+                      const DropdownMenuItem(value: 'date', child: Text('Date Created'.t(context))),
+                      const DropdownMenuItem(value: 'due', child: Text('Due Date'.t(context))),
+                      const DropdownMenuItem(value: 'amount', child: Text('Amount'.t(context))),
+                      const DropdownMenuItem(value: 'status', child: Text('Status'.t(context))),
                     ],
                     onChanged: (value) {
                       if (value != null) {
@@ -173,12 +174,12 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
                     },
                   ),
                   SettingsDropdown<String>(
-                    label: 'Sort Notes By',
+                    label: 'Sort Notes By'.t(context),
                     value: prefs.defaultNoteSort,
                     items: [
-                      const DropdownMenuItem(value: 'newest', child: Text('Newest First')),
-                      const DropdownMenuItem(value: 'oldest', child: Text('Oldest First')),
-                      const DropdownMenuItem(value: 'title', child: Text('Title')),
+                      const DropdownMenuItem(value: 'newest', child: Text('Newest First'.t(context))),
+                      const DropdownMenuItem(value: 'oldest', child: Text('Oldest First'.t(context))),
+                      const DropdownMenuItem(value: 'title', child: Text('Title'.t(context))),
                     ],
                     onChanged: (value) {
                       if (value != null) {
@@ -188,18 +189,18 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Info
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: theme.accentColor.withOpacity(0.1),
                   borderRadius: theme.cornerRadius,
                   border: Border.all(color: theme.accentColor.withOpacity(0.3)),
                 ),
                 child: Text(
-                  'Preferences are applied immediately to your view. Sort preferences affect how lists are displayed.',
+                  'Preferences are applied immediately to your view. Sort preferences affect how lists are displayed.'.t(context),
                   style: TextStyle(fontSize: 12, color: theme.textSecondary),
                 ),
               ),

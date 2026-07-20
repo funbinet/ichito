@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:provider/provider.dart';
@@ -22,7 +23,7 @@ class DesignCard extends StatelessWidget  {
       child: Container(
         decoration: BoxDecoration(
           color: theme.cardColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: theme.cornerRadius,
           border: Border.all(
             color: theme.borderColor,
             width: 1,
@@ -43,7 +44,7 @@ class DesignCard extends StatelessWidget  {
               child: _buildImage(context, theme),
             ),
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: EdgeInsets.all(12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -59,7 +60,7 @@ class DesignCard extends StatelessWidget  {
                     ),
                   ),
                   if (design.category != null && design.category!.isNotEmpty) ...[
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       design.category!,
                       maxLines: 1,
@@ -140,7 +141,7 @@ class _DesignListTileState extends State<DesignListTile> {
     final theme = Provider.of<ThemeProvider>(context);
     
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       color: theme.cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: theme.cornerRadius,
@@ -156,7 +157,7 @@ class _DesignListTileState extends State<DesignListTile> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(12),
               child: Row(
                 children: [
                   GestureDetector(
@@ -168,7 +169,7 @@ class _DesignListTileState extends State<DesignListTile> {
                       height: 60,
                       decoration: BoxDecoration(
                         color: theme.accentLight.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: theme.cornerRadius,
                         border: Border.all(color: theme.borderColor, width: 1),
                       ),
                       clipBehavior: Clip.antiAlias,
@@ -182,7 +183,7 @@ class _DesignListTileState extends State<DesignListTile> {
                             ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,7 +198,7 @@ class _DesignListTileState extends State<DesignListTile> {
                           )
                         ),
                         if (widget.design.category != null && widget.design.category!.isNotEmpty) ...[
-                          const SizedBox(height: 4),
+                          SizedBox(height: 4),
                           Text(
                             widget.design.category!,
                             style: TextStyle(
@@ -224,7 +225,7 @@ class _DesignListTileState extends State<DesignListTile> {
             ),
             if (_isExpanded)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: theme.backgroundColor.withOpacity(0.5),
                   border: Border(top: BorderSide(color: theme.borderColor)),
@@ -239,19 +240,19 @@ class _DesignListTileState extends State<DesignListTile> {
                           if (widget.design.description != null && widget.design.description!.isNotEmpty)
                             Text(widget.design.description!, style: TextStyle(fontSize: 13, color: theme.textSecondary), maxLines: 2, overflow: TextOverflow.ellipsis)
                           else
-                            Text('No description', style: TextStyle(fontSize: 13, color: theme.textSecondary, fontStyle: FontStyle.italic)),
+                            Text('No description'.t(context), style: TextStyle(fontSize: 13, color: theme.textSecondary, fontStyle: FontStyle.italic)),
                         ],
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: 16),
                     OutlinedButton.icon(
                       onPressed: widget.onTap,
                       icon: Icon(Icons.edit_outlined, size: 16, color: theme.accentColor),
-                      label: Text('Edit/View', style: TextStyle(color: theme.accentColor)),
+                      label: Text('Edit/View'.t(context), style: TextStyle(color: theme.accentColor)),
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(color: theme.accentColor),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        shape: RoundedRectangleBorder(borderRadius: theme.buttonRadius),
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       ),
                     ),
                   ],

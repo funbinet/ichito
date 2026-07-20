@@ -25,7 +25,7 @@ class FabricCard extends StatelessWidget  {
       child: Container(
         decoration: BoxDecoration(
           color: theme.cardColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: theme.cornerRadius,
           border: Border.all(
             color: theme.borderColor,
             width: 1,
@@ -46,7 +46,7 @@ class FabricCard extends StatelessWidget  {
               child: _buildImage(context, theme),
             ),
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: EdgeInsets.all(12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -61,7 +61,7 @@ class FabricCard extends StatelessWidget  {
                       color: theme.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Row(
                     children: [
                       Text(
@@ -74,7 +74,7 @@ class FabricCard extends StatelessWidget  {
                         ),
                       ),
                       Text(
-                        ' / ${fabric.unit}',
+                        ' / ${fabric.unit}'.t(context),
                         style: TextStyle(
                           fontFamily: theme.fontFamily,
                           color: theme.textSecondary,
@@ -153,7 +153,7 @@ class _FabricListTileState extends State<FabricListTile> {
     final lang = Provider.of<LanguageProvider>(context);
     
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       color: theme.cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: theme.cornerRadius,
@@ -169,7 +169,7 @@ class _FabricListTileState extends State<FabricListTile> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(12),
               child: Row(
                 children: [
                   GestureDetector(
@@ -181,7 +181,7 @@ class _FabricListTileState extends State<FabricListTile> {
                       height: 60,
                       decoration: BoxDecoration(
                         color: theme.accentLight.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: theme.cornerRadius,
                         border: Border.all(color: theme.borderColor, width: 1),
                       ),
                       clipBehavior: Clip.antiAlias,
@@ -195,7 +195,7 @@ class _FabricListTileState extends State<FabricListTile> {
                             ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,7 +209,7 @@ class _FabricListTileState extends State<FabricListTile> {
                             fontFamily: theme.fontFamily
                           )
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Row(
                           children: [
                             Text(
@@ -221,7 +221,7 @@ class _FabricListTileState extends State<FabricListTile> {
                               ),
                             ),
                             Text(
-                              ' / ${widget.fabric.unit}',
+                              ' / ${widget.fabric.unit}'.t(context),
                               style: TextStyle(
                                 fontFamily: theme.fontFamily,
                                 color: theme.textSecondary,
@@ -247,7 +247,7 @@ class _FabricListTileState extends State<FabricListTile> {
             ),
             if (_isExpanded)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: theme.backgroundColor.withOpacity(0.5),
                   border: Border(top: BorderSide(color: theme.borderColor)),
@@ -258,21 +258,21 @@ class _FabricListTileState extends State<FabricListTile> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Unit: ${widget.fabric.unit}', style: TextStyle(fontSize: 13, color: theme.textSecondary)),
+                        Text('Unit: ${widget.fabric.unit}'.t(context), style: TextStyle(fontSize: 13, color: theme.textSecondary)),
                         if (widget.fabric.color != null) ...[
-                          const SizedBox(height: 4),
-                          Text('Color: ${widget.fabric.color}', style: TextStyle(fontSize: 13, color: theme.textSecondary)),
+                          SizedBox(height: 4),
+                          Text('Color: ${widget.fabric.color}'.t(context), style: TextStyle(fontSize: 13, color: theme.textSecondary)),
                         ],
                       ],
                     ),
                     OutlinedButton.icon(
                       onPressed: widget.onTap,
                       icon: Icon(Icons.edit_outlined, size: 16, color: theme.accentColor),
-                      label: Text('Edit/View', style: TextStyle(color: theme.accentColor)),
+                      label: Text('Edit/View'.t(context), style: TextStyle(color: theme.accentColor)),
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(color: theme.accentColor),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        shape: RoundedRectangleBorder(borderRadius: theme.buttonRadius),
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       ),
                     ),
                   ],

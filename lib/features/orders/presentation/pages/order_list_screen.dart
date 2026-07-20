@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
 import '../../../../shared/mixins/navigation_mixin.dart';
@@ -105,18 +106,18 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
         iconTheme: IconThemeData(color: theme.textPrimary),
       ),
       pageActionButton: PageActionButton(
-        label: 'New Order',
+        label: 'New Order'.t(context),
         icon: Icons.add_shopping_cart_outlined,
         onPressed: () => navigateTo('/order_wizard'),
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: TextField(
               onChanged: _onSearchChanged,
               decoration: InputDecoration(
-                hintText: 'Search by Order # or Client...',
+                hintText: 'Search by Order # or Client...'.t(context),
                 hintStyle: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily),
                 prefixIcon: Icon(Icons.search, color: theme.textSecondary),
                 filled: true,
@@ -130,12 +131,12 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
           ),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Row(
               children: _statusFilters.map((filter) {
                 final isSelected = _selectedStatus == filter;
                 return Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
+                  padding: EdgeInsets.only(right: 8.0),
                   child: FilterChip(
                     label: Text(_formatStatusLabel(filter), style: TextStyle(color: isSelected ? Colors.white : theme.textPrimary, fontFamily: theme.fontFamily)),
                     selected: isSelected,
@@ -171,8 +172,8 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.receipt_long_outlined, size: 80, color: theme.textSecondary.withOpacity(0.5)),
-          const SizedBox(height: 16),
-          Text('No orders found', style: subtitleStyle),
+          SizedBox(height: 16),
+          Text('No orders found'.t(context), style: subtitleStyle),
         ],
       ),
     );
@@ -180,11 +181,11 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
 
   Widget _buildViewControls() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          Text('View:', style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
-          const SizedBox(width: 8),
+          Text('View:'.t(context), style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+          SizedBox(width: 8),
           IconButton(
             icon: Icon(
               Icons.grid_view_outlined,
@@ -192,8 +193,8 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
             ),
             onPressed: () => setState(() => _viewMode = ViewMode.grid),
             iconSize: 20,
-            constraints: const BoxConstraints(),
-            padding: const EdgeInsets.all(4),
+            constraints: BoxConstraints(),
+            padding: EdgeInsets.all(4),
           ),
           IconButton(
             icon: Icon(
@@ -202,21 +203,21 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
             ),
             onPressed: () => setState(() => _viewMode = ViewMode.list),
             iconSize: 20,
-            constraints: const BoxConstraints(),
-            padding: const EdgeInsets.all(4),
+            constraints: BoxConstraints(),
+            padding: EdgeInsets.all(4),
           ),
           const Spacer(),
-          Text('Sort: ', style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+          Text('Sort: '.t(context), style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
           DropdownButton<OrderSortOption>(
             value: _sortOption,
-            underline: const SizedBox(),
+            underline: SizedBox(),
             icon: Icon(Icons.keyboard_arrow_down, size: 16, color: theme.textSecondary),
             style: TextStyle(fontSize: 12, color: theme.textPrimary, fontFamily: theme.fontFamily),
             dropdownColor: theme.cardColor,
             items: const [
-              DropdownMenuItem(value: OrderSortOption.newest, child: Text('Newest')),
-              DropdownMenuItem(value: OrderSortOption.oldest, child: Text('Oldest')),
-              DropdownMenuItem(value: OrderSortOption.dueSoon, child: Text('Due Soon')),
+              DropdownMenuItem(value: OrderSortOption.newest, child: Text('Newest'.t(context))),
+              DropdownMenuItem(value: OrderSortOption.oldest, child: Text('Oldest'.t(context))),
+              DropdownMenuItem(value: OrderSortOption.dueSoon, child: Text('Due Soon'.t(context))),
             ],
             onChanged: (option) {
               if (option != null) {
@@ -235,7 +236,7 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
   Widget _buildList() {
     if (_viewMode == ViewMode.list) {
       return ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+        padding: EdgeInsets.fromLTRB(16, 16, 16, 100),
         itemCount: _filteredOrders.length,
         itemBuilder: (context, index) {
           final order = _filteredOrders[index];
@@ -244,7 +245,7 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
       );
     } else {
       return GridView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           childAspectRatio: 0.85,
@@ -265,7 +266,7 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
     
     return Card(
       color: theme.cardColor,
-      margin: _viewMode == ViewMode.list ? const EdgeInsets.only(bottom: 12) : EdgeInsets.zero,
+      margin: _viewMode == ViewMode.list ? EdgeInsets.only(bottom: 12) : EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: isOverdue ? const BorderSide(color: Colors.red, width: 1) : BorderSide(color: theme.accentColor.withOpacity(0.3), width: 1),
@@ -283,7 +284,7 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
           if (result == true) _loadOrders();
         },
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -294,7 +295,7 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
                   Text(order.orderNumber, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.textPrimary, fontFamily: theme.fontFamily)),
                   if (_viewMode == ViewMode.list)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: _getStatusColor(order.status).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
@@ -306,11 +307,11 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
                     ),
                 ],
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               if (_viewMode == ViewMode.grid)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  margin: EdgeInsets.only(bottom: 8),
                   decoration: BoxDecoration(
                     color: _getStatusColor(order.status).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -323,17 +324,17 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
               Row(
                 children: [
                   Icon(Icons.person_outline, size: 16, color: theme.textSecondary),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Expanded(
                     child: Text(order.customerName ?? 'Unknown', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily), maxLines: 1, overflow: TextOverflow.ellipsis),
                   ),
                 ],
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: 4),
               Row(
                 children: [
                   Icon(Icons.checkroom_outlined, size: 16, color: theme.textSecondary),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Expanded(
                     child: Text(order.garmentName ?? 'Unknown', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily), maxLines: 1, overflow: TextOverflow.ellipsis),
                   ),
@@ -347,14 +348,14 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Due Date', style: TextStyle(color: theme.textSecondary, fontSize: 10, fontFamily: theme.fontFamily)),
+                      Text('Due Date'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 10, fontFamily: theme.fontFamily)),
                       Text(lang.formatDate(order.dueDate), style: TextStyle(color: isOverdue ? Colors.red : theme.textPrimary, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily, fontSize: 12)),
                     ],
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text('Balance', style: TextStyle(color: theme.textSecondary, fontSize: 10, fontFamily: theme.fontFamily)),
+                      Text('Balance'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 10, fontFamily: theme.fontFamily)),
                       Text(
                         lang.formatCurrency(order.balance),
                         style: TextStyle(

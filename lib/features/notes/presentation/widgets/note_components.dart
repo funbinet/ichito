@@ -22,7 +22,7 @@ class VerseChip extends StatelessWidget {
     final chipColor = const Color(0xFF9C27B0); // Purple for church
     
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: chipColor.withOpacity(0.12),
         borderRadius: BorderRadius.circular(12),
@@ -32,7 +32,7 @@ class VerseChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.book_outlined, size: 12, color: chipColor),
-          const SizedBox(width: 4),
+          SizedBox(width: 4),
           Text(
             verse,
             style: TextStyle(
@@ -42,7 +42,7 @@ class VerseChip extends StatelessWidget {
             ),
           ),
           if (removable) ...[
-            const SizedBox(width: 4),
+            SizedBox(width: 4),
             GestureDetector(
               onTap: onRemove,
               child: Icon(Icons.close, size: 14, color: chipColor),
@@ -79,8 +79,8 @@ class NoteCard extends StatelessWidget {
       onTap: onTap,
       onLongPress: onLongPress ?? () => _showQuickActions(context),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        padding: const EdgeInsets.all(16),
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: theme.cardColor,
           borderRadius: theme.cornerRadius,
@@ -94,7 +94,7 @@ class NoteCard extends StatelessWidget {
             Row(
               children: [
                 Icon(_getNoteIcon(), size: 20, color: _getNoteColor(theme)),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     note.title,
@@ -110,7 +110,7 @@ class NoteCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             // Content preview
             Text(
               (note.content == null || note.content!.isEmpty) ? '(No content)' : note.content!,
@@ -120,14 +120,14 @@ class NoteCard extends StatelessWidget {
             ),
             // Type-specific info
             if (note.type == 'church') ...[
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               if (note.speaker != null && note.speaker!.isNotEmpty)
                 Text(
-                  'Speaker: ${note.speaker}',
+                  'Speaker: ${note.speaker}'.t(context),
                   style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily),
                 ),
               if (note.bibleVerses != null && note.bibleVerses!.isNotEmpty) ...[
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Wrap(
                   spacing: 4,
                   runSpacing: 4,
@@ -138,34 +138,34 @@ class NoteCard extends StatelessWidget {
               ],
             ],
             if (note.type == 'chama') ...[
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Row(
                 children: [
                   Text(
-                    'Members: ${note.members?.length ?? 0}',
+                    'Members: ${note.members?.length ?? 0}'.t(context),
                     style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   Text(
-                    'Collected: ${language.formatCurrency(note.totalCollected ?? 0)}',
+                    'Collected: ${language.formatCurrency(note.totalCollected ?? 0)}'.t(context),
                     style: TextStyle(fontSize: 12, color: theme.accentColor, fontFamily: theme.fontFamily),
                   ),
                 ],
               ),
               if (note.recipient != null && note.recipient!.isNotEmpty) ...[
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
-                  'Recipient: ${note.recipient}',
+                  'Recipient: ${note.recipient}'.t(context),
                   style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily),
                 ),
               ],
             ],
             // Timestamp and type badge
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: _getNoteColor(theme).withOpacity(0.15),
                     borderRadius: BorderRadius.circular(8),

@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../shared/providers/theme_provider.dart';
@@ -25,8 +26,8 @@ class StatCard extends StatelessWidget {
     
     return Container(
       width: 160,
-      margin: const EdgeInsets.symmetric(horizontal: 6),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.symmetric(horizontal: 6),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: theme.cornerRadius,
@@ -40,7 +41,7 @@ class StatCard extends StatelessWidget {
           const Spacer(),
           Text(title,
             style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(value,
             style: TextStyle(
               fontSize: 22,
@@ -52,7 +53,7 @@ class StatCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
           if (trendPercentage != null) ...[
-            const SizedBox(height: 6),
+            SizedBox(height: 6),
             Row(
               children: [
                 Icon(
@@ -64,7 +65,7 @@ class StatCard extends StatelessWidget {
                     ? const Color(0xFF4CAF50)
                     : const Color(0xFFF44336),
                 ),
-                const SizedBox(width: 4),
+                SizedBox(width: 4),
                 Flexible(
                   child: Text(
                     '${trendPositive ? "+" : ""}${trendPercentage!.toStringAsFixed(0)}% this month',
@@ -116,8 +117,8 @@ class ChartStatCard extends StatelessWidget {
     final theme = Provider.of<ThemeProvider>(context);
     
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      padding: const EdgeInsets.all(20),
+      margin: EdgeInsets.symmetric(horizontal: 8),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: theme.cornerRadius,
@@ -131,7 +132,7 @@ class ChartStatCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: theme.accentColor.withOpacity(0.15),
                   shape: BoxShape.circle,
@@ -140,7 +141,7 @@ class ChartStatCard extends StatelessWidget {
               ),
               if (trendPercentage != null)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
                     color: trendPositive
                         ? const Color(0xFF4CAF50).withOpacity(0.15)
@@ -155,7 +156,7 @@ class ChartStatCard extends StatelessWidget {
                         size: 16,
                         color: trendPositive ? const Color(0xFF4CAF50) : const Color(0xFFF44336),
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4),
                       Text(
                         '${trendPositive ? "+" : ""}${trendPercentage!.toStringAsFixed(1)}%',
                         style: TextStyle(
@@ -170,10 +171,10 @@ class ChartStatCard extends StatelessWidget {
                 ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(title,
             style: TextStyle(fontSize: 14, color: theme.textSecondary, fontFamily: theme.fontFamily)),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(value,
             style: TextStyle(
               fontSize: 28,
@@ -184,7 +185,7 @@ class ChartStatCard extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Expanded(
             child: _buildChart(theme),
           ),
@@ -194,7 +195,7 @@ class ChartStatCard extends StatelessWidget {
   }
 
   Widget _buildChart(ThemeProvider theme) {
-    if (data.isEmpty) return const SizedBox();
+    if (data.isEmpty) return SizedBox();
 
     if (chartType == ChartType.line) {
       List<FlSpot> spots = [];

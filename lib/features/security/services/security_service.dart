@@ -60,6 +60,17 @@ class SecurityService {
     return storedHash == _hashData(recoveryDate);
   }
 
+  // Verify full recovery
+  Future<bool> verifyRecoveryCode(String code, String dob) async {
+    return await verifySecurityKey(code) && await verifyRecoveryDate(dob);
+  }
+
+  // Setup Recovery Info Only
+  Future<void> setupRecoveryInfo(String code, String dob) async {
+    await _secureStorage.write(key: _securityKeyKey, value: _hashData(code));
+    await _secureStorage.write(key: _recoveryDateKey, value: _hashData(dob));
+  }
+
   // Biometrics
   Future<bool> canUseBiometrics() async {
     final canCheck = await _localAuth.canCheckBiometrics;

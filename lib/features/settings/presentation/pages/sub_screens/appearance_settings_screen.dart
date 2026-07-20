@@ -25,7 +25,7 @@ class _AppearanceSettingsScreenState extends State<AppearanceSettingsScreen> wit
       builder: (context) {
         return AlertDialog(
           backgroundColor: theme.cardColor,
-          title: Text('Pick Accent Color', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
+          title: Text('Pick Accent Color'.t(context), style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
           content: SingleChildScrollView(
             child: ColorPicker(
               pickerColor: pickerColor,
@@ -38,7 +38,7 @@ class _AppearanceSettingsScreenState extends State<AppearanceSettingsScreen> wit
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Cancel', style: TextStyle(color: theme.textSecondary)),
+              child: Text('Cancel'.t(context), style: TextStyle(color: theme.textSecondary)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -47,7 +47,7 @@ class _AppearanceSettingsScreenState extends State<AppearanceSettingsScreen> wit
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(backgroundColor: theme.accentColor),
-              child: Text('Select', style: TextStyle(color: theme.onAccent)),
+              child: Text('Select'.t(context), style: TextStyle(color: theme.onAccent)),
             ),
           ],
         );
@@ -61,28 +61,32 @@ class _AppearanceSettingsScreenState extends State<AppearanceSettingsScreen> wit
       showRadialMenu: false,
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Appearance', style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Appearance'.t(context), style: headingStyle.copyWith(fontSize: 18)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         children: [
           _buildSectionHeader('Theme Mode'),
           _buildThemeSelector(),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           _buildSectionHeader('Colors'),
           _buildColorSettings(),
-          const SizedBox(height: 24),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
+          SizedBox(height: 24),
+          SizedBox(height: 24),
+          _buildSectionHeader('Global Font Size'),
+          _buildFontSizeSettings(),
+          SizedBox(height: 24),
           _buildSectionHeader('Corner Styles'),
           _buildCornerSettings(),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           _buildSectionHeader('Gradient Themes (15 Options)'),
           _buildGradientSettings(),
         ],
@@ -92,7 +96,7 @@ class _AppearanceSettingsScreenState extends State<AppearanceSettingsScreen> wit
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: 8),
       child: Text(
         title.toUpperCase(),
         style: subtitleStyle.copyWith(color: theme.accentColor, fontWeight: FontWeight.bold),
@@ -134,8 +138,8 @@ class _AppearanceSettingsScreenState extends State<AppearanceSettingsScreen> wit
         side: BorderSide(color: theme.accentColor.withOpacity(0.2)),
       ),
       child: ListTile(
-        title: Text('Accent Color', style: bodyStyle),
-        subtitle: Text('Tap to change the primary accent color', style: subtitleStyle),
+        title: Text('Accent Color'.t(context), style: bodyStyle),
+        subtitle: Text('Tap to change the primary accent color'.t(context), style: subtitleStyle),
         trailing: Container(
           width: 32,
           height: 32,
@@ -146,6 +150,51 @@ class _AppearanceSettingsScreenState extends State<AppearanceSettingsScreen> wit
           ),
         ),
         onTap: _showColorPicker,
+      ),
+    );
+  }
+
+  Widget _buildFontSizeSettings() {
+    return Card(
+      color: theme.cardColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: theme.cornerRadius,
+        side: BorderSide(color: theme.accentColor.withOpacity(0.2)),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Font Size'.t(context), style: bodyStyle),
+                Text('${theme.fontSize.toInt()} pt', style: subtitleStyle.copyWith(color: theme.accentColor)),
+              ],
+            ),
+            Slider(
+              value: theme.fontSize,
+              min: 12.0,
+              max: 32.0,
+              divisions: 20,
+              activeColor: theme.accentColor,
+              inactiveColor: theme.borderColor,
+              label: '${theme.fontSize.toInt()}',
+              onChanged: (val) {
+                theme.setFontSize(val);
+              },
+            ),
+            Text(
+              'Sample Text Preview'.t(context),
+              style: TextStyle(
+                fontFamily: theme.fontFamily,
+                fontSize: theme.fontSize,
+                color: theme.textPrimary,
+              ),
+            ),
+            SizedBox(height: 8),
+          ],
+        ),
       ),
     );
   }
@@ -209,8 +258,8 @@ class _AppearanceSettingsScreenState extends State<AppearanceSettingsScreen> wit
       child: Column(
         children: [
           SwitchListTile(
-            title: Text('Use Gradient Accents', style: bodyStyle),
-            subtitle: Text('Apply gradients instead of solid colors', style: subtitleStyle),
+            title: Text('Use Gradient Accents'.t(context), style: bodyStyle),
+            subtitle: Text('Apply gradients instead of solid colors'.t(context), style: subtitleStyle),
             value: theme.useGradients,
             activeColor: theme.accentColor,
             onChanged: (val) {
@@ -219,7 +268,7 @@ class _AppearanceSettingsScreenState extends State<AppearanceSettingsScreen> wit
           ),
           const Divider(height: 1),
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.0),
             child: Wrap(
               spacing: 12,
               runSpacing: 12,

@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 
 mixin NavigationMixin<T extends StatefulWidget> on State<T> {
@@ -6,17 +7,17 @@ mixin NavigationMixin<T extends StatefulWidget> on State<T> {
       final shouldPop = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Discard Changes?'),
-          content: const Text('You have unsaved changes. Are you sure you want to discard them?'),
+          title: Text('Discard Changes?'.t(context)),
+          content: Text('You have unsaved changes. Are you sure you want to discard them?'.t(context)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text('Cancel'.t(context)),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
               style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Discard'),
+              child: Text('Discard'.t(context)),
             ),
           ],
         ),

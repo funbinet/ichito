@@ -110,12 +110,12 @@ class _DesignsListScreenState extends State<DesignsListScreen> with ThemeAwareMi
 
   Widget _buildViewControls() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text('View:', style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
-          const SizedBox(width: 8),
+          Text('View:'.t(context), style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+          SizedBox(width: 8),
           IconButton(
             icon: Icon(
               Icons.grid_view_outlined,
@@ -123,8 +123,8 @@ class _DesignsListScreenState extends State<DesignsListScreen> with ThemeAwareMi
             ),
             onPressed: () => setState(() => _viewMode = ViewMode.grid),
             iconSize: 20,
-            constraints: const BoxConstraints(),
-            padding: const EdgeInsets.all(4),
+            constraints: BoxConstraints(),
+            padding: EdgeInsets.all(4),
           ),
           IconButton(
             icon: Icon(
@@ -133,8 +133,8 @@ class _DesignsListScreenState extends State<DesignsListScreen> with ThemeAwareMi
             ),
             onPressed: () => setState(() => _viewMode = ViewMode.list),
             iconSize: 20,
-            constraints: const BoxConstraints(),
-            padding: const EdgeInsets.all(4),
+            constraints: BoxConstraints(),
+            padding: EdgeInsets.all(4),
           ),
         ],
       ),
@@ -143,7 +143,7 @@ class _DesignsListScreenState extends State<DesignsListScreen> with ThemeAwareMi
 
   Widget _buildSearchBar() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: TextField(
         onChanged: (val) {
           _searchQuery = val;
@@ -175,7 +175,7 @@ class _DesignsListScreenState extends State<DesignsListScreen> with ThemeAwareMi
             size: 64,
             color: theme.textSecondary.withOpacity(0.5),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             lang.t('designs'),
             style: TextStyle(
@@ -192,7 +192,7 @@ class _DesignsListScreenState extends State<DesignsListScreen> with ThemeAwareMi
   Widget _buildDesignList() {
     if (_viewMode == ViewMode.list) {
       return ListView.builder(
-        padding: const EdgeInsets.only(bottom: 180),
+        padding: EdgeInsets.only(bottom: 180),
         itemCount: _designs.length,
         itemBuilder: (context, index) {
           return DesignListTile(
@@ -203,7 +203,7 @@ class _DesignsListScreenState extends State<DesignsListScreen> with ThemeAwareMi
       );
     } else {
       return GridView.builder(
-        padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 180),
+        padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 180),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           childAspectRatio: 0.85,

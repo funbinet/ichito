@@ -5,6 +5,7 @@ import '../../../../shared/providers/profile_provider.dart';
 import '../../../../shared/providers/notification_provider.dart';
 import '../../../../shared/providers/language_provider.dart';
 import '../../../../shared/widgets/themed_logo.dart';
+import '../../../../shared/widgets/square_avatar.dart';
 
 class WelcomeHeader extends StatelessWidget {
   final VoidCallback? onExportCSV;
@@ -24,7 +25,7 @@ class WelcomeHeader extends StatelessWidget {
     final language = Provider.of<LanguageProvider>(context);
     
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
       child: Row(
         children: [
           // Logo + App name
@@ -34,9 +35,9 @@ class WelcomeHeader extends StatelessWidget {
               Row(
                 children: [
                   const ThemedLogo(size: 24),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Text(
-                    'ICHITO',
+                    'ICHITO'.t(context),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -47,7 +48,7 @@ class WelcomeHeader extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: 4),
               Text(
                 '${language.t("greeting")}, ${profile.businessName.isNotEmpty ? profile.businessName : "Tailor"}',
                 style: TextStyle(
@@ -66,32 +67,32 @@ class WelcomeHeader extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.table_chart_outlined, color: theme.textSecondary, size: 20),
               onPressed: onExportCSV,
-              tooltip: 'Export CSV',
+              tooltip: 'Export CSV'.t(context),
               padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
+              constraints: BoxConstraints(),
             ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
 
           // PDF Export
           if (onExportPDF != null)
             IconButton(
               icon: Icon(Icons.picture_as_pdf_outlined, color: theme.textSecondary, size: 20),
               onPressed: onExportPDF,
-              tooltip: 'Export PDF',
+              tooltip: 'Export PDF'.t(context),
               padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
+              constraints: BoxConstraints(),
             ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
 
           // Settings
           IconButton(
             icon: Icon(Icons.settings_outlined, color: theme.textSecondary, size: 22),
             onPressed: () => Navigator.pushNamed(context, '/settings'),
-            tooltip: 'Settings',
+            tooltip: 'Settings'.t(context),
             padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
+            constraints: BoxConstraints(),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           
           // Notification bell with dynamic badge
           Stack(
@@ -108,8 +109,8 @@ class WelcomeHeader extends StatelessWidget {
                   right: 6,
                   top: 6,
                   child: Container(
-                    padding: const EdgeInsets.all(4),
-                    constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                    padding: EdgeInsets.all(4),
+                    constraints: BoxConstraints(minWidth: 18, minHeight: 18),
                     decoration: BoxDecoration(
                       color: theme.accentColor,
                       shape: BoxShape.circle,
@@ -131,21 +132,9 @@ class WelcomeHeader extends StatelessWidget {
           // Profile avatar — navigates to /profile
           GestureDetector(
             onTap: () => Navigator.pushNamed(context, '/profile'),
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: theme.accentColor.withOpacity(0.4), width: 1.5),
-              ),
-              child: CircleAvatar(
-                radius: 18,
-                backgroundColor: theme.accentLight,
-                backgroundImage: profile.profilePhotoBytes != null
-                  ? MemoryImage(profile.profilePhotoBytes!)
-                  : null,
-                child: profile.profilePhotoBytes == null
-                  ? Icon(Icons.person_outlined, color: theme.accentColor, size: 20)
-                  : null,
-              ),
+            child: SquareAvatar(
+              size: 36,
+              base64Image: profile.profilePhotoBase64, // Needs to use base64 String
             ),
           ),
         ],

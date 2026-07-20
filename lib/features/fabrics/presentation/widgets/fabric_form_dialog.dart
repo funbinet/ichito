@@ -116,7 +116,7 @@ class _FabricFormDialogState extends State<FabricFormDialog> {
       shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
       child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(24.0),
           child: Form(
             key: _formKey,
             child: Column(
@@ -133,7 +133,7 @@ class _FabricFormDialogState extends State<FabricFormDialog> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 
                 // Image Picker
                 Center(
@@ -155,13 +155,13 @@ class _FabricFormDialogState extends State<FabricFormDialog> {
                       ),
                       child: _imagePath == null
                           ? _isPickingImage 
-                            ? const Center(child: CircularProgressIndicator())
+                            ? Center(child: CircularProgressIndicator())
                             : Icon(Icons.add_a_photo, color: theme.textSecondary, size: 40)
                           : null,
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 
                 // Fields
                 TextFormField(
@@ -170,7 +170,7 @@ class _FabricFormDialogState extends State<FabricFormDialog> {
                   style: TextStyle(color: theme.textPrimary),
                   validator: (val) => val == null || val.isEmpty ? 'Required' : null,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 
                 Row(
                   children: [
@@ -184,7 +184,7 @@ class _FabricFormDialogState extends State<FabricFormDialog> {
                         validator: (val) => val == null || val.isEmpty ? 'Required' : null,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(
                       flex: 1,
                       child: TextFormField(
@@ -196,21 +196,21 @@ class _FabricFormDialogState extends State<FabricFormDialog> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 TextFormField(
                   controller: _categoryController,
                   decoration: _inputDecoration(lang.t('category') ?? 'Category', theme),
                   style: TextStyle(color: theme.textPrimary),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 TextFormField(
                   controller: _colorController,
                   decoration: _inputDecoration('Color', theme),
                   style: TextStyle(color: theme.textPrimary),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 
                 TextFormField(
                   controller: _descriptionController,
@@ -218,7 +218,7 @@ class _FabricFormDialogState extends State<FabricFormDialog> {
                   style: TextStyle(color: theme.textPrimary),
                   maxLines: 3,
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
                 
                 // Buttons
                 Row(
@@ -231,7 +231,7 @@ class _FabricFormDialogState extends State<FabricFormDialog> {
                         style: TextStyle(color: theme.textSecondary),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: _isSaving ? null : _save,
                       style: ElevatedButton.styleFrom(
@@ -240,7 +240,7 @@ class _FabricFormDialogState extends State<FabricFormDialog> {
                         shape: RoundedRectangleBorder(borderRadius: theme.buttonRadius),
                       ),
                       child: _isSaving 
-                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                          ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
                           : Text(lang.t('save') ?? 'Save'),
                     ),
                   ],

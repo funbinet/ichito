@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
@@ -87,19 +88,19 @@ class _ChurchNoteEditorState extends State<ChurchNoteEditor> with ThemeAwareMixi
         ),
         actions: [
           if (_isSaving)
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(16.0),
               child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
             )
           else
             TextButton(
               onPressed: _saveNote,
-              child: Text('Save Note', style: TextStyle(color: theme.accentColor, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily)),
+              child: Text('Save Note'.t(context), style: TextStyle(color: theme.accentColor, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily)),
             ),
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(24.0),
         child: Column(
           children: [
             TextField(
@@ -111,14 +112,14 @@ class _ChurchNoteEditorState extends State<ChurchNoteEditor> with ThemeAwareMixi
                 color: theme.textPrimary,
               ),
               decoration: InputDecoration(
-                hintText: 'Sermon Title',
+                hintText: 'Sermon Title'.t(context),
                 hintStyle: TextStyle(color: theme.textSecondary.withOpacity(0.5)),
                 border: InputBorder.none,
               ),
             ),
             Container(
-              margin: const EdgeInsets.only(top: 8, bottom: 16),
-              padding: const EdgeInsets.all(16),
+              margin: EdgeInsets.only(top: 8, bottom: 16),
+              padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: const Color(0xFF9C27B0).withOpacity(0.05),
                 borderRadius: BorderRadius.circular(16),
@@ -143,7 +144,7 @@ class _ChurchNoteEditorState extends State<ChurchNoteEditor> with ThemeAwareMixi
                   color: theme.textPrimary,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Write sermon notes here...',
+                  hintText: 'Write sermon notes here...'.t(context),
                   hintStyle: TextStyle(color: theme.textSecondary.withOpacity(0.5)),
                   border: InputBorder.none,
                 ),
@@ -159,7 +160,7 @@ class _ChurchNoteEditorState extends State<ChurchNoteEditor> with ThemeAwareMixi
     return Row(
       children: [
         Icon(icon, size: 20, color: const Color(0xFF9C27B0)),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
         Expanded(
           child: TextField(
             controller: controller,

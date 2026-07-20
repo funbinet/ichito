@@ -1,5 +1,9 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_timezone/flutter_timezone.dart';
 
 /// Service wrapper for local push notifications.
 ///
@@ -16,6 +20,15 @@ class NotificationService {
   /// Initialize the notification service. Call once during app startup.
   Future<void> initialize() async {
     if (_initialized) return;
+
+    // Initialize timezones
+    tz.initializeTimeZones();
+    try {
+      final String currentTimeZone = (await FlutterTimezone.getLocalTimezone()).identifier;
+      tz.setLocalLocation(tz.getLocation(currentTimeZone));
+    } catch (e) {
+      debugPrint('Could not set timezone: $e');
+    }
 
     const androidSettings = AndroidInitializationSettings('@mipmap/launcher_icon');
     const initSettings = InitializationSettings(android: androidSettings);
@@ -68,6 +81,55 @@ class NotificationService {
     await _plugin.show(id, title, body, details, payload: payload);
   }
 
+  /// Show an instant notification for C/U/D operations.
+  Future<void> showModelNotification({
+    required String action, // Created, Updated, Deleted
+    required String type,   // Client, Order, Fabric, etc.
+    required String name,   // Name of the item
+  }) async {
+    final int id = DateTime.now().millisecondsSinceEpoch.remainder(100000);
+    final String title = '$type $action';
+    final String body = '$name has been successfully ${action.toLowerCase()}.';
+    await showNotification(id: id, title: title, body: body);
+  }
+
+  /// Schedule due reminders for an order at 8am, 12pm, and 6pm on the due date.
+  Future<void> scheduleDueReminders(DateTime dueDate, String orderNumber, String customerName) async {
+    if (!_initialized) return;
+
+    const androidDetails = AndroidNotificationDetails(
+      'ichito_due_reminders',
+      'Due Reminders',
+      channelDescription: 'Scheduled reminders for order due dates',
+      importance: Importance.high,
+      priority: Priority.high,
+      icon: '@mipmap/launcher_icon',
+    );
+    const details = NotificationDetails(android: androidDetails);
+
+    final List<int> reminderHours = [8, 12, 18]; // 8 AM, 12 PM, 6 PM
+
+    for (int hour in reminderHours) {
+      final scheduledDate = DateTime(dueDate.year, dueDate.month, dueDate.day, hour, 0);
+      
+      // Only schedule if it's in the future
+      if (scheduledDate.isAfter(DateTime.now())) {
+        final tz.TZDateTime tzScheduledDate = tz.TZDateTime.from(scheduledDate, tz.local);
+        final int id = (orderNumber.hashCode + hour).remainder(100000);
+        
+        await _plugin.zonedSchedule(
+          id,
+          'Order Due Today',
+          'Order $orderNumber for $customerName is due at ${hour == 12 ? 'noon' : hour > 12 ? '${hour-12} PM' : '$hour AM'}.',
+          tzScheduledDate,
+          details,
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+        );
+      }
+    }
+  }
+
   /// Show a summary notification for multiple due orders.
   Future<void> showOrdersDueSummary({
     required int count,
@@ -75,7 +137,7 @@ class NotificationService {
   }) async {
     await showNotification(
       id: 1000, // Fixed ID for summary notification
-      title: '📋 $count order${count == 1 ? '' : 's'} due soon',
+      title: '📋 $count order${count == 1 ? '.t(context)' : 's'} due soon',
       body: body,
       payload: 'orders_due',
     );

@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
@@ -67,19 +68,19 @@ class _OrderWizardScreenState extends State<OrderWizardScreen> with ThemeAwareMi
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: theme.cardColor,
-        title: Text('Discard Order?', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
-        content: Text('Are you sure you want to discard this order? All progress will be lost.', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
+        title: Text('Discard Order?'.t(context), style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
+        content: Text('Are you sure you want to discard this order? All progress will be lost.'.t(context), style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text('Cancel'.t(context)),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
               Navigator.pop(context);
             },
-            child: const Text('Discard', style: TextStyle(color: Colors.red)),
+            child: Text('Discard'.t(context), style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -101,7 +102,7 @@ class _OrderWizardScreenState extends State<OrderWizardScreen> with ThemeAwareMi
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'New Order',
+              'New Order'.t(context),
               style: TextStyle(
                 color: theme.textPrimary,
                 fontSize: 16,
@@ -109,7 +110,7 @@ class _OrderWizardScreenState extends State<OrderWizardScreen> with ThemeAwareMi
                 fontFamily: theme.fontFamily,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Row(
               children: [
                 Expanded(
@@ -120,7 +121,7 @@ class _OrderWizardScreenState extends State<OrderWizardScreen> with ThemeAwareMi
                     minHeight: 4,
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(
                   '${((_currentStep + 1) / _totalSteps * 100).toInt()}%',
                   style: TextStyle(

@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import '../../../../../shared/mixins/theme_aware_mixin.dart';
 import '../../../../../core/widgets/adaptive_components.dart';
@@ -76,7 +77,7 @@ class _Step3MeasurementsState extends State<Step3Measurements> with ThemeAwareMi
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error loading data: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error loading data: $e'.t(context))));
       }
     } finally {
       if (mounted) {
@@ -114,22 +115,22 @@ class _Step3MeasurementsState extends State<Step3Measurements> with ThemeAwareMi
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: EdgeInsets.all(32.0),
         child: Center(child: CircularProgressIndicator(color: theme.accentColor)),
       );
     }
 
     if (_garment == null) {
-      return const Center(child: Text('Garment not found'));
+      return Center(child: Text('Garment not found'.t(context)));
     }
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Step 3: Measurements for ${_garment!.name}',
+            'Step 3: Measurements for ${_garment!.name}'.t(context),
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -137,12 +138,12 @@ class _Step3MeasurementsState extends State<Step3Measurements> with ThemeAwareMi
               fontFamily: theme.fontFamily,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
-            'Enter measurements in inches. Existing profile data has been loaded automatically.',
+            'Enter measurements in inches. Existing profile data has been loaded automatically.'.t(context),
             style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily, fontSize: 12),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Expanded(
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -171,13 +172,13 @@ class _Step3MeasurementsState extends State<Step3Measurements> with ThemeAwareMi
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
                 );
               },
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           CheckboxListTile(
             title: Text(
               'Save these measurements to ${_customer?.name ?? "customer"}\'s profile as defaults.',
@@ -194,7 +195,7 @@ class _Step3MeasurementsState extends State<Step3Measurements> with ThemeAwareMi
             activeColor: theme.accentColor,
             checkColor: Colors.white,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Row(
             children: [
               Expanded(
@@ -204,7 +205,7 @@ class _Step3MeasurementsState extends State<Step3Measurements> with ThemeAwareMi
                   isPrimary: false,
                 ),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               Expanded(
                 child: AdaptiveButton(
                   text: 'Next Step',

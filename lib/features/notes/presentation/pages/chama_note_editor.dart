@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:convert';
@@ -95,7 +96,7 @@ class _ChamaNoteEditorState extends State<ChamaNoteEditor> with ThemeAwareMixin 
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: theme.cardColor,
-        title: Text('Add Contribution', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
+        title: Text('Add Contribution'.t(context), style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -104,7 +105,7 @@ class _ChamaNoteEditorState extends State<ChamaNoteEditor> with ThemeAwareMixin 
               style: TextStyle(color: theme.textPrimary),
               onChanged: (v) => name = v,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             TextField(
               decoration: const InputDecoration(labelText: 'Amount'),
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -116,7 +117,7 @@ class _ChamaNoteEditorState extends State<ChamaNoteEditor> with ThemeAwareMixin 
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('Cancel'.t(context)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -127,7 +128,7 @@ class _ChamaNoteEditorState extends State<ChamaNoteEditor> with ThemeAwareMixin 
                 Navigator.pop(context);
               }
             },
-            child: const Text('Add'),
+            child: Text('Add'.t(context)),
           ),
         ],
       ),
@@ -150,19 +151,19 @@ class _ChamaNoteEditorState extends State<ChamaNoteEditor> with ThemeAwareMixin 
         ),
         actions: [
           if (_isSaving)
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(16.0),
               child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
             )
           else
             TextButton(
               onPressed: _saveNote,
-              child: Text('Save Note', style: TextStyle(color: theme.accentColor, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily)),
+              child: Text('Save Note'.t(context), style: TextStyle(color: theme.accentColor, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily)),
             ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0).copyWith(bottom: 120),
+        padding: EdgeInsets.all(24.0).copyWith(bottom: 120),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -175,16 +176,16 @@ class _ChamaNoteEditorState extends State<ChamaNoteEditor> with ThemeAwareMixin 
                 color: theme.textPrimary,
               ),
               decoration: InputDecoration(
-                hintText: 'Meeting Title',
+                hintText: 'Meeting Title'.t(context),
                 hintStyle: TextStyle(color: theme.textSecondary.withOpacity(0.5)),
                 border: InputBorder.none,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             // Meta Card
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: const Color(0xFF4CAF50).withOpacity(0.05),
                 borderRadius: BorderRadius.circular(16),
@@ -206,15 +207,15 @@ class _ChamaNoteEditorState extends State<ChamaNoteEditor> with ThemeAwareMixin 
                   const Divider(height: 24),
                   Row(
                     children: [
-                      const Icon(Icons.person, size: 20, color: Color(0xFF4CAF50)),
-                      const SizedBox(width: 12),
+                      Icon(Icons.person, size: 20, color: Color(0xFF4CAF50)),
+                      SizedBox(width: 12),
                       Expanded(
                         child: TextField(
                           controller: _recipientController,
                           style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily),
                           decoration: InputDecoration(
                             isDense: true,
-                            hintText: 'Recipient (Who receives today?)',
+                            hintText: 'Recipient (Who receives today?)'.t(context),
                             hintStyle: TextStyle(color: theme.textSecondary.withOpacity(0.5)),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.zero,
@@ -226,8 +227,8 @@ class _ChamaNoteEditorState extends State<ChamaNoteEditor> with ThemeAwareMixin 
                   const Divider(height: 24),
                   Row(
                     children: [
-                      const Icon(Icons.attach_money, size: 20, color: Color(0xFF4CAF50)),
-                      const SizedBox(width: 12),
+                      Icon(Icons.attach_money, size: 20, color: Color(0xFF4CAF50)),
+                      SizedBox(width: 12),
                       Expanded(
                         child: TextField(
                           controller: _expectedTotalController,
@@ -235,7 +236,7 @@ class _ChamaNoteEditorState extends State<ChamaNoteEditor> with ThemeAwareMixin 
                           style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily),
                           decoration: InputDecoration(
                             isDense: true,
-                            hintText: 'Expected Total Amount',
+                            hintText: 'Expected Total Amount'.t(context),
                             hintStyle: TextStyle(color: theme.textSecondary.withOpacity(0.5)),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.zero,
@@ -248,12 +249,12 @@ class _ChamaNoteEditorState extends State<ChamaNoteEditor> with ThemeAwareMixin 
               ),
             ),
             
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Contributions',
+                  'Contributions'.t(context),
                   style: TextStyle(
                     fontFamily: theme.fontFamily,
                     fontSize: theme.fontSize * 1.2,
@@ -263,20 +264,20 @@ class _ChamaNoteEditorState extends State<ChamaNoteEditor> with ThemeAwareMixin 
                 ),
                 TextButton.icon(
                   onPressed: _addContribution,
-                  icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Add'),
+                  icon: Icon(Icons.add, size: 18),
+                  label: Text('Add'.t(context)),
                   style: TextButton.styleFrom(foregroundColor: const Color(0xFF4CAF50)),
                 )
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             
             if (_contributions.isEmpty)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24.0),
+                padding: EdgeInsets.symmetric(vertical: 24.0),
                 child: Center(
                   child: Text(
-                    'No contributions yet',
+                    'No contributions yet'.t(context),
                     style: TextStyle(color: theme.textSecondary),
                   ),
                 ),
@@ -305,7 +306,7 @@ class _ChamaNoteEditorState extends State<ChamaNoteEditor> with ThemeAwareMixin 
                             style: TextStyle(color: theme.textPrimary, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 20),
+                            icon: Icon(Icons.remove_circle_outline, color: Colors.red, size: 20),
                             onPressed: () {
                               setState(() {
                                 _contributions.remove(key);
@@ -319,12 +320,12 @@ class _ChamaNoteEditorState extends State<ChamaNoteEditor> with ThemeAwareMixin 
                 ),
               ),
               
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
-                  'Total Collected: ',
+                  'Total Collected: '.t(context),
                   style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily),
                 ),
                 Text(
@@ -339,9 +340,9 @@ class _ChamaNoteEditorState extends State<ChamaNoteEditor> with ThemeAwareMixin 
               ],
             ),
             
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
             Text(
-              'Meeting Minutes / Notes',
+              'Meeting Minutes / Notes'.t(context),
               style: TextStyle(
                 fontFamily: theme.fontFamily,
                 fontSize: theme.fontSize * 1.2,
@@ -349,14 +350,14 @@ class _ChamaNoteEditorState extends State<ChamaNoteEditor> with ThemeAwareMixin 
                 color: theme.textPrimary,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Container(
               decoration: BoxDecoration(
                 border: Border.all(color: theme.borderColor),
                 borderRadius: BorderRadius.circular(12),
                 color: theme.cardColor,
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: EdgeInsets.symmetric(horizontal: 16),
               child: TextField(
                 controller: _contentController,
                 maxLines: 8,
@@ -365,7 +366,7 @@ class _ChamaNoteEditorState extends State<ChamaNoteEditor> with ThemeAwareMixin 
                   color: theme.textPrimary,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Write notes here...',
+                  hintText: 'Write notes here...'.t(context),
                   hintStyle: TextStyle(color: theme.textSecondary.withOpacity(0.5)),
                   border: InputBorder.none,
                 ),
@@ -383,7 +384,7 @@ class _ChamaNoteEditorState extends State<ChamaNoteEditor> with ThemeAwareMixin 
       child: Row(
         children: [
           Icon(icon, size: 20, color: const Color(0xFF4CAF50)),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Text(
               value,

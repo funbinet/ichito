@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
@@ -7,8 +8,10 @@ import '../../../../shared/widgets/image_picker_dialog.dart';
 import '../../../../shared/widgets/image_crop_dialog.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
+import 'package:provider/provider.dart';
+import '../../../../shared/providers/customer_provider.dart';
+import '../../../../shared/data/local/settings_repository.dart';
 import '../../data/models/customer.dart';
-import '../../data/repositories/customer_repository.dart';
 
 class CustomerFormScreen extends StatefulWidget {
   final Customer? customer;
@@ -21,7 +24,6 @@ class CustomerFormScreen extends StatefulWidget {
 
 class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAwareMixin, NavigationMixin {
   final _formKey = GlobalKey<FormState>();
-  final CustomerRepository _repository = CustomerRepository();
 
   late TextEditingController _nameController;
   late TextEditingController _phoneController;
@@ -67,6 +69,11 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
   }
   
   List<String> _getMeasurementFieldsForGender(String gender) {
+    final schema = SettingsRepository().getMeasurementSchema();
+    if (schema.isNotEmpty) {
+      return schema;
+    }
+    // Fallback if settings are not set
     if (gender.toLowerCase() == 'male') {
       return ['height', 'chest', 'waist', 'hip', 'shoulder', 'neck', 'sleeve_length'];
     }
@@ -104,7 +111,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
     if (pickedFile == null) return;
     if (!mounted) return;
     
-    final croppedBytes = await ImageCropDialog.show(context, File(pickedFile.path));
+    final croppedBytes = await ImageCropDialog.show(context, File(pickedFile.path), isCircularPreview: true);
     if (croppedBytes == null) return;
     
     setState(() {
@@ -141,10 +148,11 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
       updatedAt: DateTime.now(),
     );
 
+    final provider = Provider.of<CustomerProvider>(context, listen: false);
     if (widget.customer == null) {
-      await _repository.createCustomer(customer);
+      await provider.addCustomer(customer);
     } else {
-      await _repository.updateCustomer(customer);
+      await provider.updateCustomer(customer);
     }
 
     if (mounted) {
@@ -185,7 +193,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
             TextButton(
               onPressed: _saveCustomer,
               child: Text(
-                'Save',
+                'Save'.t(context),
                 style: TextStyle(
                   color: theme.accentColor,
                   fontWeight: FontWeight.bold,
@@ -199,7 +207,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
         body: Form(
           key: _formKey,
           child: ListView(
-            padding: const EdgeInsets.symmetric(vertical: 24),
+            padding: EdgeInsets.symmetric(vertical: 24),
             children: [
               // Photo Upload
               Center(
@@ -210,7 +218,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
                     height: 100,
                     decoration: BoxDecoration(
                       color: theme.accentLight,
-                      shape: BoxShape.circle,
+                      borderRadius: theme.cornerRadius,
                       border: Border.all(color: theme.accentColor, width: 2),
                       image: _photoPath != null
                           ? DecorationImage(image: MemoryImage(base64Decode(_photoPath!)), fit: BoxFit.cover)
@@ -221,63 +229,63 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.camera_alt_outlined, color: theme.accentColor, size: 32),
-                              const SizedBox(height: 4),
-                              Text('Upload', style: TextStyle(fontSize: 12, color: theme.accentColor, fontFamily: theme.fontFamily)),
+                              SizedBox(height: 4),
+                              Text('Upload'.t(context), style: TextStyle(fontSize: 12, color: theme.accentColor, fontFamily: theme.fontFamily)),
                             ],
                           )
                         : null,
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
               
               Padding(
-                padding: const EdgeInsets.only(left: 16, bottom: 8),
-                child: Text('Full Name *', style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
+                padding: EdgeInsets.only(left: 16, bottom: 8),
+                child: Text('Full Name *'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
               ),
               AdaptiveTextField(
                 controller: _nameController,
                 label: '',
-                hint: 'e.g. Jane Muthoni',
+                hint: 'e.g. Jane Muthoni'.t(context),
                 prefixIcon: Icons.person_outline,
                 validator: (val) => val == null || val.isEmpty ? 'Name is required' : null,
               ),
               
               Padding(
-                padding: const EdgeInsets.only(left: 16, top: 16, bottom: 8),
-                child: Text('Phone *', style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
+                padding: EdgeInsets.only(left: 16, top: 16, bottom: 8),
+                child: Text('Phone *'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
               ),
               AdaptiveTextField(
                 controller: _phoneController,
                 label: '',
-                hint: 'e.g. 0712 345 678',
+                hint: 'e.g. 0712 345 678'.t(context),
                 prefixIcon: Icons.phone_outlined,
                 keyboardType: TextInputType.phone,
                 validator: (val) => val == null || val.isEmpty ? 'Phone is required' : null,
               ),
               
               Padding(
-                padding: const EdgeInsets.only(left: 16, top: 16, bottom: 8),
-                child: Text('Email (Optional)', style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
+                padding: EdgeInsets.only(left: 16, top: 16, bottom: 8),
+                child: Text('Email (Optional)'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
               ),
               AdaptiveTextField(
                 controller: _emailController,
                 label: '',
-                hint: 'e.g. jane@email.com',
+                hint: 'e.g. jane@email.com'.t(context),
                 prefixIcon: Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
               ),
               
               Padding(
-                padding: const EdgeInsets.only(left: 16, top: 16, bottom: 8),
-                child: Text('Gender *', style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
+                padding: EdgeInsets.only(left: 16, top: 16, bottom: 8),
+                child: Text('Gender *'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 child: SegmentedButton<String>(
                   segments: const [
-                    ButtonSegment(value: 'male', label: Text('Male'), icon: Icon(Icons.male)),
-                    ButtonSegment(value: 'female', label: Text('Female'), icon: Icon(Icons.female)),
+                    ButtonSegment(value: 'male', label: Text('Male'.t(context)), icon: Icon(Icons.male)),
+                    ButtonSegment(value: 'female', label: Text('Female'.t(context)), icon: Icon(Icons.female)),
                   ],
                   selected: {_selectedGender.toLowerCase() == 'male' ? 'male' : 'female'},
                   onSelectionChanged: (Set<String> newSelection) {
@@ -308,11 +316,11 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
               ),
               
               Padding(
-                padding: const EdgeInsets.only(left: 16, top: 16, bottom: 8),
-                child: Text('Role / Status', style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
+                padding: EdgeInsets.only(left: 16, top: 16, bottom: 8),
+                child: Text('Role / Status'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 child: DropdownButtonFormField<String>(
                   value: _selectedRole,
                   dropdownColor: theme.cardColor,
@@ -327,12 +335,12 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
                       borderRadius: theme.cornerRadius,
                       borderSide: BorderSide(color: theme.accentColor, width: 2),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
                   items: const [
-                    DropdownMenuItem(value: 'regular', child: Text('Regular')),
-                    DropdownMenuItem(value: 'vip', child: Text('VIP')),
-                    DropdownMenuItem(value: 'loyal', child: Text('Loyal')),
+                    DropdownMenuItem(value: 'regular', child: Text('Regular'.t(context))),
+                    DropdownMenuItem(value: 'vip', child: Text('VIP'.t(context))),
+                    DropdownMenuItem(value: 'loyal', child: Text('Loyal'.t(context))),
                   ],
                   onChanged: (val) {
                     if (val != null) {
@@ -343,35 +351,35 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
               ),
               
               Padding(
-                padding: const EdgeInsets.only(left: 16, top: 16, bottom: 8),
-                child: Text('Location (Optional)', style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
+                padding: EdgeInsets.only(left: 16, top: 16, bottom: 8),
+                child: Text('Location (Optional)'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
               ),
               AdaptiveTextField(
                 controller: _locationController,
                 label: '',
-                hint: 'e.g. Nairobi CBD',
+                hint: 'e.g. Nairobi CBD'.t(context),
                 prefixIcon: Icons.location_on_outlined,
               ),
               
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   children: [
                     Expanded(child: Divider(color: theme.borderColor)),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Text('Default Measurements (Optional)', style: TextStyle(color: theme.textSecondary, fontSize: 12, fontFamily: theme.fontFamily)),
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Text('Default Measurements (Optional)'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 12, fontFamily: theme.fontFamily)),
                     ),
                     Expanded(child: Divider(color: theme.borderColor)),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               
               _buildMeasurementGrid(),
               
-              const SizedBox(height: 48),
+              SizedBox(height: 48),
             ],
           ),
         ),
@@ -383,7 +391,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
     final fields = _getMeasurementFieldsForGender(_selectedGender);
     
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -414,7 +422,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
               ),
               suffixText: 'cm', // Or fetch from settings
               suffixStyle: TextStyle(color: theme.textSecondary, fontSize: 12, fontFamily: theme.fontFamily),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             ),
           );
         },

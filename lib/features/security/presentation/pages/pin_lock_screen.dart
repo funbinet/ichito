@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../../../../shared/providers/language_provider.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
 import '../../../../shared/widgets/themed_logo.dart';
+import '../../../../shared/widgets/square_avatar.dart';
+import '../../../../shared/providers/profile_provider.dart';
 import '../../services/security_service.dart';
 
 class PinLockScreen extends StatefulWidget {
@@ -97,16 +99,20 @@ class _PinLockScreenState extends State<PinLockScreen> with ThemeAwareMixin {
 
   @override
   Widget build(BuildContext context) {
+    final profile = Provider.of<ProfileProvider>(context);
     return Scaffold(
       backgroundColor: theme.backgroundColor,
       body: SafeArea(
         child: Column(
           children: [
             const Spacer(flex: 2),
-            ThemedLogo(size: 80, color: theme.accentColor),
-            const SizedBox(height: 24),
+            SquareAvatar(
+              size: 80,
+              base64Image: profile.profilePhotoBase64,
+            ),
+            SizedBox(height: 24),
             Text(
-              'Enter ${_isPasswordMode ? 'Password' : 'PIN'}',
+              'Enter ${_isPasswordMode ? '.t(context)Password' : 'PIN'}',
               style: TextStyle(
                 color: theme.textPrimary,
                 fontSize: theme.fontSize * 1.5,
@@ -114,14 +120,14 @@ class _PinLockScreenState extends State<PinLockScreen> with ThemeAwareMixin {
                 fontFamily: theme.fontFamily,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             if (_isError)
               Text(
-                'Incorrect ${_isPasswordMode ? 'Password' : 'PIN'}. Try again.',
+                'Incorrect ${_isPasswordMode ? '.t(context)Password' : 'PIN'}. Try again.',
                 style: TextStyle(color: Colors.red, fontFamily: theme.fontFamily),
               )
             else
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
             const Spacer(),
             
             if (_isPasswordMode)
@@ -138,19 +144,19 @@ class _PinLockScreenState extends State<PinLockScreen> with ThemeAwareMixin {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                TextButton(
+                IconButton(
                   onPressed: _tryBiometric,
-                  child: Text('Use Biometrics', style: TextStyle(color: theme.accentColor)),
+                  icon: Icon(Icons.fingerprint, size: 48, color: theme.accentColor),
                 ),
                 TextButton(
                   onPressed: () {
-                    // Navigate to forgot PIN/password screen
+                    _showRecoveryDialog(context);
                   },
-                  child: Text('Forgot?', style: TextStyle(color: theme.textSecondary)),
+                  child: Text('Forgot?'.t(context), style: TextStyle(color: theme.textSecondary)),
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
           ],
         ),
       ),
@@ -163,7 +169,7 @@ class _PinLockScreenState extends State<PinLockScreen> with ThemeAwareMixin {
       children: List.generate(4, (index) {
         bool isFilled = index < _input.length;
         return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 12),
+          margin: EdgeInsets.symmetric(horizontal: 12),
           width: 20,
           height: 20,
           decoration: BoxDecoration(
@@ -181,7 +187,7 @@ class _PinLockScreenState extends State<PinLockScreen> with ThemeAwareMixin {
   
   Widget _buildPasswordInput() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 48.0),
+      padding: EdgeInsets.symmetric(horizontal: 48.0),
       child: Column(
         children: [
           TextField(
@@ -189,7 +195,7 @@ class _PinLockScreenState extends State<PinLockScreen> with ThemeAwareMixin {
             obscureText: true,
             style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily),
             decoration: InputDecoration(
-              hintText: 'Password',
+              hintText: 'Password'.t(context),
               hintStyle: TextStyle(color: theme.textSecondary),
               filled: true,
               fillColor: theme.cardColor,
@@ -204,15 +210,15 @@ class _PinLockScreenState extends State<PinLockScreen> with ThemeAwareMixin {
             ),
             onSubmitted: (_) => _verifyPassword(),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           ElevatedButton(
             onPressed: _verifyPassword,
             style: ElevatedButton.styleFrom(
               backgroundColor: theme.accentColor,
               shape: RoundedRectangleBorder(borderRadius: theme.buttonRadius),
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
             ),
-            child: Text('Unlock', style: TextStyle(color: theme.onAccent)),
+            child: Text('Unlock'.t(context), style: TextStyle(color: theme.onAccent)),
           ),
         ],
       ),
@@ -221,7 +227,7 @@ class _PinLockScreenState extends State<PinLockScreen> with ThemeAwareMixin {
 
   Widget _buildKeypad() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
+      padding: EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         children: [
           Row(
@@ -232,7 +238,7 @@ class _PinLockScreenState extends State<PinLockScreen> with ThemeAwareMixin {
               _buildKeypadButton('3'),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -241,7 +247,7 @@ class _PinLockScreenState extends State<PinLockScreen> with ThemeAwareMixin {
               _buildKeypadButton('6'),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -250,11 +256,11 @@ class _PinLockScreenState extends State<PinLockScreen> with ThemeAwareMixin {
               _buildKeypadButton('9'),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildKeypadButton('pw', icon: Icons.keyboard, onPressed: () => setState(() => _isPasswordMode = true)),
+              SizedBox(width: 80),
               _buildKeypadButton('0'),
               _buildKeypadButton('del', icon: Icons.backspace_outlined, onPressed: _onBackspacePressed),
             ],
@@ -289,6 +295,142 @@ class _PinLockScreenState extends State<PinLockScreen> with ThemeAwareMixin {
                 ),
               ),
       ),
+    );
+  }
+
+  void _showRecoveryDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => const _RecoveryDialog(),
+    );
+  }
+}
+
+class _RecoveryDialog extends StatefulWidget {
+  const _RecoveryDialog();
+
+  @override
+  State<_RecoveryDialog> createState() => _RecoveryDialogState();
+}
+
+class _RecoveryDialogState extends State<_RecoveryDialog> with ThemeAwareMixin {
+  final _codeController = TextEditingController();
+  DateTime? _selectedDate;
+  bool _isError = false;
+
+  Future<void> _selectDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime(2000),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            colorScheme: ColorScheme.dark(
+              primary: theme.accentColor,
+              onPrimary: theme.onAccent,
+              surface: theme.backgroundColor,
+              onSurface: theme.textPrimary,
+            ),
+            dialogBackgroundColor: theme.cardColor,
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+        _isError = false;
+      });
+    }
+  }
+
+  Future<void> _verifyRecovery() async {
+    if (_codeController.text.trim().isEmpty || _selectedDate == null) {
+      setState(() => _isError = true);
+      return;
+    }
+
+    final dateStr = _selectedDate!.toIso8601String().split('T')[0];
+    final success = await SecurityService().verifyRecoveryCode(_codeController.text.trim(), dateStr);
+    
+    if (success) {
+      if (mounted) {
+        Navigator.pop(context); // close dialog
+        // Also unlock the app or clear PIN
+        final pinLockState = context.findAncestorStateOfType<_PinLockScreenState>();
+        if (pinLockState != null) {
+          pinLockState.widget.onUnlocked();
+        }
+      }
+    } else {
+      setState(() => _isError = true);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: theme.cardColor,
+      shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
+      title: Text('Account Recovery'.t(context), style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_isError)
+            Text('Invalid recovery details'.t(context), style: TextStyle(color: Colors.red, fontFamily: theme.fontFamily)),
+          SizedBox(height: 16),
+          TextField(
+            controller: _codeController,
+            style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily),
+            decoration: InputDecoration(
+              labelText: 'Security Code',
+              labelStyle: TextStyle(color: theme.textSecondary),
+              filled: true,
+              fillColor: theme.backgroundColor,
+              border: OutlineInputBorder(borderRadius: theme.cornerRadius),
+            ),
+          ),
+          SizedBox(height: 16),
+          InkWell(
+            onTap: _selectDate,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              decoration: BoxDecoration(
+                color: theme.backgroundColor,
+                borderRadius: theme.cornerRadius,
+                border: Border.all(color: theme.borderColor),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.calendar_today, color: theme.textSecondary),
+                  SizedBox(width: 16),
+                  Text(
+                    _selectedDate == null ? 'Select Date of Birth' : _selectedDate!.toIso8601String().split('T')[0],
+                    style: TextStyle(color: _selectedDate == null ? theme.textSecondary : theme.textPrimary),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Cancel'.t(context), style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
+        ),
+        ElevatedButton(
+          onPressed: _verifyRecovery,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: theme.accentColor,
+            shape: RoundedRectangleBorder(borderRadius: theme.buttonRadius),
+          ),
+          child: Text('Verify & Unlock'.t(context), style: TextStyle(color: theme.onAccent, fontFamily: theme.fontFamily)),
+        ),
+      ],
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 
 /// A settings section tile with expand/collapse functionality.
@@ -29,7 +30,7 @@ class _SettingsTileState extends State<SettingsTile> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 12),
       child: ExpansionTile(
         title: Text(
           widget.title,
@@ -63,7 +64,7 @@ class SettingsToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -74,7 +75,7 @@ class SettingsToggle extends StatelessWidget {
                 Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
                 if (description != null)
                   Padding(
-                    padding: const EdgeInsets.only(top: 4),
+                    padding: EdgeInsets.only(top: 4),
                     child: Text(description!, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
                   ),
               ],
@@ -107,14 +108,14 @@ class SettingsDropdown<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
           if (description != null)
             Padding(
-              padding: const EdgeInsets.only(top: 4, bottom: 8),
+              padding: EdgeInsets.only(top: 4, bottom: 8),
               child: Text(description!, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
             ),
           DropdownButton<T>(
@@ -153,7 +154,7 @@ class SettingsSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -221,12 +222,12 @@ class _SettingsTextFieldState extends State<SettingsTextField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(widget.label, style: const TextStyle(fontWeight: FontWeight.w500)),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           TextField(
             controller: _controller,
             keyboardType: widget.keyboardType,
@@ -252,25 +253,25 @@ class SettingsDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (label == null) {
-      return const Padding(
+      return Padding(
         padding: EdgeInsets.symmetric(vertical: 16),
         child: Divider(),
       );
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       child: Row(
         children: [
-          const Expanded(child: Divider()),
+          Expanded(child: Divider()),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: 12),
             child: Text(
               label!,
               style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
             ),
           ),
-          const Expanded(child: Divider()),
+          Expanded(child: Divider()),
         ],
       ),
     );
@@ -310,7 +311,7 @@ class StorageUsageBar extends StatelessWidget {
     final progress = totalBytes > 0 ? usedBytes / totalBytes : 0.0;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -324,7 +325,7 @@ class StorageUsageBar extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(

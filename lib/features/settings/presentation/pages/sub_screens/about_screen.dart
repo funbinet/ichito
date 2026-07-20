@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../../shared/mixins/theme_aware_mixin.dart';
@@ -20,7 +21,7 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not open link: $e')),
+        SnackBar(content: Text('Could not open link: $e'.t(context))),
       );
     }
   }
@@ -34,16 +35,16 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
     return Scaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('About ICHITO', style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('About ICHITO'.t(context), style: headingStyle.copyWith(fontSize: 18)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16).copyWith(bottom: 120),
+        padding: EdgeInsets.all(16).copyWith(bottom: 120),
         children: [
           // App Logo and Title
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           Center(
             child: Container(
               width: 100,
@@ -62,12 +63,12 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
               ),
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // App Name
           Center(
             child: Text(
-              'ICHITO',
+              'ICHITO'.t(context),
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -76,19 +77,19 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
 
           // Version
           Center(
             child: Text(
-              'Version $_appVersion (Build $_buildNumber)',
+              'Version $_appVersion (Build $_buildNumber)'.t(context),
               style: TextStyle(
                 fontSize: 14,
                 color: theme.textSecondary,
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
 
           // Tagline
           Center(
@@ -102,11 +103,11 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
               ),
             ),
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: 32),
 
           // Description
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: theme.cardColor,
               borderRadius: theme.cornerRadius,
@@ -116,16 +117,16 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'About',
+                  'About'.t(context),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                     color: theme.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Text(
-                  'ICHITO is a complete tailor management system built with care for tailors everywhere.\n\n'
+                  'ICHITO is a complete tailor management system built with care for tailors everywhere.\n\n'.t(context)
                   '"Ichito" means "to work" or "work/job" in Sheng (Kenyan slang).\n\n'
                   'The app combines premium aesthetics with powerful functionality to help you manage your tailoring business offline, anytime, anywhere.',
                   style: TextStyle(
@@ -137,11 +138,11 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // Technology
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: theme.cardColor,
               borderRadius: theme.cornerRadius,
@@ -151,16 +152,16 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Built With',
+                  'Built With'.t(context),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                     color: theme.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Text(
-                  'Powered by Flutter & Dart\n'
+                  'Powered by Flutter & Dart\n'.t(context)
                   'SQLite for local data storage\n'
                   'Clean Architecture with Provider state management',
                   style: TextStyle(
@@ -172,13 +173,13 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // Actions
           ElevatedButton.icon(
             onPressed: _sendEmail,
-            icon: const Icon(Icons.mail_outline),
-            label: const Text('Contact Support'),
+            icon: Icon(Icons.mail_outline),
+            label: Text('Contact Support'.t(context)),
             style: ElevatedButton.styleFrom(
               backgroundColor: theme.accentColor,
               foregroundColor: theme.onAccent,
@@ -186,38 +187,38 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
               shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           OutlinedButton.icon(
             onPressed: () {
               _openUrl('https://ichito.app/privacy');
             },
-            icon: const Icon(Icons.privacy_tip_outlined),
-            label: const Text('Privacy Policy'),
+            icon: Icon(Icons.privacy_tip_outlined),
+            label: Text('Privacy Policy'.t(context)),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
               shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
               side: BorderSide(color: theme.borderColor),
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           OutlinedButton.icon(
             onPressed: () {
               _openUrl('https://ichito.app/licenses');
             },
-            icon: const Icon(Icons.description_outlined),
-            label: const Text('Open Source Licenses'),
+            icon: Icon(Icons.description_outlined),
+            label: Text('Open Source Licenses'.t(context)),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
               shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
               side: BorderSide(color: theme.borderColor),
             ),
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: 32),
 
           // Footer
           Center(
             child: Text(
-              '© 2026 ICHITO. All rights reserved.\n'
+              '© 2026 ICHITO. All rights reserved.\n'.t(context)
               'Licensed under MIT License',
               textAlign: TextAlign.center,
               style: TextStyle(

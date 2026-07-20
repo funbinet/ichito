@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../shared/providers/theme_provider.dart';
@@ -72,11 +73,11 @@ class _AuthDeleteDialogState extends State<AuthDeleteDialog> {
       shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
       title: Row(
         children: [
-          const Icon(Icons.warning_amber_rounded, color: Colors.red),
-          const SizedBox(width: 8),
+          Icon(Icons.warning_amber_rounded, color: Colors.red),
+          SizedBox(width: 8),
           Expanded(
             child: Text(
-              'Delete ${widget.itemName}?',
+              'Delete ${widget.itemName}?'.t(context),
               style: TextStyle(
                 color: theme.textPrimary,
                 fontFamily: theme.fontFamily,
@@ -91,21 +92,21 @@ class _AuthDeleteDialogState extends State<AuthDeleteDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'This item will be permanently deleted. This action cannot be undone. Please confirm by entering your PIN or using biometrics.',
+            'This item will be permanently deleted. This action cannot be undone. Please confirm by entering your PIN or using biometrics.'.t(context),
             style: TextStyle(
               color: theme.textSecondary,
               fontFamily: theme.fontFamily,
               fontSize: theme.fontSize * 0.9,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           TextField(
             controller: _pinController,
             obscureText: true,
             keyboardType: TextInputType.number,
             style: TextStyle(color: theme.textPrimary),
             decoration: InputDecoration(
-              hintText: 'Enter PIN',
+              hintText: 'Enter PIN'.t(context),
               hintStyle: TextStyle(color: theme.textSecondary.withOpacity(0.5)),
               errorText: _errorText,
               enabledBorder: OutlineInputBorder(
@@ -124,7 +125,7 @@ class _AuthDeleteDialogState extends State<AuthDeleteDialog> {
         TextButton(
           onPressed: () => Navigator.pop(context, false),
           child: Text(
-            'CANCEL',
+            'CANCEL'.t(context),
             style: TextStyle(color: theme.textSecondary),
           ),
         ),
@@ -136,12 +137,12 @@ class _AuthDeleteDialogState extends State<AuthDeleteDialog> {
           ),
           onPressed: _isAuthenticating ? null : _authenticate,
           child: _isAuthenticating
-              ? const SizedBox(
+              ? SizedBox(
                   width: 16,
                   height: 16,
                   child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                 )
-              : const Text('DELETE'),
+              : Text('DELETE'.t(context)),
         ),
       ],
     );

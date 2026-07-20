@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
@@ -83,18 +84,18 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with ThemeAwareMixin 
   Widget build(BuildContext context) {
     return IchitoScaffold(
       appBar: AppBar(
-        title: Text('Analytics & Reports', style: headingStyle),
+        title: Text('Analytics & Reports'.t(context), style: headingStyle),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
         actions: [
           IconButton(
-            icon: const Icon(Icons.picture_as_pdf_outlined),
-            tooltip: 'Export PDF',
+            icon: Icon(Icons.picture_as_pdf_outlined),
+            tooltip: 'Export PDF'.t(context),
             onPressed: () async {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Generating PDF Report...')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Generating PDF Report...'.t(context))));
               await ExportService.exportStatsToPDF(
-                title: 'Analytics Report',
+                title: 'Analytics Report'.t(context),
                 fileNamePrefix: 'analytics_report',
                 stats: {
                   'Total Revenue': lang.formatCurrency(_totalRevenue, showSymbol: true),
@@ -106,12 +107,12 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with ThemeAwareMixin 
             },
           ),
           IconButton(
-            icon: const Icon(Icons.table_chart_outlined),
-            tooltip: 'Export CSV',
+            icon: Icon(Icons.table_chart_outlined),
+            tooltip: 'Export CSV'.t(context),
             onPressed: () async {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Exporting CSV...')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Exporting CSV...'.t(context))));
               await ExportService.exportStatsToCSV(
-                title: 'Analytics Report',
+                title: 'Analytics Report'.t(context),
                 fileNamePrefix: 'analytics_report',
                 stats: {
                   'Total Revenue': _totalRevenue.toStringAsFixed(2),
@@ -127,12 +128,12 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with ThemeAwareMixin 
       body: _isLoading
           ? Center(child: CircularProgressIndicator(color: theme.accentColor))
           : ListView(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 100),
               children: [
                 _buildSummaryCards(),
-                const SizedBox(height: 24),
-                Text('Revenue Trend (Last 6 Months)', style: headingStyle.copyWith(fontSize: 18)),
-                const SizedBox(height: 16),
+                SizedBox(height: 24),
+                Text('Revenue Trend (Last 6 Months)'.t(context), style: headingStyle.copyWith(fontSize: 18)),
+                SizedBox(height: 16),
                 _buildRevenueChart(),
               ],
             ),
@@ -145,15 +146,15 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with ThemeAwareMixin 
         Row(
           children: [
             Expanded(child: _buildCard('Total Revenue', lang.formatCurrency(_totalRevenue, showSymbol: true), Colors.green)),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(child: _buildCard('Pending Bal.', lang.formatCurrency(_pendingBalances, showSymbol: true), Colors.red)),
           ],
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Row(
           children: [
             Expanded(child: _buildCard('Total Orders', _totalOrders.toString(), theme.accentColor)),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(child: _buildCard('Completed', _completedOrders.toString(), Colors.blue)),
           ],
         ),
@@ -166,12 +167,12 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with ThemeAwareMixin 
       color: theme.cardColor,
       shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(value, style: headingStyle.copyWith(fontSize: 20, color: color)),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(title, style: subtitleStyle),
           ],
         ),
@@ -182,7 +183,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with ThemeAwareMixin 
   Widget _buildRevenueChart() {
     return Container(
       height: 300,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: theme.cornerRadius,

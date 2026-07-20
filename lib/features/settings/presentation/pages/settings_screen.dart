@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
 import '../../../../core/widgets/ichito_scaffold.dart';
@@ -21,65 +22,59 @@ class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
         iconTheme: IconThemeData(color: theme.textPrimary),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16).copyWith(bottom: 120),
+        padding: EdgeInsets.all(16).copyWith(bottom: 120),
         children: [
           _buildSettingsTile(
-            title: 'Profile Settings',
-            subtitle: 'Personal & business information',
+            title: 'Profile Settings'.t(context),
+            subtitle: 'Personal & business information'.t(context),
             icon: Icons.person_outline,
             onTap: () => Navigator.pushNamed(context, '/settings/profile'),
           ),
           _buildSettingsTile(
-            title: 'Appearance Settings',
-            subtitle: 'Theme, colors, and gradients',
+            title: 'Appearance Settings'.t(context),
+            subtitle: 'Theme, colors, and gradients'.t(context),
             icon: Icons.palette_outlined,
             onTap: () => Navigator.pushNamed(context, '/settings/appearance'),
           ),
           _buildSettingsTile(
-            title: 'Language & Format',
-            subtitle: 'Language, units, currency & dates',
+            title: 'Language & Format'.t(context),
+            subtitle: 'Language, units, currency & dates'.t(context),
             icon: Icons.language_outlined,
             onTap: () => Navigator.pushNamed(context, '/settings/language'),
           ),
           _buildSettingsTile(
-            title: 'Security Settings',
-            subtitle: 'App lock, biometrics, PIN',
+            title: 'Security Settings'.t(context),
+            subtitle: 'App lock, biometrics, PIN'.t(context),
             icon: Icons.security_outlined,
             onTap: () => Navigator.pushNamed(context, '/settings/security'),
           ),
           _buildSettingsTile(
-            title: 'Preferences Settings',
-            subtitle: 'Display, interaction & default sort',
+            title: 'Preferences Settings'.t(context),
+            subtitle: 'Display, interaction & default sort'.t(context),
             icon: Icons.tune_outlined,
             onTap: () => Navigator.pushNamed(context, '/settings/preferences'),
           ),
           _buildSettingsTile(
-            title: 'Business Settings',
-            subtitle: 'Financials, tax & order prefixes',
-            icon: Icons.business_outlined,
-            onTap: () => Navigator.pushNamed(context, '/settings/business'),
+            title: 'Measurement Types'.t(context),
+            subtitle: 'Configure global garment measurements'.t(context),
+            icon: Icons.straighten_outlined,
+            onTap: () => Navigator.pushNamed(context, '/settings/measurements'),
           ),
           _buildSettingsTile(
-            title: 'Storage Management',
-            subtitle: 'Usage, backup, restore & cache',
-            icon: Icons.storage_outlined,
-            onTap: () => Navigator.pushNamed(context, '/settings/storage'),
+            title: 'Backup & Restore'.t(context),
+            subtitle: 'Backup or restore data from device'.t(context),
+            icon: Icons.restore_outlined,
+            onTap: () => Navigator.pushNamed(context, '/settings/backup'),
           ),
           _buildSettingsTile(
-            title: 'Advanced Settings',
-            subtitle: 'Performance mode & debugging',
-            icon: Icons.build_outlined,
-            onTap: () => Navigator.pushNamed(context, '/settings/advanced'),
-          ),
-          _buildSettingsTile(
-            title: 'Help',
-            subtitle: 'User guide and support',
+            title: 'Help'.t(context),
+            subtitle: 'User guide and support'.t(context),
             icon: Icons.help_outline,
             onTap: () => Navigator.pushNamed(context, '/settings/help'),
           ),
           _buildSettingsTile(
-            title: 'About',
-            subtitle: 'Version info and legal',
+            title: 'About'.t(context),
+            subtitle: 'Version info and legal'.t(context),
             icon: Icons.info_outline,
             onTap: () => Navigator.pushNamed(context, '/settings/about'),
           ),
@@ -98,14 +93,14 @@ class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
   }) {
     return Card(
       color: theme.cardColor,
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: EdgeInsets.only(bottom: 8),
       shape: RoundedRectangleBorder(
         borderRadius: theme.cornerRadius,
         side: BorderSide(color: theme.borderColor),
       ),
       child: ListTile(
         leading: Container(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: (iconColor ?? theme.accentColor).withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),

@@ -116,6 +116,18 @@ class OrderRepository {
     return count;
   }
 
+  Future<int> updateOrder(Order order) async {
+    final db = await _dbHelper.database;
+    if (order.id == null) return 0;
+    
+    return await db.update(
+      'orders',
+      order.toMap()..['updated_at'] = DateTime.now().toIso8601String(),
+      where: 'id = ?',
+      whereArgs: [order.id],
+    );
+  }
+
   Future<int> deleteOrder(String id) async {
     final db = await _dbHelper.database;
     // We also should delete associated payments and status logs
@@ -158,6 +170,36 @@ class OrderRepository {
   Future<List<Payment>> getPaymentsForOrder(String orderId) async {
     final db = await _dbHelper.database;
     final result = await db.query('payments', where: 'order_id = ?', whereArgs: [orderId], orderBy: 'date DESC');
+    return result.map((map) => Payment.fromMap(map)).toList();
+  }
+
+  Future<List<Payment>> getAllPayments({
+    DateTime? day,
+    int? month,
+    int? year,
+    String? paymentId,
+  }) async {
+    final db = await _dbHelper.database;
+    String whereClause = '';
+    List<dynamic> whereArgs = [];
+
+    if (paymentId != null) {
+      whereClause = 'id = ?';
+      whereArgs.add(paymentId);
+    } else if (day != null) {
+      whereClause = 'date(date) = ?';
+      whereArgs.add(day.toIso8601String().substring(0, 10));
+    } else if (month != null && year != null) {
+      whereClause = 'strftime("%Y-%m", date) = ?';
+      whereArgs.add('${year.toString()}-${month.toString().padLeft(2, '0')}');
+    } else if (year != null) {
+      whereClause = 'strftime("%Y", date) = ?';
+      whereArgs.add(year.toString());
+    }
+
+    final query = whereClause.isNotEmpty ? 'SELECT * FROM payments WHERE $whereClause ORDER BY date DESC' : 'SELECT * FROM payments ORDER BY date DESC';
+    final result = whereClause.isNotEmpty ? await db.rawQuery(query, whereArgs) : await db.rawQuery(query);
+    
     return result.map((map) => Payment.fromMap(map)).toList();
   }
 

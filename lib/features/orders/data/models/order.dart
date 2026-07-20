@@ -99,6 +99,52 @@ class Order {
       garmentName: map['garmentName'], // From JOIN
     );
   }
+
+  Order copyWith({
+    String? id,
+    String? orderNumber,
+    String? customerId,
+    String? garmentId,
+    String? fabricId,
+    String? designId,
+    DateTime? orderDate,
+    DateTime? dueDate,
+    DateTime? trialDate,
+    String? status,
+    double? totalAmount,
+    double? paidAmount,
+    Map<String, double>? measurements,
+    String? notes,
+    String? specialInstructions,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? customerName,
+    String? garmentName,
+    String? fabricName,
+  }) {
+    return Order(
+      id: id ?? this.id,
+      orderNumber: orderNumber ?? this.orderNumber,
+      customerId: customerId ?? this.customerId,
+      garmentId: garmentId ?? this.garmentId,
+      fabricId: fabricId ?? this.fabricId,
+      designId: designId ?? this.designId,
+      orderDate: orderDate ?? this.orderDate,
+      dueDate: dueDate ?? this.dueDate,
+      trialDate: trialDate ?? this.trialDate,
+      status: status ?? this.status,
+      totalAmount: totalAmount ?? this.totalAmount,
+      paidAmount: paidAmount ?? this.paidAmount,
+      measurements: measurements ?? this.measurements,
+      notes: notes ?? this.notes,
+      specialInstructions: specialInstructions ?? this.specialInstructions,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      customerName: customerName ?? this.customerName,
+      garmentName: garmentName ?? this.garmentName,
+      fabricName: fabricName ?? this.fabricName,
+    );
+  }
 }
 
 class Payment {

@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
 import '../../../../shared/mixins/navigation_mixin.dart';
@@ -176,7 +177,7 @@ class _GarmentsLibraryScreenState extends State<GarmentsLibraryScreen>
                 ? _buildEmptyState()
                 : _buildGarmentList(),
           ),
-          const SizedBox(height: 80), // Padding for RadialMenu
+          SizedBox(height: 80), // Padding for RadialMenu
         ],
       ),
     );
@@ -184,10 +185,10 @@ class _GarmentsLibraryScreenState extends State<GarmentsLibraryScreen>
 
   Widget _buildSearchBar() {
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      margin: EdgeInsets.fromLTRB(16, 8, 16, 12),
       child: AdaptiveTextField(
         label: '',
-        hint: 'Search garments...',
+        hint: 'Search garments...'.t(context),
         prefixIcon: Icons.search,
         controller: _searchController,
         onChanged: _onSearchChanged,
@@ -198,12 +199,12 @@ class _GarmentsLibraryScreenState extends State<GarmentsLibraryScreen>
   Widget _buildFilterChips() {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: _filters
             .map(
               (filter) => Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: EdgeInsets.only(right: 8),
                 child: FilterChip(
                   label: Text(
                     filter.label,
@@ -242,18 +243,18 @@ class _GarmentsLibraryScreenState extends State<GarmentsLibraryScreen>
 
   Widget _buildViewControls() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
           Text(
-            'View:',
+            'View:'.t(context),
             style: TextStyle(
               fontSize: 12,
               color: theme.textSecondary,
               fontFamily: theme.fontFamily,
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           IconButton(
             icon: Icon(
               Icons.grid_view_outlined,
@@ -263,8 +264,8 @@ class _GarmentsLibraryScreenState extends State<GarmentsLibraryScreen>
             ),
             onPressed: () => setState(() => _viewMode = ViewMode.grid),
             iconSize: 20,
-            constraints: const BoxConstraints(),
-            padding: const EdgeInsets.all(4),
+            constraints: BoxConstraints(),
+            padding: EdgeInsets.all(4),
           ),
           IconButton(
             icon: Icon(
@@ -275,12 +276,12 @@ class _GarmentsLibraryScreenState extends State<GarmentsLibraryScreen>
             ),
             onPressed: () => setState(() => _viewMode = ViewMode.list),
             iconSize: 20,
-            constraints: const BoxConstraints(),
-            padding: const EdgeInsets.all(4),
+            constraints: BoxConstraints(),
+            padding: EdgeInsets.all(4),
           ),
           const Spacer(),
           Text(
-            'Sort: ',
+            'Sort: '.t(context),
             style: TextStyle(
               fontSize: 12,
               color: theme.textSecondary,
@@ -289,7 +290,7 @@ class _GarmentsLibraryScreenState extends State<GarmentsLibraryScreen>
           ),
           DropdownButton<SortOption>(
             value: _sortOption,
-            underline: const SizedBox(),
+            underline: SizedBox(),
             icon: Icon(
               Icons.keyboard_arrow_down,
               size: 16,
@@ -302,12 +303,12 @@ class _GarmentsLibraryScreenState extends State<GarmentsLibraryScreen>
             ),
             dropdownColor: theme.cardColor,
             items: const [
-              DropdownMenuItem(value: SortOption.name, child: Text('Name')),
+              DropdownMenuItem(value: SortOption.name, child: Text('Name'.t(context))),
               DropdownMenuItem(
                 value: SortOption.used,
-                child: Text('Most Used'),
+                child: Text('Most Used'.t(context)),
               ),
-              DropdownMenuItem(value: SortOption.recent, child: Text('Recent')),
+              DropdownMenuItem(value: SortOption.recent, child: Text('Recent'.t(context))),
             ],
             onChanged: (option) {
               if (option != null) {
@@ -331,8 +332,8 @@ class _GarmentsLibraryScreenState extends State<GarmentsLibraryScreen>
             size: 80,
             color: theme.textSecondary.withOpacity(0.5),
           ),
-          const SizedBox(height: 16),
-          Text('No garments found', style: subtitleStyle),
+          SizedBox(height: 16),
+          Text('No garments found'.t(context), style: subtitleStyle),
         ],
       ),
     );
@@ -352,7 +353,7 @@ class _GarmentsLibraryScreenState extends State<GarmentsLibraryScreen>
       );
     } else {
       return GridView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: 16),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
           crossAxisSpacing: 12,

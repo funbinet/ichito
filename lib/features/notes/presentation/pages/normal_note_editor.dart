@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
@@ -73,19 +74,19 @@ class _NormalNoteEditorState extends State<NormalNoteEditor> with ThemeAwareMixi
         ),
         actions: [
           if (_isSaving)
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(16.0),
               child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
             )
           else
             TextButton(
               onPressed: _saveNote,
-              child: Text('Save Note', style: TextStyle(color: theme.accentColor, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily)),
+              child: Text('Save Note'.t(context), style: TextStyle(color: theme.accentColor, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily)),
             ),
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(24.0),
         child: Column(
           children: [
             TextField(
@@ -97,12 +98,12 @@ class _NormalNoteEditorState extends State<NormalNoteEditor> with ThemeAwareMixi
                 color: theme.textPrimary,
               ),
               decoration: InputDecoration(
-                hintText: 'Title',
+                hintText: 'Title'.t(context),
                 hintStyle: TextStyle(color: theme.textSecondary.withOpacity(0.5)),
                 border: InputBorder.none,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Expanded(
               child: TextField(
                 controller: _contentController,
@@ -114,7 +115,7 @@ class _NormalNoteEditorState extends State<NormalNoteEditor> with ThemeAwareMixi
                   color: theme.textPrimary,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Start typing...',
+                  hintText: 'Start typing...'.t(context),
                   hintStyle: TextStyle(color: theme.textSecondary.withOpacity(0.5)),
                   border: InputBorder.none,
                 ),

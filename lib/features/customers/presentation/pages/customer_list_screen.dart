@@ -7,8 +7,8 @@ import '../../../../shared/providers/language_provider.dart';
 import '../../../../shared/widgets/page_action_button.dart';
 import '../../../../core/widgets/ichito_scaffold.dart';
 import '../../../../core/widgets/adaptive_components.dart';
+import '../../../../shared/providers/customer_provider.dart';
 import '../../data/models/customer.dart';
-import '../../data/repositories/customer_repository.dart';
 import '../widgets/customer_components.dart';
 import 'customer_detail_screen.dart';
 import 'customer_form_screen.dart';
@@ -30,10 +30,8 @@ class CustomerListScreen extends StatefulWidget {
 }
 
 class _CustomerListScreenState extends State<CustomerListScreen> with ThemeAwareMixin, NavigationMixin {
-  final CustomerRepository _repository = CustomerRepository();
-  List<Customer> _allCustomers = [];
   List<Customer> _filteredCustomers = [];
-  bool _isLoading = true;
+  bool _isInit = false;
   
   final TextEditingController _searchController = TextEditingController();
   
@@ -54,7 +52,6 @@ class _CustomerListScreenState extends State<CustomerListScreen> with ThemeAware
   void initState() {
     super.initState();
     _activeFilter = _filters.first;
-    _loadCustomers();
   }
 
   @override
@@ -63,23 +60,16 @@ class _CustomerListScreenState extends State<CustomerListScreen> with ThemeAware
     super.dispose();
   }
 
-  Future<void> _loadCustomers() async {
-    setState(() => _isLoading = true);
-    final customers = await _repository.getAllCustomers();
-    
-    // For MVP we might need to mock some stats if not fully populated from repo
-    for (var c in customers) {
-      if (c.totalSpent == 0) {
-         c.totalSpent = c.totalOrders * 5000; // Mocking data for demonstration
-      }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInit) {
+      _applyFilterAndSort();
+      _isInit = true;
     }
-    
-    setState(() {
-      _allCustomers = customers;
-      _isLoading = false;
-    });
-    _applyFilterAndSort();
   }
+
+  // Loaded from Provider now
 
   void _onSearchChanged(String query) {
     // Simple inline debounce
@@ -92,9 +82,11 @@ class _CustomerListScreenState extends State<CustomerListScreen> with ThemeAware
   }
 
   void _applyFilterAndSort() {
+    if (!mounted) return;
     final query = _searchController.text.toLowerCase();
+    final provider = Provider.of<CustomerProvider>(context, listen: false);
     
-    List<Customer> temp = _allCustomers.where((c) {
+    List<Customer> temp = provider.customers.where((c) {
       final matchesSearch = c.name.toLowerCase().contains(query) || c.phone.contains(query);
       if (!matchesSearch) return false;
       
@@ -156,23 +148,32 @@ class _CustomerListScreenState extends State<CustomerListScreen> with ThemeAware
           ),
         ],
       ),
-      body: Column(
-        children: [
-          _buildSearchBar(),
-          _buildFilterChips(),
-          _buildViewControls(),
-          Expanded(
-            child: _isLoading 
-              ? Center(child: CircularProgressIndicator(color: theme.accentColor))
-              : _filteredCustomers.isEmpty 
-                ? _buildEmptyState() 
-                : _buildCustomerList(),
-          ),
-          const SizedBox(height: 80), // Padding for RadialMenu
-        ],
+      body: Consumer<CustomerProvider>(
+        builder: (context, provider, child) {
+          // Sync logic continuously applied when provider updates
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _applyFilterAndSort();
+          });
+
+          return Column(
+            children: [
+              _buildSearchBar(),
+              _buildFilterChips(),
+              _buildViewControls(),
+              Expanded(
+                child: provider.isLoading 
+                  ? Center(child: CircularProgressIndicator(color: theme.accentColor))
+                  : _filteredCustomers.isEmpty 
+                    ? _buildEmptyState() 
+                    : _buildCustomerList(),
+              ),
+              SizedBox(height: 80), // Padding for RadialMenu
+            ],
+          );
+        },
       ),
       pageActionButton: PageActionButton(
-        label: 'Add Client',
+        label: 'Add Client'.t(context),
         icon: Icons.add,
         onPressed: () => navigateTo('/customers/new'),
       ),
@@ -181,10 +182,10 @@ class _CustomerListScreenState extends State<CustomerListScreen> with ThemeAware
   
   Widget _buildSearchBar() {
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      margin: EdgeInsets.fromLTRB(16, 8, 16, 12),
       child: AdaptiveTextField(
         label: '',
-        hint: 'Search by name or phone...',
+        hint: 'Search by name or phone...'.t(context),
         prefixIcon: Icons.search,
         controller: _searchController,
         onChanged: _onSearchChanged,
@@ -195,11 +196,11 @@ class _CustomerListScreenState extends State<CustomerListScreen> with ThemeAware
   Widget _buildFilterChips() {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: _filters.map((filter) =>
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: EdgeInsets.only(right: 8),
             child: FilterChip(
               label: Text(filter.label, style: TextStyle(color: _activeFilter == filter ? theme.onAccent : theme.textPrimary, fontFamily: theme.fontFamily)),
               selected: _activeFilter == filter,
@@ -223,11 +224,11 @@ class _CustomerListScreenState extends State<CustomerListScreen> with ThemeAware
   
   Widget _buildViewControls() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          Text('View:', style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
-          const SizedBox(width: 8),
+          Text('View:'.t(context), style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+          SizedBox(width: 8),
           IconButton(
             icon: Icon(
               Icons.grid_view_outlined,
@@ -235,8 +236,8 @@ class _CustomerListScreenState extends State<CustomerListScreen> with ThemeAware
             ),
             onPressed: () => setState(() => _viewMode = ViewMode.grid),
             iconSize: 20,
-            constraints: const BoxConstraints(),
-            padding: const EdgeInsets.all(4),
+            constraints: BoxConstraints(),
+            padding: EdgeInsets.all(4),
           ),
           IconButton(
             icon: Icon(
@@ -245,22 +246,22 @@ class _CustomerListScreenState extends State<CustomerListScreen> with ThemeAware
             ),
             onPressed: () => setState(() => _viewMode = ViewMode.list),
             iconSize: 20,
-            constraints: const BoxConstraints(),
-            padding: const EdgeInsets.all(4),
+            constraints: BoxConstraints(),
+            padding: EdgeInsets.all(4),
           ),
           const Spacer(),
-          Text('Sort: ', style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+          Text('Sort: '.t(context), style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
           DropdownButton<SortOption>(
             value: _sortOption,
-            underline: const SizedBox(),
+            underline: SizedBox(),
             icon: Icon(Icons.keyboard_arrow_down, size: 16, color: theme.textSecondary),
             style: TextStyle(fontSize: 12, color: theme.textPrimary, fontFamily: theme.fontFamily),
             dropdownColor: theme.cardColor,
             items: const [
-              DropdownMenuItem(value: SortOption.name, child: Text('Name')),
-              DropdownMenuItem(value: SortOption.orders, child: Text('Orders')),
-              DropdownMenuItem(value: SortOption.spent, child: Text('Spent')),
-              DropdownMenuItem(value: SortOption.recent, child: Text('Recent')),
+              DropdownMenuItem(value: SortOption.name, child: Text('Name'.t(context))),
+              DropdownMenuItem(value: SortOption.orders, child: Text('Orders'.t(context))),
+              DropdownMenuItem(value: SortOption.spent, child: Text('Spent'.t(context))),
+              DropdownMenuItem(value: SortOption.recent, child: Text('Recent'.t(context))),
             ],
             onChanged: (option) {
               if (option != null) {
@@ -280,8 +281,8 @@ class _CustomerListScreenState extends State<CustomerListScreen> with ThemeAware
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.people_outline, size: 80, color: theme.textSecondary.withOpacity(0.5)),
-          const SizedBox(height: 16),
-          Text('No clients found', style: subtitleStyle),
+          SizedBox(height: 16),
+          Text('No clients found'.t(context), style: subtitleStyle),
         ],
       ),
     );
@@ -301,7 +302,7 @@ class _CustomerListScreenState extends State<CustomerListScreen> with ThemeAware
       );
     } else {
       return GridView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: 16),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 12,

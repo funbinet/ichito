@@ -95,6 +95,8 @@ class SettingsRepository {
   static const String _biometricEnabledKey = 'biometricEnabled';
   static const String _autoLockSecondsKey = 'autoLockSeconds';
   static const String _encryptionEnabledKey = 'encryptionEnabled';
+  static const String _recoveryCodeKey = 'recoveryCode';
+  static const String _dateOfBirthKey = 'dateOfBirth';
 
   // Preferences
   static const String _defaultViewKey = 'defaultView';
@@ -158,6 +160,8 @@ class SettingsRepository {
   bool getBiometricEnabled() => _getBool(_biometricEnabledKey, false);
   int getAutoLockSeconds() => _getInt(_autoLockSecondsKey, 300);
   bool getEncryptionEnabled() => _getBool(_encryptionEnabledKey, false);
+  String? getRecoveryCode() => _cache[_recoveryCodeKey];
+  String? getDateOfBirth() => _cache[_dateOfBirthKey];
 
   // Preferences
   String getDefaultView() => _getString(_defaultViewKey, 'grid');
@@ -219,6 +223,8 @@ class SettingsRepository {
   Future<void> setAutoLockSeconds(int seconds) => _set(_autoLockSecondsKey, seconds.toString());
   Future<void> setEncryptionEnabled(bool enabled) =>
       _set(_encryptionEnabledKey, enabled ? '1' : '0');
+  Future<void> setRecoveryCode(String code) => _set(_recoveryCodeKey, code);
+  Future<void> setDateOfBirth(String dob) => _set(_dateOfBirthKey, dob);
 
   // Preferences
   Future<void> setDefaultView(String view) => _set(_defaultViewKey, view);

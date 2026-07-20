@@ -76,29 +76,29 @@ class _DesignDetailScreenState extends State<DesignDetailScreen> with ThemeAware
         iconTheme: IconThemeData(color: theme.textPrimary),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit_outlined),
+            icon: Icon(Icons.edit_outlined),
             onPressed: _editDesign,
           ),
           IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.red),
+            icon: Icon(Icons.delete_outline, color: Colors.red),
             onPressed: _deleteDesign,
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 120),
+        padding: EdgeInsets.only(bottom: 120),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildImage(context),
             Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: EdgeInsets.all(24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (_design.category != null && _design.category!.isNotEmpty) ...[
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: theme.accentColor.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(16),
@@ -112,7 +112,7 @@ class _DesignDetailScreenState extends State<DesignDetailScreen> with ThemeAware
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                   ],
                   Text(
                     lang.t('description'),
@@ -122,7 +122,7 @@ class _DesignDetailScreenState extends State<DesignDetailScreen> with ThemeAware
                       fontFamily: theme.fontFamily,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     _design.description ?? '-',
                     style: TextStyle(

@@ -29,6 +29,7 @@ class _RadialMenuState extends State<RadialMenu>
   bool _isOpen = false;
 
   final List<RadialMenuItem> _menuItems = [
+    RadialMenuItem(labelKey: 'home', icon: Icons.home_outlined, route: '/dashboard'),
     RadialMenuItem(labelKey: 'new_order', icon: Icons.add_shopping_cart_outlined, route: '/order_wizard'),
     RadialMenuItem(labelKey: 'customers', icon: Icons.people_outlined, route: '/customers'),
     RadialMenuItem(labelKey: 'orders', icon: Icons.shopping_bag_outlined, route: '/orders'),
@@ -84,7 +85,7 @@ class _RadialMenuState extends State<RadialMenu>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: theme.accentLight.withOpacity(0.05),
               shape: BoxShape.circle,
@@ -95,7 +96,7 @@ class _RadialMenuState extends State<RadialMenu>
               size: 26,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             lang.t(item.labelKey),
             textAlign: TextAlign.center,
@@ -115,7 +116,7 @@ class _RadialMenuState extends State<RadialMenu>
 
   Widget _buildGridPanel() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(24),

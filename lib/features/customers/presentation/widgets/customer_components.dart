@@ -1,8 +1,10 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:provider/provider.dart';
 import '../../../../shared/providers/theme_provider.dart';
 import '../../data/models/customer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoyaltyBadge extends StatelessWidget {
   final String status;
@@ -34,7 +36,7 @@ class LoyaltyBadge extends StatelessWidget {
     }
     
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: badgeColor.withOpacity(0.15),
         borderRadius: BorderRadius.circular(12),
@@ -44,7 +46,7 @@ class LoyaltyBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(badgeIcon, size: 10, color: badgeColor),
-          const SizedBox(width: 3),
+          SizedBox(width: 3),
           Text(
             status,
             style: TextStyle(
@@ -135,7 +137,7 @@ class CustomerCard extends StatelessWidget {
             Expanded(
               flex: 2,
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -151,19 +153,19 @@ class CustomerCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.shopping_bag_outlined, size: 12, color: theme.textSecondary),
-                        const SizedBox(width: 4),
+                        SizedBox(width: 4),
                         Text(
                           '${customer.totalOrders} Orders',
                           style: TextStyle(fontSize: 11, color: theme.textSecondary, fontFamily: theme.fontFamily),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     LoyaltyBadge(status: customer.loyaltyStatus),
                   ],
                 ),
@@ -205,12 +207,19 @@ class _CustomerListTileState extends State<CustomerListTile> {
     );
   }
 
+  void _launchUrl(String scheme, String path) async {
+    final Uri url = Uri(scheme: scheme, path: path);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
     
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       color: theme.cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: theme.cornerRadius,
@@ -226,7 +235,7 @@ class _CustomerListTileState extends State<CustomerListTile> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(12),
               child: Row(
                 children: [
                   // Image/Avatar
@@ -239,7 +248,7 @@ class _CustomerListTileState extends State<CustomerListTile> {
                       height: 60,
                       decoration: BoxDecoration(
                         color: theme.accentLight.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: theme.cornerRadius,
                         border: Border.all(color: theme.borderColor, width: 1),
                       ),
                       clipBehavior: Clip.antiAlias,
@@ -261,7 +270,7 @@ class _CustomerListTileState extends State<CustomerListTile> {
                             ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   // Info
                   Expanded(
                     child: Column(
@@ -276,11 +285,11 @@ class _CustomerListTileState extends State<CustomerListTile> {
                             fontFamily: theme.fontFamily
                           )
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Row(
                           children: [
                             Icon(Icons.phone_outlined, size: 14, color: theme.textSecondary),
-                            const SizedBox(width: 4),
+                            SizedBox(width: 4),
                             Text(
                               widget.customer.phone,
                               style: TextStyle(
@@ -299,7 +308,7 @@ class _CustomerListTileState extends State<CustomerListTile> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       LoyaltyBadge(status: widget.customer.loyaltyStatus),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Icon(
                         _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
                         color: theme.textSecondary,
@@ -311,7 +320,7 @@ class _CustomerListTileState extends State<CustomerListTile> {
             ),
             if (_isExpanded)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: theme.backgroundColor.withOpacity(0.5),
                   border: Border(top: BorderSide(color: theme.borderColor)),
@@ -322,21 +331,32 @@ class _CustomerListTileState extends State<CustomerListTile> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Total Orders: ${widget.customer.totalOrders}', style: TextStyle(fontSize: 13, color: theme.textSecondary)),
-                        const SizedBox(height: 4),
-                        Text('Role: ${widget.customer.role}', style: TextStyle(fontSize: 13, color: theme.textSecondary)),
+                        Text('Total Orders: ${widget.customer.totalOrders}'.t(context), style: TextStyle(fontSize: 13, color: theme.textSecondary)),
+                        SizedBox(height: 4),
+                        Text('Role: ${widget.customer.role}'.t(context), style: TextStyle(fontSize: 13, color: theme.textSecondary)),
                       ],
                     ),
                     Row(
                       children: [
+                        IconButton(
+                          onPressed: () => _launchUrl('tel', widget.customer.phone),
+                          icon: Icon(Icons.phone, size: 18, color: theme.textSecondary),
+                          tooltip: 'Call'.t(context),
+                        ),
+                        IconButton(
+                          onPressed: () => _launchUrl('sms', widget.customer.phone),
+                          icon: Icon(Icons.message, size: 18, color: theme.textSecondary),
+                          tooltip: 'SMS'.t(context),
+                        ),
+                        SizedBox(width: 8),
                         OutlinedButton.icon(
                           onPressed: widget.onTap, // onTap passed from parent means view details
                           icon: Icon(Icons.edit_outlined, size: 16, color: theme.accentColor),
-                          label: Text('Edit/View', style: TextStyle(color: theme.accentColor)),
+                          label: Text('Edit/View'.t(context), style: TextStyle(color: theme.accentColor)),
                           style: OutlinedButton.styleFrom(
                             side: BorderSide(color: theme.accentColor),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           ),
                         ),
                       ],

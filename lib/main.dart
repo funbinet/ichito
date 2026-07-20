@@ -6,6 +6,8 @@ import 'shared/providers/language_provider.dart';
 import 'shared/providers/app_state_provider.dart';
 import 'shared/providers/profile_provider.dart';
 import 'shared/providers/notification_provider.dart';
+import 'shared/providers/customer_provider.dart';
+import 'shared/providers/order_provider.dart';
 import 'shared/data/database/database_helper.dart';
 import 'shared/data/local/settings_repository.dart';
 import 'features/notifications/data/services/notification_service.dart';
@@ -49,6 +51,12 @@ void main() async {
   final notificationProvider = NotificationProvider();
   await notificationProvider.loadNotifications();
 
+  final customerProvider = CustomerProvider();
+  await customerProvider.loadCustomers();
+
+  final orderProvider = OrderProvider();
+  await orderProvider.loadOrders();
+
   // Check for due orders and generate notifications
   await notificationProvider.checkOrderDueDates();
 
@@ -74,6 +82,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AppStateProvider()..initialize()),
         ChangeNotifierProvider.value(value: profileProvider),
         ChangeNotifierProvider.value(value: notificationProvider),
+        ChangeNotifierProvider.value(value: customerProvider),
+        ChangeNotifierProvider.value(value: orderProvider),
       ],
       child: const IchitoApp(),
     ),
@@ -110,7 +120,7 @@ class _IchitoAppState extends State<IchitoApp> with WidgetsBindingObserver {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return MaterialApp(
-      title: 'ICHITO',
+      title: 'ICHITO'.t(context),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: themeProvider.themeMode == AppThemeMode.light ? Brightness.light : Brightness.dark,
@@ -126,6 +136,12 @@ class _IchitoAppState extends State<IchitoApp> with WidgetsBindingObserver {
       onGenerateRoute: RouteGenerator.generateRoute,
       builder: (context, child) {
         final appState = Provider.of<AppStateProvider>(context);
+        final scaledChild = MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(themeProvider.fontSize / 16.0),
+          ),
+          child: child!,
+        );
         if (appState.isLocked) {
           return Scaffold(
             body: PinLockScreen(
@@ -133,7 +149,7 @@ class _IchitoAppState extends State<IchitoApp> with WidgetsBindingObserver {
             ),
           );
         }
-        return child!;
+        return scaledChild;
       },
     );
   }

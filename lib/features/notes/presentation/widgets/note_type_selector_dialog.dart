@@ -15,15 +15,15 @@ class NoteTypeSelectorDialog extends StatelessWidget {
       backgroundColor: theme.cardColor,
       shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24.0),
+        padding: EdgeInsets.symmetric(vertical: 24.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              padding: EdgeInsets.symmetric(horizontal: 24.0),
               child: Text(
-                'What type of note?',
+                'What type of note?'.t(context),
                 style: TextStyle(
                   fontFamily: theme.fontFamily,
                   fontSize: theme.fontSize * 1.5,
@@ -33,7 +33,7 @@ class NoteTypeSelectorDialog extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             _buildTypeOption(
               context,
               theme,
@@ -73,18 +73,18 @@ class NoteTypeSelectorDialog extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+        padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: color.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: color, size: 28),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,7 +98,7 @@ class NoteTypeSelectorDialog extends StatelessWidget {
                       color: theme.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     subtitle,
                     style: TextStyle(

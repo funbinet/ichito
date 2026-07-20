@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../../shared/mixins/theme_aware_mixin.dart';
@@ -9,6 +10,7 @@ import '../../../../garments/data/repositories/garment_repository.dart';
 import '../../../data/models/order.dart';
 import '../../../data/repositories/order_repository.dart';
 import '../../pages/order_detail_screen.dart';
+import '../../../../../shared/widgets/square_avatar.dart';
 
 class Step6Review extends StatefulWidget {
   final String customerId;
@@ -64,7 +66,7 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
       _customer = await CustomerRepository().getById(widget.customerId);
       _garment = await GarmentRepository().getById(widget.garmentId);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'.t(context))));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -117,7 +119,7 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error creating order: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error creating order: $e'.t(context))));
       }
     } finally {
       if (mounted) setState(() => _isCreating = false);
@@ -135,15 +137,15 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               decoration: BoxDecoration(color: Colors.green.withOpacity(0.1), shape: BoxShape.circle),
-              child: const Icon(Icons.check_circle, color: Colors.green, size: 64),
+              child: Icon(Icons.check_circle, color: Colors.green, size: 64),
             ),
-            const SizedBox(height: 16),
-            Text('Order Created!', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
-            const SizedBox(height: 8),
-            Text('The order has been successfully recorded in the system.', textAlign: TextAlign.center, style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
-            const SizedBox(height: 24),
+            SizedBox(height: 16),
+            Text('Order Created!'.t(context), style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+            SizedBox(height: 8),
+            Text('The order has been successfully recorded in the system.'.t(context), textAlign: TextAlign.center, style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
+            SizedBox(height: 24),
             Row(
               children: [
                 Expanded(
@@ -152,7 +154,7 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
                       Navigator.pop(ctx);
                       Navigator.pop(context); // Exit wizard to Home
                     },
-                    child: const Text('Go Home'),
+                    child: Text('Go Home'.t(context)),
                   ),
                 ),
                 Expanded(
@@ -182,7 +184,7 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: EdgeInsets.all(32.0),
         child: Center(child: CircularProgressIndicator(color: theme.accentColor)),
       );
     }
@@ -191,106 +193,119 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
     final currencyFormat = NumberFormat.currency(symbol: 'KES ', decimalDigits: 0);
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(16.0),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Step 6: Review & Confirm',
+              'Step 6: Review & Confirm'.t(context),
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             // Client & Garment
-            Card(
-              color: theme.cardColor,
-              elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: theme.borderColor)),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.person, size: 20, color: theme.textSecondary),
-                        const SizedBox(width: 8),
-                        Text(_customer?.name ?? 'Unknown', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                      ],
+            Row(
+              children: [
+                Expanded(
+                  child: Card(
+                    color: theme.cardColor,
+                    shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius, side: BorderSide(color: theme.borderColor)),
+                    child: Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: Column(
+                        children: [
+                          SquareAvatar(size: 60, base64Image: _customer?.photoPath, fallbackText: _customer?.initials),
+                          SizedBox(height: 8),
+                          Text(_customer?.name ?? 'Unknown', style: TextStyle(fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Icon(Icons.checkroom, size: 20, color: theme.textSecondary),
-                        const SizedBox(width: 8),
-                        Text(_garment?.name ?? 'Unknown', style: TextStyle(fontSize: 16, color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Card(
+                    color: theme.cardColor,
+                    shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius, side: BorderSide(color: theme.borderColor)),
+                    child: Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: Column(
+                        children: [
+                          SquareAvatar(size: 60, base64Image: null, fallbackText: _garment?.name.isNotEmpty == true ? _garment!.name[0].toUpperCase() : 'G'),
+                          SizedBox(height: 8),
+                          Text(_garment?.name ?? 'Unknown', style: TextStyle(fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Financials
             Card(
               color: theme.cardColor,
-              elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: theme.borderColor)),
+              shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius, side: BorderSide(color: theme.borderColor)),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Financials', style: TextStyle(fontWeight: FontWeight.bold, color: theme.textSecondary, fontFamily: theme.fontFamily)),
-                    const SizedBox(height: 12),
+                    Text('Financials'.t(context), style: TextStyle(fontWeight: FontWeight.bold, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+                    SizedBox(height: 16),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Labor Cost', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                        Text(currencyFormat.format(widget.laborCost), style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Labor Cost'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 12, fontFamily: theme.fontFamily)),
+                              Text(currencyFormat.format(widget.laborCost), style: TextStyle(color: theme.textPrimary, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily)),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Material Cost'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 12, fontFamily: theme.fontFamily)),
+                              Text(currencyFormat.format(widget.fabricCost), style: TextStyle(color: theme.textPrimary, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily)),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 16),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Material Cost', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                        Text(currencyFormat.format(widget.fabricCost), style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Total Amount'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 12, fontFamily: theme.fontFamily)),
+                              Text(currencyFormat.format(widget.totalAmount), style: TextStyle(color: theme.accentColor, fontWeight: FontWeight.bold, fontSize: 18, fontFamily: theme.fontFamily)),
+                            ],
+                          ),
+                        ),
+                        if (widget.deposit > 0)
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Balance Due'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 12, fontFamily: theme.fontFamily)),
+                                Text(currencyFormat.format(widget.totalAmount - widget.deposit), style: TextStyle(color: theme.textPrimary, fontWeight: FontWeight.bold, fontSize: 18, fontFamily: theme.fontFamily)),
+                              ],
+                            ),
+                          ),
                       ],
                     ),
-                    const Divider(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Total Amount', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                        Text(currencyFormat.format(widget.totalAmount), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.accentColor, fontFamily: theme.fontFamily)),
-                      ],
-                    ),
-                    if (widget.deposit > 0) ...[
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Deposit Received', style: TextStyle(color: Colors.green, fontFamily: theme.fontFamily)),
-                          Text('-${currencyFormat.format(widget.deposit)}', style: TextStyle(color: Colors.green, fontFamily: theme.fontFamily)),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Balance Due', style: TextStyle(fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                          Text(currencyFormat.format(widget.totalAmount - widget.deposit), style: TextStyle(fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                        ],
-                      ),
-                    ],
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Schedule
             Card(
@@ -298,22 +313,22 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
               elevation: 0,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: theme.borderColor)),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0),
                 child: Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Due Date', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
+                        Text('Due Date'.t(context), style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
                         Text(dateFormat.format(widget.dueDate), style: TextStyle(fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
                       ],
                     ),
                     if (widget.trialDate != null) ...[
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Trial Date', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
+                          Text('Trial Date'.t(context), style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
                           Text(dateFormat.format(widget.trialDate!), style: TextStyle(fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
                         ],
                       ),
@@ -322,7 +337,7 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             Row(
               children: [
                 Expanded(
@@ -332,7 +347,7 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
                     isPrimary: false,
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(
                   child: _isCreating
                       ? Center(child: CircularProgressIndicator(color: theme.accentColor))

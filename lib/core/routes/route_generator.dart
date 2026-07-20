@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import '../../features/dashboard/presentation/pages/dashboard_screen.dart';
 import '../../features/customers/presentation/pages/customer_list_screen.dart';
@@ -20,15 +21,15 @@ import '../../features/settings/presentation/pages/sub_screens/appearance_settin
 import '../../features/settings/presentation/pages/sub_screens/security_settings_screen.dart';
 import '../../features/settings/presentation/pages/sub_screens/language_settings_screen.dart';
 import '../../features/settings/presentation/pages/sub_screens/preferences_settings_screen.dart';
-import '../../features/settings/presentation/pages/sub_screens/business_settings_screen.dart';
-import '../../features/settings/presentation/pages/sub_screens/storage_settings_screen.dart';
-import '../../features/settings/presentation/pages/sub_screens/advanced_settings_screen.dart';
+import '../../features/settings/presentation/pages/sub_screens/measurement_types_screen.dart';
+import '../../features/settings/presentation/pages/sub_screens/backup_restore_screen.dart';
 import '../../features/settings/presentation/pages/sub_screens/help_screen.dart';
 import '../../features/settings/presentation/pages/sub_screens/about_screen.dart';
 import '../../features/security/presentation/pages/pin_lock_screen.dart';
 import '../../features/security/presentation/pages/pin_setup_screen.dart';
 import '../../features/customers/presentation/pages/customer_form_screen.dart';
 import '../../features/customers/presentation/pages/customer_detail_screen.dart';
+import '../../features/customers/presentation/pages/customer_financials_screen.dart';
 import '../../shared/data/local/settings_repository.dart';
 
 class RouteGenerator {
@@ -73,14 +74,11 @@ class RouteGenerator {
       case '/settings/preferences':
         page = const PreferencesSettingsScreen();
         break;
-      case '/settings/business':
-        page = const BusinessSettingsScreen();
+      case '/settings/measurements':
+        page = const MeasurementTypesScreen();
         break;
-      case '/settings/storage':
-        page = const StorageSettingsScreen();
-        break;
-      case '/settings/advanced':
-        page = const AdvancedSettingsScreen();
+      case '/settings/backup':
+        page = const BackupRestoreScreen();
         break;
       case '/settings/help':
         page = const HelpScreen();
@@ -122,6 +120,10 @@ class RouteGenerator {
       case '/customers/detail':
         final String customerId = settings.arguments as String;
         page = CustomerDetailScreen(customerId: customerId);
+        break;
+      case '/customers/financials':
+        final String customerId = settings.arguments as String;
+        page = CustomerFinancialsScreen(customerId: customerId);
         break;
       case '/orders/detail':
         final String orderId = settings.arguments as String;
@@ -166,13 +168,13 @@ class RouteGenerator {
 
   static Widget _comingSoonRoute(String routeName) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Coming Soon')),
+      appBar: AppBar(title: Text('Coming Soon'.t(context))),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.construction, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
+            Icon(Icons.construction, size: 64, color: Colors.grey),
+            SizedBox(height: 16),
             Text('The feature "$routeName" is under construction.', style: const TextStyle(fontSize: 16)),
           ],
         ),
@@ -182,7 +184,7 @@ class RouteGenerator {
 
   static Widget _errorRoute(String? routeName) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Route Not Found')),
+      appBar: AppBar(title: Text('Route Not Found'.t(context))),
       body: Center(
         child: Text('ERROR: The route "$routeName" could not be found.'),
       ),

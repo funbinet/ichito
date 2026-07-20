@@ -1,12 +1,14 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../../../shared/mixins/theme_aware_mixin.dart';
 import '../../../../../core/widgets/adaptive_components.dart';
 import '../../../../garments/data/models/garment.dart';
 import '../../../../garments/data/repositories/garment_repository.dart';
+import '../../../../garments/data/repositories/garment_repository.dart';
 import '../../../../customers/data/repositories/customer_repository.dart';
 import '../../../../customers/data/models/customer.dart';
-import '../../../../garments/presentation/widgets/garment_components.dart';
+import '../../../../garments/presentation/widgets/garment_form_dialog.dart';
 
 class Step2Garment extends StatefulWidget {
   final String? customerId;
@@ -38,6 +40,7 @@ class _Step2GarmentState extends State<Step2Garment> with ThemeAwareMixin {
   String _searchQuery = '';
   String _selectedGenderFilter = 'All'; // 'Men', 'Women', 'Unisex', 'All'
   Timer? _debounce;
+  bool _isGridView = true;
 
   @override
   void initState() {
@@ -88,7 +91,7 @@ class _Step2GarmentState extends State<Step2Garment> with ThemeAwareMixin {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error loading data: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error loading data: $e'.t(context))));
       }
     } finally {
       if (mounted) {
@@ -108,76 +111,13 @@ class _Step2GarmentState extends State<Step2Garment> with ThemeAwareMixin {
   }
 
   Future<void> _showAddGarmentDialog() async {
-    final nameCtrl = TextEditingController();
-    final priceCtrl = TextEditingController(text: '0');
-    final categoryCtrl = TextEditingController(text: 'Unisex');
-    final measurementsCtrl = TextEditingController(text: 'Chest, Waist, Length');
-    final formKey = GlobalKey<FormState>();
-
-    final result = await showDialog<bool>(
+    final result = await showDialog<Garment>(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: theme.cardColor,
-          title: Text('Add New Garment', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
-          content: Form(
-            key: formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AdaptiveTextField(
-                    controller: nameCtrl,
-                    label: 'Garment Name',
-                    validator: (val) => val == null || val.isEmpty ? 'Required' : null,
-                  ),
-                  AdaptiveTextField(
-                    controller: priceCtrl,
-                    label: 'Base Price',
-                    keyboardType: TextInputType.number,
-                  ),
-                  AdaptiveTextField(
-                    controller: categoryCtrl,
-                    label: 'Category (Men/Women/Unisex)',
-                  ),
-                  AdaptiveTextField(
-                    controller: measurementsCtrl,
-                    label: 'Measurement Fields (comma separated)',
-                    maxLines: 2,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (formKey.currentState!.validate()) {
-                  final meas = measurementsCtrl.text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
-                  final newGarment = Garment(
-                    name: nameCtrl.text.trim(),
-                    category: categoryCtrl.text.trim(),
-                    defaultPrice: double.tryParse(priceCtrl.text) ?? 0.0,
-                    measurementFields: meas,
-                    createdAt: DateTime.now(),
-                    updatedAt: DateTime.now(),
-                  );
-                  await _garmentRepo.createGarment(newGarment);
-                  Navigator.pop(context, true);
-                }
-              },
-              child: const Text('Add'),
-            ),
-          ],
-        );
-      },
+      builder: (context) => const GarmentFormDialog(),
     );
 
-    if (result == true) {
+    if (result != null) {
+      await _garmentRepo.createGarment(result);
       final garments = await _garmentRepo.getAll();
       setState(() {
         _garments = garments;
@@ -213,12 +153,12 @@ class _Step2GarmentState extends State<Step2Garment> with ThemeAwareMixin {
     final selectedGarment = _garments.where((g) => g.id == widget.selectedGarmentId).firstOrNull;
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Step 2: Select Garment',
+            'Step 2: Select Garment'.t(context),
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -226,28 +166,40 @@ class _Step2GarmentState extends State<Step2Garment> with ThemeAwareMixin {
               fontFamily: theme.fontFamily,
             ),
           ),
-          const SizedBox(height: 16),
-          TextField(
-            onChanged: _onSearchChanged,
-            decoration: InputDecoration(
-              hintText: 'Search garments...',
-              hintStyle: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily),
-              prefixIcon: Icon(Icons.search, color: theme.textSecondary),
-              filled: true,
-              fillColor: theme.cardColor,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
+          SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  onChanged: _onSearchChanged,
+                  decoration: InputDecoration(
+                    hintText: 'Search garments...'.t(context),
+                    hintStyle: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily),
+                    prefixIcon: Icon(Icons.search, color: theme.textSecondary),
+                    filled: true,
+                    fillColor: theme.cardColor,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
               ),
-            ),
+              SizedBox(width: 8),
+              IconButton(
+                icon: Icon(_isGridView ? Icons.view_list : Icons.grid_view, color: theme.textSecondary),
+                onPressed: () => setState(() => _isGridView = !_isGridView),
+                tooltip: 'Toggle View'.t(context),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           // Filter tabs
           Row(
             children: ['Men', 'Women', 'All'].map((filter) {
               final isSelected = _selectedGenderFilter == filter;
               return Padding(
-                padding: const EdgeInsets.only(right: 8.0),
+                padding: EdgeInsets.only(right: 8.0),
                 child: FilterChip(
                   label: Text(filter, style: TextStyle(color: isSelected ? Colors.white : theme.textPrimary, fontFamily: theme.fontFamily)),
                   selected: isSelected,
@@ -263,92 +215,114 @@ class _Step2GarmentState extends State<Step2Garment> with ThemeAwareMixin {
               );
             }).toList(),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Expanded(
             child: _isLoading
                 ? Center(child: CircularProgressIndicator(color: theme.accentColor))
                 : _filteredGarments.isEmpty
                     ? Center(
                         child: Text(
-                          'No garments found',
+                          'No garments found'.t(context),
                           style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily),
                         ),
                       )
-                    : GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 0.8,
-                        ),
-                        itemCount: _filteredGarments.length,
-                        itemBuilder: (context, index) {
-                          final garment = _filteredGarments[index];
-                          final isSelected = widget.selectedGarmentId == garment.id;
-                          return GestureDetector(
-                            onTap: () => widget.onGarmentSelected(garment.id!),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: isSelected ? theme.accentColor.withOpacity(0.05) : theme.cardColor,
-                                borderRadius: BorderRadius.circular(12),
-                                border: isSelected ? Border.all(color: theme.accentColor, width: 2) : Border.all(color: theme.borderColor, width: 0.5),
-                              ),
-                              padding: const EdgeInsets.all(8),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.checkroom_outlined, size: 32, color: isSelected ? theme.accentColor : theme.textSecondary),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    garment.name,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                      color: theme.textPrimary,
-                                      fontFamily: theme.fontFamily,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${garment.measurementFields.length} meas.',
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: theme.textSecondary,
-                                      fontFamily: theme.fontFamily,
-                                    ),
-                                  ),
-                                  Text(
-                                    garment.category,
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: theme.textSecondary,
-                                      fontFamily: theme.fontFamily,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                    : _isGridView
+                        ? GridView.builder(
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                              childAspectRatio: 0.8,
                             ),
-                          );
-                        },
-                      ),
+                            itemCount: _filteredGarments.length,
+                            itemBuilder: (context, index) {
+                              final garment = _filteredGarments[index];
+                              final isSelected = widget.selectedGarmentId == garment.id;
+                              return GestureDetector(
+                                onTap: () => widget.onGarmentSelected(garment.id!),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: isSelected ? theme.accentColor.withOpacity(0.05) : theme.cardColor,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: isSelected ? Border.all(color: theme.accentColor, width: 2) : Border.all(color: theme.borderColor, width: 0.5),
+                                  ),
+                                  padding: EdgeInsets.all(8),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.checkroom_outlined, size: 32, color: isSelected ? theme.accentColor : theme.textSecondary),
+                                      SizedBox(height: 8),
+                                      Text(
+                                        garment.name,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                          color: theme.textPrimary,
+                                          fontFamily: theme.fontFamily,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        '${garment.measurementFields.length} meas.',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: theme.textSecondary,
+                                          fontFamily: theme.fontFamily,
+                                        ),
+                                      ),
+                                      Text(
+                                        garment.category,
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: theme.textSecondary,
+                                          fontFamily: theme.fontFamily,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        : ListView.builder(
+                            itemCount: _filteredGarments.length,
+                            itemBuilder: (context, index) {
+                              final garment = _filteredGarments[index];
+                              final isSelected = widget.selectedGarmentId == garment.id;
+                              return Card(
+                                color: isSelected ? theme.accentColor.withOpacity(0.05) : theme.cardColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: theme.cornerRadius,
+                                  side: isSelected ? BorderSide(color: theme.accentColor, width: 2) : BorderSide(color: theme.borderColor, width: 0.5),
+                                ),
+                                child: ListTile(
+                                  leading: Icon(Icons.checkroom_outlined, color: isSelected ? theme.accentColor : theme.textSecondary),
+                                  title: Text(garment.name, style: TextStyle(color: theme.textPrimary, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily)),
+                                  subtitle: Text('${garment.category} - ${garment.measurementFields.length} measurements', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
+                                  trailing: isSelected ? Icon(Icons.check_circle, color: theme.accentColor) : null,
+                                  onTap: () => widget.onGarmentSelected(garment.id!),
+                                ),
+                              );
+                            },
+                          ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           AdaptiveButton(
             text: '+ Add New Garment',
             onPressed: _showAddGarmentDialog,
             isPrimary: false,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           if (selectedGarment != null)
             Row(
               children: [
                 Icon(Icons.check_circle, color: theme.accentColor),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(
-                  'Selected: ${selectedGarment.name}',
+                  'Selected: ${selectedGarment.name}'.t(context),
                   style: TextStyle(
                     color: theme.textPrimary,
                     fontWeight: FontWeight.bold,
@@ -357,7 +331,7 @@ class _Step2GarmentState extends State<Step2Garment> with ThemeAwareMixin {
                 ),
               ],
             ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Row(
             children: [
               Expanded(
@@ -367,7 +341,7 @@ class _Step2GarmentState extends State<Step2Garment> with ThemeAwareMixin {
                   isPrimary: false,
                 ),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               Expanded(
                 child: AdaptiveButton(
                   text: 'Next Step',

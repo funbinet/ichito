@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
 import '../../../../core/widgets/ichito_scaffold.dart';
@@ -75,7 +76,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
         }
       }
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PIN setup successfully!', style: TextStyle(color: theme.onAccent)), backgroundColor: theme.accentColor));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PIN setup successfully!'.t(context), style: TextStyle(color: theme.onAccent)), backgroundColor: theme.accentColor));
         Navigator.pop(context);
       }
     } else {
@@ -92,7 +93,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
     
     if (p1.isEmpty || p1.length < 6) {
       setState(() => _isError = true);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password must be at least 6 characters')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password must be at least 6 characters'.t(context))));
       return;
     }
     
@@ -105,12 +106,12 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
         }
       }
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Password setup successfully!', style: TextStyle(color: theme.onAccent)), backgroundColor: theme.accentColor));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Password setup successfully!'.t(context), style: TextStyle(color: theme.onAccent)), backgroundColor: theme.accentColor));
         Navigator.pop(context);
       }
     } else {
       setState(() => _isError = true);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Passwords do not match'.t(context))));
     }
   }
 
@@ -120,12 +121,12 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
       showRadialMenu: false,
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Setup Security', style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Setup Security'.t(context), style: headingStyle.copyWith(fontSize: 18)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
@@ -151,7 +152,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
             Text(
               _isPasswordMode 
                 ? 'Create a Secure Password'
@@ -163,14 +164,14 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
                 fontFamily: theme.fontFamily,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             if (_isError)
               Text(
-                'Does not match. Try again.',
+                'Does not match. Try again.'.t(context),
                 style: TextStyle(color: Colors.red, fontFamily: theme.fontFamily),
               )
             else
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
             const Spacer(),
             
             if (_isPasswordMode)
@@ -183,7 +184,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
             if (!_isPasswordMode)
               _buildKeypad(),
               
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
           ],
         ),
       ),
@@ -197,7 +198,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
       children: List.generate(4, (index) {
         bool isFilled = index < currentInput.length;
         return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 12),
+          margin: EdgeInsets.symmetric(horizontal: 12),
           width: 20,
           height: 20,
           decoration: BoxDecoration(
@@ -215,7 +216,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
   
   Widget _buildPasswordInput() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+      padding: EdgeInsets.symmetric(horizontal: 32.0),
       child: Column(
         children: [
           TextField(
@@ -230,7 +231,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
               border: OutlineInputBorder(borderRadius: theme.cornerRadius),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           TextField(
             controller: _confirmPasswordController,
             obscureText: true,
@@ -243,7 +244,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
               border: OutlineInputBorder(borderRadius: theme.cornerRadius),
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           ElevatedButton(
             onPressed: _savePassword,
             style: ElevatedButton.styleFrom(
@@ -251,7 +252,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
               minimumSize: const Size(double.infinity, 50),
               shape: RoundedRectangleBorder(borderRadius: theme.buttonRadius),
             ),
-            child: Text('Save Password', style: TextStyle(color: theme.onAccent)),
+            child: Text('Save Password'.t(context), style: TextStyle(color: theme.onAccent)),
           ),
         ],
       ),
@@ -260,7 +261,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
 
   Widget _buildKeypad() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
+      padding: EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         children: [
           Row(
@@ -271,7 +272,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
               _buildKeypadButton('3'),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -280,7 +281,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
               _buildKeypadButton('6'),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -289,11 +290,11 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
               _buildKeypadButton('9'),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const SizedBox(width: 80),
+              SizedBox(width: 80),
               _buildKeypadButton('0'),
               _buildKeypadButton('del', icon: Icons.backspace_outlined, onPressed: _onBackspacePressed),
             ],

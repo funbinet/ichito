@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../../shared/mixins/theme_aware_mixin.dart';
@@ -70,13 +71,13 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> with Th
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Business settings saved successfully')),
+          const SnackBar(content: Text('Business settings saved successfully'.t(context))),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving settings: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Error saving settings: $e'.t(context)), backgroundColor: Colors.red),
         );
       }
     }
@@ -87,104 +88,104 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> with Th
     return Scaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Business Settings', style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Business Settings'.t(context), style: headingStyle.copyWith(fontSize: 18)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16).copyWith(bottom: 120),
+        padding: EdgeInsets.all(16).copyWith(bottom: 120),
         children: [
           // Business Information
           SettingsTile(
-            title: 'Business Information',
+            title: 'Business Information'.t(context),
             children: [
               SettingsTextField(
-                label: 'Business Name',
+                label: 'Business Name'.t(context),
                 initialValue: _nameController.text,
                 onChanged: (value) => _nameController.text = value,
-                hintText: 'e.g., Ichito Studios',
+                hintText: 'e.g., Ichito Studios'.t(context),
               ),
               SettingsTextField(
-                label: 'Location',
+                label: 'Location'.t(context),
                 initialValue: _locationController.text,
                 onChanged: (value) => _locationController.text = value,
-                hintText: 'e.g., Nairobi, Kenya',
+                hintText: 'e.g., Nairobi, Kenya'.t(context),
               ),
               SettingsTextField(
-                label: 'Phone',
+                label: 'Phone'.t(context),
                 initialValue: _phoneController.text,
                 onChanged: (value) => _phoneController.text = value,
                 keyboardType: TextInputType.phone,
-                hintText: 'e.g., +254 712 345 678',
+                hintText: 'e.g., +254 712 345 678'.t(context),
               ),
               SettingsTextField(
-                label: 'Email',
+                label: 'Email'.t(context),
                 initialValue: _emailController.text,
                 onChanged: (value) => _emailController.text = value,
                 keyboardType: TextInputType.emailAddress,
-                hintText: 'e.g., contact@ichito.app',
+                hintText: 'e.g., contact@ichito.app'.t(context),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           // Financial Settings
           SettingsTile(
-            title: 'Financial Settings',
+            title: 'Financial Settings'.t(context),
             children: [
               SettingsTextField(
-                label: 'Default Labor Cost',
+                label: 'Default Labor Cost'.t(context),
                 initialValue: _laborCostController.text,
                 onChanged: (value) => _laborCostController.text = value,
                 keyboardType: TextInputType.number,
                 hintText: '1500',
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Text(
-                  'Default cost per order used in the order wizard pricing step',
+                  'Default cost per order used in the order wizard pricing step'.t(context),
                   style: TextStyle(fontSize: 12, color: theme.textSecondary),
                 ),
               ),
               SettingsTextField(
-                label: 'Tax Rate (%)',
+                label: 'Tax Rate (%)'.t(context),
                 initialValue: _taxRateController.text,
                 onChanged: (value) => _taxRateController.text = value,
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 hintText: '0',
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Text(
-                  'Percentage tax applied to order totals (0 = no tax)',
+                  'Percentage tax applied to order totals (0 = no tax)'.t(context),
                   style: TextStyle(fontSize: 12, color: theme.textSecondary),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           // Order Settings
           SettingsTile(
-            title: 'Order Settings',
+            title: 'Order Settings'.t(context),
             children: [
               SettingsTextField(
-                label: 'Order Number Prefix',
+                label: 'Order Number Prefix'.t(context),
                 initialValue: _orderPrefixController.text,
                 onChanged: (value) => _orderPrefixController.text = value,
-                hintText: 'ICHITO',
+                hintText: 'ICHITO'.t(context),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Example order number:',
+                      'Example order number:'.t(context),
                       style: TextStyle(fontSize: 12, color: theme.textSecondary),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       '${_orderPrefixController.text.isNotEmpty ? _orderPrefixController.text : 'ICHITO'}-2026-07-001',
                       style: TextStyle(
@@ -199,18 +200,18 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> with Th
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // Save button
           ElevatedButton(
             onPressed: _saveSettings,
             style: ElevatedButton.styleFrom(
               backgroundColor: theme.accentColor,
-              padding: const EdgeInsets.symmetric(vertical: 14),
+              padding: EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
             ),
             child: Text(
-              'Save Business Settings',
+              'Save Business Settings'.t(context),
               style: TextStyle(
                 color: theme.onAccent,
                 fontWeight: FontWeight.bold,

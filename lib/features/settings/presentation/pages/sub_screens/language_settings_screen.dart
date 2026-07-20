@@ -42,7 +42,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
     langProv.setDateFormat(_selectedDateFormat);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Language & Format settings saved')),
+      const SnackBar(content: Text('Language & Format settings saved'.t(context))),
     );
     Navigator.pop(context);
   }
@@ -82,24 +82,24 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
     return Scaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Language & Format', style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Language & Format'.t(context), style: headingStyle.copyWith(fontSize: 18)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16).copyWith(bottom: 120),
+        padding: EdgeInsets.all(16).copyWith(bottom: 120),
         children: [
           // Language
           SettingsTile(
-            title: 'Language',
+            title: 'Language'.t(context),
             children: [
               SettingsDropdown<String>(
-                label: 'Select Language',
+                label: 'Select Language'.t(context),
                 value: _selectedLanguage,
                 items: [
-                  const DropdownMenuItem(value: 'english', child: Text('English')),
-                  const DropdownMenuItem(value: 'sheng', child: Text('Sheng')),
+                  const DropdownMenuItem(value: 'english', child: Text('English'.t(context))),
+                  const DropdownMenuItem(value: 'sheng', child: Text('Sheng'.t(context))),
                 ],
                 onChanged: (value) {
                   if (value != null) {
@@ -108,7 +108,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
                 },
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Text(
                   _selectedLanguage == 'english' ? 'Full interface language' : 'Sheng slang with English fallbacks',
                   style: TextStyle(fontSize: 12, color: theme.textSecondary),
@@ -116,18 +116,18 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           
           // Measurement Unit
           SettingsTile(
-            title: 'Measurement Unit',
+            title: 'Measurement Unit'.t(context),
             children: [
               SettingsDropdown<String>(
-                label: 'Select Unit',
+                label: 'Select Unit'.t(context),
                 value: _selectedUnit,
                 items: [
-                  const DropdownMenuItem(value: 'cm', child: Text('Centimeters (cm)')),
-                  const DropdownMenuItem(value: 'inches', child: Text('Inches')),
+                  const DropdownMenuItem(value: 'cm', child: Text('Centimeters (cm)'.t(context))),
+                  const DropdownMenuItem(value: 'inches', child: Text('Inches'.t(context))),
                 ],
                 onChanged: (value) {
                   if (value != null) {
@@ -136,30 +136,30 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
                 },
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Text(
-                  'Example: ${_formatMeasurementExample(_selectedUnit)}',
+                  'Example: ${_formatMeasurementExample(_selectedUnit)}'.t(context),
                   style: TextStyle(fontSize: 12, color: theme.textSecondary),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           
           // Currency
           SettingsTile(
-            title: 'Currency',
+            title: 'Currency'.t(context),
             children: [
               SettingsDropdown<String>(
-                label: 'Select Currency',
+                label: 'Select Currency'.t(context),
                 value: _selectedCurrency,
                 items: [
-                  const DropdownMenuItem(value: 'KES', child: Text('KES - Kenya Shilling')),
-                  const DropdownMenuItem(value: 'USD', child: Text('USD - US Dollar')),
-                  const DropdownMenuItem(value: 'EUR', child: Text('EUR - Euro')),
-                  const DropdownMenuItem(value: 'GBP', child: Text('GBP - British Pound')),
-                  const DropdownMenuItem(value: 'TZS', child: Text('TZS - Tanzania Shilling')),
-                  const DropdownMenuItem(value: 'UGX', child: Text('UGX - Uganda Shilling')),
+                  const DropdownMenuItem(value: 'KES', child: Text('KES - Kenya Shilling'.t(context))),
+                  const DropdownMenuItem(value: 'USD', child: Text('USD - US Dollar'.t(context))),
+                  const DropdownMenuItem(value: 'EUR', child: Text('EUR - Euro'.t(context))),
+                  const DropdownMenuItem(value: 'GBP', child: Text('GBP - British Pound'.t(context))),
+                  const DropdownMenuItem(value: 'TZS', child: Text('TZS - Tanzania Shilling'.t(context))),
+                  const DropdownMenuItem(value: 'UGX', child: Text('UGX - Uganda Shilling'.t(context))),
                 ],
                 onChanged: (value) {
                   if (value != null) {
@@ -168,27 +168,27 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
                 },
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Text(
-                  'Example: ${_formatCurrencyExample(_selectedCurrency)}',
+                  'Example: ${_formatCurrencyExample(_selectedCurrency)}'.t(context),
                   style: TextStyle(fontSize: 12, color: theme.textSecondary),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           
           // Date Format
           SettingsTile(
-            title: 'Date Format',
+            title: 'Date Format'.t(context),
             children: [
               SettingsDropdown<String>(
-                label: 'Select Date Format',
+                label: 'Select Date Format'.t(context),
                 value: _selectedDateFormat,
                 items: [
-                  const DropdownMenuItem(value: 'DD/MM/YYYY', child: Text('DD/MM/YYYY')),
-                  const DropdownMenuItem(value: 'MM/DD/YYYY', child: Text('MM/DD/YYYY')),
-                  const DropdownMenuItem(value: 'YYYY-MM-DD', child: Text('YYYY-MM-DD')),
+                  const DropdownMenuItem(value: 'DD/MM/YYYY', child: Text('DD/MM/YYYY'.t(context))),
+                  const DropdownMenuItem(value: 'MM/DD/YYYY', child: Text('MM/DD/YYYY'.t(context))),
+                  const DropdownMenuItem(value: 'YYYY-MM-DD', child: Text('YYYY-MM-DD'.t(context))),
                 ],
                 onChanged: (value) {
                   if (value != null) {
@@ -197,26 +197,26 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
                 },
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Text(
-                  'Example: ${_formatDateExample(_selectedDateFormat)}',
+                  'Example: ${_formatDateExample(_selectedDateFormat)}'.t(context),
                   style: TextStyle(fontSize: 12, color: theme.textSecondary),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           
           // Save button
           ElevatedButton(
             onPressed: _saveSettings,
             style: ElevatedButton.styleFrom(
               backgroundColor: theme.accentColor,
-              padding: const EdgeInsets.symmetric(vertical: 14),
+              padding: EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
             ),
             child: Text(
-              'Save Settings',
+              'Save Settings'.t(context),
               style: TextStyle(
                 color: theme.onAccent,
                 fontWeight: FontWeight.bold,

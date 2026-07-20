@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -13,6 +14,7 @@ import '../../../../shared/widgets/image_picker_dialog.dart';
 import '../../../../shared/widgets/image_crop_dialog.dart';
 import '../../../../core/widgets/adaptive_components.dart';
 import '../../../../shared/data/local/settings_repository.dart';
+import '../../../../shared/widgets/square_avatar.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -120,7 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> with ThemeAwareMixin, Nav
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Profile saved successfully!'),
+          content: Text('Profile saved successfully!'.t(context)),
           backgroundColor: theme.accentColor,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -148,7 +150,8 @@ class _ProfileScreenState extends State<ProfileScreen> with ThemeAwareMixin, Nav
               width: 110,
               height: 110,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
+                shape: BoxShape.rectangle,
+                borderRadius: theme.cornerRadius,
                 border: Border.all(color: theme.accentColor, width: 2.5),
                 boxShadow: [
                   BoxShadow(
@@ -158,13 +161,9 @@ class _ProfileScreenState extends State<ProfileScreen> with ThemeAwareMixin, Nav
                   ),
                 ],
               ),
-              child: CircleAvatar(
-                radius: 52,
-                backgroundColor: theme.accentLight,
-                backgroundImage: photoBytes != null ? MemoryImage(photoBytes) : null,
-                child: photoBytes == null
-                    ? Icon(Icons.person_outlined, color: theme.accentColor, size: 48)
-                    : null,
+              child: SquareAvatar(
+                size: 110,
+                base64Image: _newPhotoBase64 ?? profile.profilePhotoBase64,
               ),
             ),
             Positioned(
@@ -175,7 +174,7 @@ class _ProfileScreenState extends State<ProfileScreen> with ThemeAwareMixin, Nav
                 height: 36,
                 decoration: BoxDecoration(
                   color: theme.accentColor,
-                  shape: BoxShape.circle,
+                  borderRadius: theme.cornerRadius,
                   border: Border.all(color: theme.cardColor, width: 2),
                 ),
                 child: Icon(Icons.camera_alt, color: theme.onAccent, size: 18),
@@ -192,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> with ThemeAwareMixin, Nav
     return IchitoScaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Business Profile', style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Business Profile'.t(context), style: headingStyle.copyWith(fontSize: 18)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
@@ -207,7 +206,7 @@ class _ProfileScreenState extends State<ProfileScreen> with ThemeAwareMixin, Nav
                       child: CircularProgressIndicator(strokeWidth: 2, color: theme.accentColor),
                     )
                   : Text(
-                      'Save',
+                      'Save'.t(context),
                       style: TextStyle(
                         color: theme.accentColor,
                         fontWeight: FontWeight.bold,
@@ -222,56 +221,56 @@ class _ProfileScreenState extends State<ProfileScreen> with ThemeAwareMixin, Nav
           key: _formKey,
           onChanged: () => setState(() => _hasChanges = true),
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(8, 16, 8, 100),
+            padding: EdgeInsets.fromLTRB(8, 16, 8, 100),
             children: [
               _buildProfilePhoto(),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Business Info Section
               _buildSectionLabel('BUSINESS INFO'),
               AdaptiveTextField(
                 controller: _businessNameCtrl,
-                label: 'Business / Shop Name',
+                label: 'Business / Shop Name'.t(context),
                 prefixIcon: Icons.storefront_outlined,
                 validator: (val) => (val == null || val.isEmpty) ? 'Business name is required' : null,
               ),
               AdaptiveTextField(
                 controller: _ownerNameCtrl,
-                label: 'Owner Name',
+                label: 'Owner Name'.t(context),
                 prefixIcon: Icons.person_outlined,
               ),
               AdaptiveTextField(
                 controller: _locationCtrl,
-                label: 'Location / City',
+                label: 'Location / City'.t(context),
                 prefixIcon: Icons.location_on_outlined,
               ),
               AdaptiveTextField(
                 controller: _laborCostCtrl,
-                label: 'Default Labor Cost',
+                label: 'Default Labor Cost'.t(context),
                 prefixIcon: Icons.payments_outlined,
                 keyboardType: TextInputType.number,
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               _buildSectionLabel('CONTACT'),
               AdaptiveTextField(
                 controller: _phoneCtrl,
-                label: 'Business Phone Number',
+                label: 'Business Phone Number'.t(context),
                 prefixIcon: Icons.phone_outlined,
                 keyboardType: TextInputType.phone,
               ),
               AdaptiveTextField(
                 controller: _emailCtrl,
-                label: 'Business Email Address',
+                label: 'Business Email Address'.t(context),
                 prefixIcon: Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               // Save Button
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 child: AdaptiveButton(
                   text: 'Save Profile',
                   icon: Icons.save_outlined,
@@ -287,7 +286,7 @@ class _ProfileScreenState extends State<ProfileScreen> with ThemeAwareMixin, Nav
 
   Widget _buildSectionLabel(String title) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
       child: Text(
         title,
         style: subtitleStyle.copyWith(

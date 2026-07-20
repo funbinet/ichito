@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../../shared/mixins/theme_aware_mixin.dart';
@@ -22,26 +23,26 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> with Th
 
   Future<void> _exportDataAsJson() async {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Exporting data as JSON...')),
+      const SnackBar(content: Text('Exporting data as JSON...'.t(context))),
     );
     // TODO: Implement actual JSON export
     await Future.delayed(const Duration(seconds: 1));
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Export completed successfully')),
+        const SnackBar(content: Text('Export completed successfully'.t(context))),
       );
     }
   }
 
   Future<void> _exportDataAsCsv() async {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Exporting data as CSV...')),
+      const SnackBar(content: Text('Exporting data as CSV...'.t(context))),
     );
     // TODO: Implement actual CSV export
     await Future.delayed(const Duration(seconds: 1));
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Export completed successfully')),
+        const SnackBar(content: Text('Export completed successfully'.t(context))),
       );
     }
   }
@@ -52,16 +53,16 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> with Th
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: theme.cardColor,
-        title: Text('Factory Reset?', style: TextStyle(color: Colors.red, fontSize: 16)),
+        title: Text('Factory Reset?'.t(context), style: TextStyle(color: Colors.red, fontSize: 16)),
         content: Text(
-          'This will delete ALL data including customers, orders, notes, and images. This action CANNOT be undone.',
+          'This will delete ALL data including customers, orders, notes, and images. This action CANNOT be undone.'.t(context),
           style: TextStyle(color: theme.textSecondary),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('Cancel'.t(context))),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Continue', style: TextStyle(color: Colors.red)),
+            child: Text('Continue'.t(context), style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -84,16 +85,16 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> with Th
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: theme.cardColor,
-        title: Text('Last Chance!', style: TextStyle(color: Colors.red, fontSize: 16)),
+        title: Text('Last Chance!'.t(context), style: TextStyle(color: Colors.red, fontSize: 16)),
         content: Text(
-          'All data will be permanently deleted. The app will restart to the welcome screen.',
+          'All data will be permanently deleted. The app will restart to the welcome screen.'.t(context),
           style: TextStyle(color: theme.textSecondary),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('Cancel'.t(context))),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Delete Everything', style: TextStyle(color: Colors.red)),
+            child: Text('Delete Everything'.t(context), style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -110,7 +111,7 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> with Th
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error during reset: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Error during reset: $e'.t(context)), backgroundColor: Colors.red),
         );
       }
     }
@@ -121,7 +122,7 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> with Th
     return Scaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Advanced Settings', style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Advanced Settings'.t(context), style: headingStyle.copyWith(fontSize: 18)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
@@ -129,14 +130,14 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> with Th
       body: Consumer<AppStateProvider>(
         builder: (context, appState, _) {
           return ListView(
-            padding: const EdgeInsets.all(16).copyWith(bottom: 120),
+            padding: EdgeInsets.all(16).copyWith(bottom: 120),
             children: [
               // Performance Settings
               SettingsTile(
-                title: 'Performance',
+                title: 'Performance'.t(context),
                 children: [
                   SettingsToggle(
-                    label: 'Performance Mode',
+                    label: 'Performance Mode'.t(context),
                     description: 'Reduce animations and effects for older devices',
                     value: appState.performanceMode,
                     onChanged: (value) async {
@@ -145,14 +146,14 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> with Th
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               // Debug Settings
               SettingsTile(
-                title: 'Debug & Logging',
+                title: 'Debug & Logging'.t(context),
                 children: [
                   SettingsToggle(
-                    label: 'Debug Logging',
+                    label: 'Debug Logging'.t(context),
                     description: 'Enable detailed debug logs for troubleshooting',
                     value: appState.debugLogging,
                     onChanged: (value) async {
@@ -161,15 +162,15 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> with Th
                   ),
                   if (appState.debugLogging)
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                       child: OutlinedButton.icon(
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Debug log viewer - coming soon')),
+                            const SnackBar(content: Text('Debug log viewer - coming soon'.t(context))),
                           );
                         },
-                        icon: const Icon(Icons.description_outlined),
-                        label: const Text('View Debug Logs'),
+                        icon: Icon(Icons.description_outlined),
+                        label: Text('View Debug Logs'.t(context)),
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size(double.infinity, 44),
                         ),
@@ -177,18 +178,18 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> with Th
                     ),
                 ],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               // Data Export
               SettingsTile(
-                title: 'Data Export',
+                title: 'Data Export'.t(context),
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     child: ElevatedButton.icon(
                       onPressed: _exportDataAsJson,
-                      icon: const Icon(Icons.description_outlined),
-                      label: const Text('Export as JSON'),
+                      icon: Icon(Icons.description_outlined),
+                      label: Text('Export as JSON'.t(context)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.accentColor.withOpacity(0.2),
                         foregroundColor: theme.accentColor,
@@ -197,11 +198,11 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> with Th
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     child: OutlinedButton.icon(
                       onPressed: _exportDataAsCsv,
-                      icon: const Icon(Icons.table_chart_outlined),
-                      label: const Text('Export as CSV'),
+                      icon: Icon(Icons.table_chart_outlined),
+                      label: Text('Export as CSV'.t(context)),
                       style: OutlinedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 44),
                       ),
@@ -209,18 +210,18 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> with Th
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               // Danger Zone
               SettingsTile(
-                title: 'Danger Zone',
+                title: 'Danger Zone'.t(context),
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                     child: ElevatedButton.icon(
                       onPressed: _showFactoryResetDialog,
-                      icon: const Icon(Icons.delete_forever_outlined),
-                      label: const Text('Factory Reset'),
+                      icon: Icon(Icons.delete_forever_outlined),
+                      label: Text('Factory Reset'.t(context)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red.withOpacity(0.2),
                         foregroundColor: Colors.red,
@@ -229,26 +230,26 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> with Th
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Text(
-                      'Delete all app data and reset to default settings. This cannot be undone.',
+                      'Delete all app data and reset to default settings. This cannot be undone.'.t(context),
                       style: TextStyle(fontSize: 12, color: Colors.red.withOpacity(0.7)),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Warning
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.red.withOpacity(0.1),
                   borderRadius: theme.cornerRadius,
                   border: Border.all(color: Colors.red.withOpacity(0.3)),
                 ),
                 child: Text(
-                  'Warning: Advanced settings are for experienced users. Incorrect changes may cause unexpected behavior.',
+                  'Warning: Advanced settings are for experienced users. Incorrect changes may cause unexpected behavior.'.t(context),
                   style: TextStyle(fontSize: 12, color: Colors.red.withOpacity(0.8)),
                 ),
               ),
@@ -283,7 +284,7 @@ class _TypeResetConfirmDialogState extends State<_TypeResetConfirmDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: widget.theme.cardColor,
-      title: Text('Confirm Reset', style: TextStyle(color: Colors.red, fontSize: 16)),
+      title: Text('Confirm Reset'.t(context), style: TextStyle(color: Colors.red, fontSize: 16)),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -292,21 +293,21 @@ class _TypeResetConfirmDialogState extends State<_TypeResetConfirmDialog> {
             'Type "RESET" to confirm:',
             style: TextStyle(color: widget.theme.textSecondary),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           TextField(
             controller: _controller,
             decoration: InputDecoration(
-              hintText: 'Type RESET',
+              hintText: 'Type RESET'.t(context),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             ),
           ),
         ],
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+        TextButton(onPressed: () => Navigator.pop(context), child: Text('Cancel'.t(context))),
         TextButton(
           onPressed: () => Navigator.pop(context, _controller.text),
-          child: const Text('Continue', style: TextStyle(color: Colors.red)),
+          child: Text('Continue'.t(context), style: TextStyle(color: Colors.red)),
         ),
       ],
     );

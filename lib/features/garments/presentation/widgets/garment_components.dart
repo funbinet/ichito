@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../shared/providers/theme_provider.dart';
@@ -35,7 +36,7 @@ class GarmentCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: theme.cardColor,
           borderRadius: theme.cornerRadius,
@@ -55,7 +56,7 @@ class GarmentCard extends StatelessWidget {
               ),
               child: Icon(Icons.checkroom_outlined, color: theme.accentColor, size: 28),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             // Name
             Text(
               garment.name,
@@ -69,16 +70,16 @@ class GarmentCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             // Measurement count
             Text(
               '${garment.measurementFields.length} measurements',
               style: TextStyle(fontSize: 11, color: theme.textSecondary, fontFamily: theme.fontFamily),
             ),
             // Category badge
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 1),
               decoration: BoxDecoration(
                 color: _getCategoryColor(garment.category).withOpacity(0.15),
                 borderRadius: BorderRadius.circular(8),
@@ -92,7 +93,7 @@ class GarmentCard extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             // Usage count
             Text(
               '${garment.usageCount ?? 0} orders',
@@ -131,7 +132,7 @@ class GarmentListTile extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
           border: Border(bottom: BorderSide(color: theme.borderColor, width: 0.5)),
         ),
@@ -146,14 +147,14 @@ class GarmentListTile extends StatelessWidget {
               ),
               child: Icon(Icons.checkroom_outlined, color: theme.accentColor, size: 24),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(garment.name,
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2),
                   Text('${garment.measurementFields.length} measurements',
                     style: TextStyle(fontSize: 13, color: theme.textSecondary, fontFamily: theme.fontFamily)),
                 ],
@@ -163,7 +164,7 @@ class GarmentListTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                   decoration: BoxDecoration(
                     color: _getCategoryColor(garment.category).withOpacity(0.15),
                     borderRadius: BorderRadius.circular(8),
@@ -177,7 +178,7 @@ class GarmentListTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text('${garment.usageCount ?? 0} orders',
                   style: TextStyle(fontSize: 11, color: theme.textSecondary, fontFamily: theme.fontFamily)),
               ],

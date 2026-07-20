@@ -3,6 +3,7 @@ import 'package:uuid/uuid.dart';
 import 'package:provider/provider.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
 import '../../../../shared/providers/language_provider.dart';
+import '../../../../shared/data/local/settings_repository.dart';
 import '../../data/models/garment.dart';
 
 class GarmentFormDialog extends StatefulWidget {
@@ -19,23 +20,28 @@ class _GarmentFormDialogState extends State<GarmentFormDialog> with ThemeAwareMi
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _priceController = TextEditingController();
-  final _measurementsController = TextEditingController();
   
   String _category = 'unisex';
+  List<String> _selectedMeasurements = [];
+  List<String> _availableMeasurements = [];
   bool _isSaving = false;
 
   @override
   void initState() {
     super.initState();
+    _availableMeasurements = SettingsRepository().getMeasurementSchema();
+    if (_availableMeasurements.isEmpty) {
+      _availableMeasurements = ['height', 'chest', 'waist', 'hip', 'shoulder', 'neck', 'sleeve_length', 'bust'];
+    }
+
     if (widget.garment != null) {
       _nameController.text = widget.garment!.name;
       _descriptionController.text = widget.garment!.description ?? '';
       _category = widget.garment!.category;
       _priceController.text = widget.garment!.defaultPrice?.toString() ?? '';
-      _measurementsController.text = widget.garment!.measurementFields.join(', ');
+      _selectedMeasurements = List.from(widget.garment!.measurementFields);
     } else {
-      // Default measurements example
-      _measurementsController.text = 'Length, Chest, Shoulders, Sleeve';
+      _selectedMeasurements = [];
     }
   }
 
@@ -44,7 +50,6 @@ class _GarmentFormDialogState extends State<GarmentFormDialog> with ThemeAwareMi
     _nameController.dispose();
     _descriptionController.dispose();
     _priceController.dispose();
-    _measurementsController.dispose();
     super.dispose();
   }
 
@@ -52,11 +57,7 @@ class _GarmentFormDialogState extends State<GarmentFormDialog> with ThemeAwareMi
     if (_formKey.currentState!.validate()) {
       setState(() => _isSaving = true);
       
-      final fields = _measurementsController.text
-          .split(',')
-          .map((e) => e.trim())
-          .where((e) => e.isNotEmpty)
-          .toList();
+      final fields = _selectedMeasurements;
 
       final garment = Garment(
         id: widget.garment?.id ?? const Uuid().v4(),
@@ -84,7 +85,7 @@ class _GarmentFormDialogState extends State<GarmentFormDialog> with ThemeAwareMi
       shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
       child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(24.0),
           child: Form(
             key: _formKey,
             child: Column(
@@ -101,7 +102,7 @@ class _GarmentFormDialogState extends State<GarmentFormDialog> with ThemeAwareMi
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 
                 TextFormField(
                   controller: _nameController,
@@ -109,7 +110,7 @@ class _GarmentFormDialogState extends State<GarmentFormDialog> with ThemeAwareMi
                   style: TextStyle(color: theme.textPrimary),
                   validator: (val) => val == null || val.isEmpty ? 'Required' : null,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 
                 DropdownButtonFormField<String>(
                   value: _category,
@@ -117,15 +118,15 @@ class _GarmentFormDialogState extends State<GarmentFormDialog> with ThemeAwareMi
                   dropdownColor: theme.cardColor,
                   style: TextStyle(color: theme.textPrimary),
                   items: const [
-                    DropdownMenuItem(value: 'men', child: Text('Men')),
-                    DropdownMenuItem(value: 'women', child: Text('Women')),
-                    DropdownMenuItem(value: 'unisex', child: Text('Unisex')),
+                    DropdownMenuItem(value: 'men', child: Text('Men'.t(context))),
+                    DropdownMenuItem(value: 'women', child: Text('Women'.t(context))),
+                    DropdownMenuItem(value: 'unisex', child: Text('Unisex'.t(context))),
                   ],
                   onChanged: (val) {
                     if (val != null) setState(() => _category = val);
                   },
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 
                 TextFormField(
                   controller: _priceController,
@@ -133,19 +134,39 @@ class _GarmentFormDialogState extends State<GarmentFormDialog> with ThemeAwareMi
                   style: TextStyle(color: theme.textPrimary),
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
-                TextFormField(
-                  controller: _measurementsController,
-                  decoration: _inputDecoration('Measurement Fields (comma separated)').copyWith(
-                    helperText: 'e.g. Waist, Hips, Inseam',
-                    helperStyle: TextStyle(color: theme.textSecondary),
-                  ),
-                  style: TextStyle(color: theme.textPrimary),
-                  maxLines: 2,
-                  validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                Text('Measurement Fields'.t(context), style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
+                SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: _availableMeasurements.map((m) {
+                    final isSelected = _selectedMeasurements.contains(m);
+                    return FilterChip(
+                      label: Text(m, style: TextStyle(color: isSelected ? theme.onAccent : theme.textPrimary)),
+                      selected: isSelected,
+                      selectedColor: theme.accentColor,
+                      backgroundColor: theme.backgroundColor.withOpacity(0.5),
+                      checkmarkColor: theme.onAccent,
+                      onSelected: (val) {
+                        setState(() {
+                          if (val) {
+                            _selectedMeasurements.add(m);
+                          } else {
+                            _selectedMeasurements.remove(m);
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
                 ),
-                const SizedBox(height: 16),
+                if (_selectedMeasurements.isEmpty)
+                  Padding(
+                    padding: EdgeInsets.only(top: 8),
+                    child: Text('Please select at least one measurement field.'.t(context), style: TextStyle(color: Colors.redAccent, fontSize: 12)),
+                  ),
+                SizedBox(height: 16),
                 
                 TextFormField(
                   controller: _descriptionController,
@@ -153,7 +174,7 @@ class _GarmentFormDialogState extends State<GarmentFormDialog> with ThemeAwareMi
                   style: TextStyle(color: theme.textPrimary),
                   maxLines: 2,
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
                 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -165,16 +186,16 @@ class _GarmentFormDialogState extends State<GarmentFormDialog> with ThemeAwareMi
                         style: TextStyle(color: theme.textSecondary),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     ElevatedButton(
-                      onPressed: _isSaving ? null : _save,
+                      onPressed: _isSaving || _selectedMeasurements.isEmpty ? null : _save,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.accentColor,
                         foregroundColor: theme.onAccent,
                         shape: RoundedRectangleBorder(borderRadius: theme.buttonRadius),
                       ),
                       child: _isSaving 
-                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                          ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
                           : Text(lang.t('save')),
                     ),
                   ],

@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -8,6 +9,7 @@ import '../../../../../core/widgets/ichito_scaffold.dart';
 import '../../../../../shared/providers/profile_provider.dart';
 import '../../../../../shared/widgets/image_picker_dialog.dart';
 import '../../../../../shared/widgets/image_crop_dialog.dart';
+import '../../../../../shared/widgets/square_avatar.dart';
 
 class ProfileSettingsScreen extends StatefulWidget {
   const ProfileSettingsScreen({super.key});
@@ -65,41 +67,35 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> with Them
       showRadialMenu: false,
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Profile', style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Profile'.t(context), style: headingStyle.copyWith(fontSize: 18)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24),
         children: [
           Center(
             child: GestureDetector(
               onTap: _pickImage,
               child: Stack(
                 children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: theme.accentColor.withOpacity(0.2),
-                    backgroundImage: profile.profilePhotoBytes != null
-                        ? MemoryImage(profile.profilePhotoBytes!)
-                        : null,
-                    child: profile.profilePhotoBytes == null
-                        ? Icon(Icons.person, size: 50, color: theme.accentColor)
-                        : null,
+                  SquareAvatar(
+                    size: 100,
+                    base64Image: profile.profilePhotoBase64,
                   ),
                   Positioned(
                     bottom: 0,
                     right: 0,
                     child: Container(
-                      padding: const EdgeInsets.all(4),
+                      padding: EdgeInsets.all(4),
                       decoration: BoxDecoration(
                         color: theme.accentColor,
-                        shape: BoxShape.circle,
+                        borderRadius: theme.cornerRadius,
                       ),
                       child: Icon(Icons.camera_alt, size: 20, color: theme.onAccent),
                     ),
@@ -108,15 +104,15 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> with Them
               ),
             ),
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: 32),
           _buildTextField('Full Name', _nameController, Icons.person_outline),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           _buildTextField('Business Name', _businessController, Icons.storefront_outlined),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           _buildTextField('Email Address', _emailController, Icons.email_outlined, keyboardType: TextInputType.emailAddress),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           _buildTextField('Phone Number', _phoneController, Icons.phone_outlined, keyboardType: TextInputType.phone),
-          const SizedBox(height: 32),
+          SizedBox(height: 32),
           ElevatedButton(
             onPressed: () async {
               await Provider.of<ProfileProvider>(context, listen: false).saveProfile(
@@ -132,10 +128,10 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> with Them
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: theme.accentColor,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(borderRadius: theme.buttonRadius),
             ),
-            child: Text('Save Changes', style: TextStyle(color: theme.onAccent, fontSize: 16, fontWeight: FontWeight.bold)),
+            child: Text('Save Changes'.t(context), style: TextStyle(color: theme.onAccent, fontSize: 16, fontWeight: FontWeight.bold)),
           ),
         ],
       ),

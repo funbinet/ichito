@@ -75,17 +75,17 @@ class _GarmentDetailScreenState extends State<GarmentDetailScreen> with ThemeAwa
         iconTheme: IconThemeData(color: theme.textPrimary),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit_outlined),
+            icon: Icon(Icons.edit_outlined),
             onPressed: _editGarment,
           ),
           IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.red),
+            icon: Icon(Icons.delete_outline, color: Colors.red),
             onPressed: _deleteGarment,
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0).copyWith(bottom: 120),
+        padding: EdgeInsets.all(24.0).copyWith(bottom: 120),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -93,7 +93,7 @@ class _GarmentDetailScreenState extends State<GarmentDetailScreen> with ThemeAwa
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
                     color: theme.accentColor.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),
@@ -118,7 +118,7 @@ class _GarmentDetailScreenState extends State<GarmentDetailScreen> with ThemeAwa
                   ),
               ],
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
             Text(
               lang.t('description'),
               style: TextStyle(
@@ -127,7 +127,7 @@ class _GarmentDetailScreenState extends State<GarmentDetailScreen> with ThemeAwa
                 fontFamily: theme.fontFamily,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               _garment.description ?? '-',
               style: TextStyle(
@@ -136,16 +136,16 @@ class _GarmentDetailScreenState extends State<GarmentDetailScreen> with ThemeAwa
                 fontFamily: theme.fontFamily,
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
             Text(
-              'Required Measurements',
+              'Required Measurements'.t(context),
               style: TextStyle(
                 color: theme.textSecondary,
                 fontSize: theme.fontSize * 0.9,
                 fontFamily: theme.fontFamily,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Wrap(
               spacing: 8,
               runSpacing: 8,

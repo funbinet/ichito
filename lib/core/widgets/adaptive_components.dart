@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../shared/providers/theme_provider.dart';
@@ -11,8 +12,8 @@ class AdaptiveCard extends StatelessWidget {
   const AdaptiveCard({
     super.key,
     required this.child,
-    this.padding = const EdgeInsets.all(16.0),
-    this.margin = const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+    this.padding = EdgeInsets.all(16.0),
+    this.margin = EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
     this.onTap,
   });
 
@@ -52,7 +53,7 @@ class AdaptiveButton extends StatelessWidget {
   final bool isPrimary;
   final IconData? icon;
 
-  const AdaptiveButton({
+  AdaptiveButton({
     super.key,
     required this.text,
     required this.onPressed,
@@ -77,7 +78,7 @@ class AdaptiveButton extends StatelessWidget {
           borderRadius: theme.buttonRadius,
           side: borderSide,
         ),
-        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+        padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -85,7 +86,7 @@ class AdaptiveButton extends StatelessWidget {
         children: [
           if (icon != null) ...[
             Icon(icon, color: textColor),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
           ],
           Text(
             text,
@@ -112,7 +113,7 @@ class AdaptiveTextField extends StatelessWidget {
   final bool obscureText;
   final ValueChanged<String>? onChanged;
 
-  const AdaptiveTextField({
+  AdaptiveTextField({
     super.key,
     this.controller,
     required this.label,
@@ -130,7 +131,7 @@ class AdaptiveTextField extends StatelessWidget {
     final theme = Provider.of<ThemeProvider>(context);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: TextFormField(
         controller: controller,
         onChanged: onChanged,

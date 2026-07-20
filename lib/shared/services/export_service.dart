@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
@@ -35,7 +36,7 @@ class ExportService {
                 rowDecoration: const pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide(color: PdfColors.grey300, width: 0.5))),
               ),
               pw.SizedBox(height: 40),
-              pw.Text('Generated on ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now())}', style: const pw.TextStyle(color: PdfColors.grey600, fontSize: 10)),
+              pw.Text('Generated on ${DateFormat('.t(context)yyyy-MM-dd HH:mm').format(DateTime.now())}', style: const pw.TextStyle(color: PdfColors.grey600, fontSize: 10)),
             ],
           );
         },

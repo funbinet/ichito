@@ -1,6 +1,9 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../../shared/mixins/theme_aware_mixin.dart';
 import '../widgets/index.dart';
+import '../../../../../core/widgets/adaptive_components.dart';
 
 class HelpScreen extends StatefulWidget {
   const HelpScreen({super.key});
@@ -10,70 +13,106 @@ class HelpScreen extends StatefulWidget {
 }
 
 class _HelpScreenState extends State<HelpScreen> with ThemeAwareMixin {
-  final List<_HelpTopic> _topics = [
-    _HelpTopic(
-      title: 'Getting Started',
-      content: 'Welcome to ICHITO! Here\'s how to get started:\n\n1. Complete your business profile on the first launch\n2. Set up your measurements and preferences\n3. Create your first customer\n4. Use the Order Wizard to process orders\n\nThat\'s it! You\'re ready to manage your tailoring business.',
-    ),
-    _HelpTopic(
-      title: 'Managing Customers',
-      content: 'Keep track of your customers:\n\n• Add customer details (name, contact, address)\n• Store customer measurements and photo\n• Track customer loyalty tiers\n• View customer order history\n• Search and filter customers easily',
-    ),
-    _HelpTopic(
-      title: 'Creating Orders',
-      content: 'Use the 6-step Order Wizard:\n\n1. Select customer\n2. Choose garments\n3. Add measurements\n4. Set pricing\n5. Add delivery date\n6. Review and confirm\n\nOrders are automatically saved with order numbers.',
-    ),
-    _HelpTopic(
-      title: 'Using the Order Wizard',
-      content: 'The Order Wizard guides you through order creation step-by-step:\n\n• Select from predefined garments\n• Use customer saved measurements\n• Add custom measurements on the fly\n• Calculate total with labor costs and tax\n• Set delivery expectations',
-    ),
-    _HelpTopic(
-      title: 'Managing Garments, Fabrics & Designs',
-      content: 'Customize your inventory:\n\n• Create garment categories\n• Add fabric types with pricing\n• Upload design inspirations\n• Reuse items across multiple orders\n• Edit and organize your library',
-    ),
-    _HelpTopic(
-      title: 'Taking Notes',
-      content: 'Three types of notes:\n\n• General Notes: Regular notes for anything\n• Church Notes: With Bible verse tagging\n• Chama Notes: Track group savings contributions\n\nNotes auto-save and sync across your orders.',
-    ),
-    _HelpTopic(
-      title: 'Understanding Statistics',
-      content: 'Track your business with analytics:\n\n• Revenue overview\n• Key metrics (orders, customers, earnings)\n• Monthly trends\n• Top performing garments\n• Customer insights\n• Export reports',
-    ),
-    _HelpTopic(
-      title: 'Customizing Your Theme',
-      content: 'Personalize your experience:\n\n• Choose from 3 theme modes (Light, Dark, AMOLED)\n• Select from 30 accent colors\n• Change corner styles\n• Adjust font size\n• Control shadows and effects\n• Create your perfect look',
-    ),
-    _HelpTopic(
-      title: 'Security & App Lock',
-      content: 'Protect your business data:\n\n• Set up a PIN code\n• Enable biometric authentication\n• Configure auto-lock timer\n• View security code for recovery\n• Your data is encrypted locally',
-    ),
-    _HelpTopic(
-      title: 'Backup & Restore',
-      content: 'Never lose your data:\n\n• Create backups anytime\n• Automatic backup file generation\n• Restore from previous backups\n• Export data as JSON or CSV\n• Keep multiple backup copies',
-    ),
-  ];
+  final Map<String, List<_HelpTopic>> _categorizedTopics = {
+    'Getting Started & Basics': [
+      _HelpTopic(
+        title: 'Welcome to ICHITO'.t(context),
+        content: '1. Complete your business profile\n2. Set up your measurements and preferences\n3. Create your first customer\n4. Use the Order Wizard to process orders',
+      ),
+      _HelpTopic(
+        title: 'Customizing Your Theme'.t(context),
+        content: 'Personalize your experience:\n\n• Choose from 3 theme modes\n• Select from 30 accent colors\n• Change corner styles and fonts',
+      ),
+    ],
+    'Managing Orders & Clients': [
+      _HelpTopic(
+        title: 'Managing Customers'.t(context),
+        content: 'Keep track of your customers:\n\n• Add customer details\n• Store measurements and photo\n• Track loyalty and history',
+      ),
+      _HelpTopic(
+        title: 'Creating Orders'.t(context),
+        content: 'Use the 6-step Order Wizard to select clients, garments, add measurements, pricing, and set due dates.',
+      ),
+    ],
+    'Inventory & Tools': [
+      _HelpTopic(
+        title: 'Garments, Fabrics & Designs'.t(context),
+        content: 'Customize your inventory:\n\n• Create garment categories\n• Add fabric types with pricing\n• Upload design inspirations',
+      ),
+      _HelpTopic(
+        title: 'Taking Notes'.t(context),
+        content: 'Three types of notes:\n\n• General Notes\n• Church Notes\n• Chama Notes',
+      ),
+    ],
+    'Data & Security': [
+      _HelpTopic(
+        title: 'Understanding Statistics'.t(context),
+        content: 'Track your business with analytics:\n\n• Revenue overview\n• Key metrics and trends',
+      ),
+      _HelpTopic(
+        title: 'Security & Backup'.t(context),
+        content: 'Protect your business data:\n\n• Set up a PIN or Biometrics\n• Create and restore backups',
+      ),
+    ],
+  };
+
+  Future<void> _launchWhatsApp() async {
+    final Uri url = Uri.parse('https://wa.me/254700000000?text=Hello%20ICHITO%20Support');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not launch WhatsApp'.t(context))));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Help & User Guide', style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Help & User Guide'.t(context), style: headingStyle.copyWith(fontSize: 18)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16).copyWith(bottom: 120),
-        itemCount: _topics.length,
-        itemBuilder: (context, index) {
-          final topic = _topics[index];
-          return HelpTopicTile(
-            title: topic.title,
-            content: topic.content,
-            theme: theme,
-          );
-        },
+      body: ListView(
+        padding: EdgeInsets.all(16).copyWith(bottom: 120),
+        children: [
+          ..._categorizedTopics.entries.map((category) {
+            return Card(
+              margin: EdgeInsets.only(bottom: 16),
+              color: theme.cardColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: theme.cornerRadius,
+                side: BorderSide(color: theme.borderColor),
+              ),
+              child: Theme(
+                data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                child: ExpansionTile(
+                  title: Text(
+                    category.key,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.textPrimary, fontFamily: theme.fontFamily),
+                  ),
+                  iconColor: theme.accentColor,
+                  collapsedIconColor: theme.textSecondary,
+                  children: category.value.map((topic) {
+                    return HelpTopicTile(
+                      title: topic.title,
+                      content: topic.content,
+                      theme: theme,
+                    );
+                  }).toList(),
+                ),
+              ),
+            );
+          }).toList(),
+          SizedBox(height: 24),
+          AdaptiveButton(
+            text: 'Contact WhatsApp Support',
+            onPressed: _launchWhatsApp,
+            icon: Icons.chat_bubble_outline,
+          ),
+        ],
       ),
     );
   }
@@ -100,12 +139,10 @@ class _HelpTopicTileState extends State<HelpTopicTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      color: widget.theme.cardColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: widget.theme.cornerRadius,
-        side: BorderSide(color: widget.theme.borderColor),
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      decoration: BoxDecoration(
+        border: Border(left: BorderSide(color: widget.theme.accentColor, width: 2)),
       ),
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
@@ -113,27 +150,30 @@ class _HelpTopicTileState extends State<HelpTopicTile> {
           title: Text(
             widget.title,
             style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
               color: widget.theme.textPrimary,
+              fontFamily: widget.theme.fontFamily,
             ),
           ),
           trailing: Icon(
             _isExpanded ? Icons.expand_less : Icons.expand_more,
-            color: widget.theme.accentColor,
+            color: widget.theme.textSecondary,
+            size: 16,
           ),
           onExpansionChanged: (expanded) {
             setState(() => _isExpanded = expanded);
           },
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8).copyWith(bottom: 16),
               child: Text(
                 widget.content,
                 style: TextStyle(
                   color: widget.theme.textSecondary,
                   fontSize: 13,
                   height: 1.6,
+                  fontFamily: widget.theme.fontFamily,
                 ),
               ),
             ),

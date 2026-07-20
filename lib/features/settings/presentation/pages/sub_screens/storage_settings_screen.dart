@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../../shared/mixins/theme_aware_mixin.dart';
@@ -39,43 +40,43 @@ class _StorageSettingsScreenState extends State<StorageSettingsScreen> with Them
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: theme.cardColor,
-        title: Text('Backup Summary', style: TextStyle(color: theme.textPrimary)),
+        title: Text('Backup Summary'.t(context), style: TextStyle(color: theme.textPrimary)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Database: ${(_databaseSize / (1024 * 1024)).toStringAsFixed(1)} MB', 
+            Text('Database: ${(_databaseSize / (1024 * 1024)).toStringAsFixed(1)} MB'.t(context), 
               style: TextStyle(color: theme.textSecondary)),
-            Text('Images: ${(_imagesSize / (1024 * 1024)).toStringAsFixed(1)} MB',
+            Text('Images: ${(_imagesSize / (1024 * 1024)).toStringAsFixed(1)} MB'.t(context),
               style: TextStyle(color: theme.textSecondary)),
-            Text('Total: ${((_databaseSize + _imagesSize) / (1024 * 1024)).toStringAsFixed(1)} MB',
+            Text('Total: ${((_databaseSize + _imagesSize) / (1024 * 1024)).toStringAsFixed(1)} MB'.t(context),
               style: TextStyle(color: theme.textPrimary, fontWeight: FontWeight.bold)),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel'.t(context))),
           TextButton(
             onPressed: () async {
               Navigator.pop(ctx);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Creating backup...')),
+                const SnackBar(content: Text('Creating backup...'.t(context))),
               );
               try {
                 final result = await BackupService().exportBackup();
                 if (result != null && mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Backup created successfully')),
+                    const SnackBar(content: Text('Backup created successfully'.t(context))),
                   );
                 }
               } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Backup failed: $e'), backgroundColor: Colors.red),
+                    SnackBar(content: Text('Backup failed: $e'.t(context)), backgroundColor: Colors.red),
                   );
                 }
               }
             },
-            child: const Text('Backup'),
+            child: Text('Backup'.t(context)),
           ),
         ],
       ),
@@ -87,16 +88,16 @@ class _StorageSettingsScreenState extends State<StorageSettingsScreen> with Them
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: theme.cardColor,
-        title: Text('Restore Backup?', style: TextStyle(color: theme.textPrimary)),
+        title: Text('Restore Backup?'.t(context), style: TextStyle(color: theme.textPrimary)),
         content: Text(
-          'Restoring from backup will REPLACE all current data. This action cannot be undone.',
+          'Restoring from backup will REPLACE all current data. This action cannot be undone.'.t(context),
           style: TextStyle(color: theme.textSecondary),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('Cancel'.t(context))),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Restore', style: TextStyle(color: Colors.red)),
+            child: Text('Restore'.t(context), style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -104,13 +105,13 @@ class _StorageSettingsScreenState extends State<StorageSettingsScreen> with Them
 
     if (confirm == true && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Restoring backup...')),
+        const SnackBar(content: Text('Restoring backup...'.t(context))),
       );
       try {
         final result = await BackupService().importBackup();
         if (result && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Backup restored successfully. Restarting app...')),
+            const SnackBar(content: Text('Backup restored successfully. Restarting app...'.t(context))),
           );
           await Future.delayed(const Duration(seconds: 2));
           if (mounted) {
@@ -120,7 +121,7 @@ class _StorageSettingsScreenState extends State<StorageSettingsScreen> with Them
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Restore failed: $e'), backgroundColor: Colors.red),
+            SnackBar(content: Text('Restore failed: $e'.t(context)), backgroundColor: Colors.red),
           );
         }
       }
@@ -132,16 +133,16 @@ class _StorageSettingsScreenState extends State<StorageSettingsScreen> with Them
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: theme.cardColor,
-        title: Text('Clear Cache?', style: TextStyle(color: theme.textPrimary)),
+        title: Text('Clear Cache?'.t(context), style: TextStyle(color: theme.textPrimary)),
         content: Text(
-          'This will delete cached image thumbnails. The app will regenerate them on next use.',
+          'This will delete cached image thumbnails. The app will regenerate them on next use.'.t(context),
           style: TextStyle(color: theme.textSecondary),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('Cancel'.t(context))),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Clear'),
+            child: Text('Clear'.t(context)),
           ),
         ],
       ),
@@ -153,7 +154,7 @@ class _StorageSettingsScreenState extends State<StorageSettingsScreen> with Them
         _cacheSize = 0;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cache cleared successfully')),
+        const SnackBar(content: Text('Cache cleared successfully'.t(context))),
       );
     }
   }
@@ -165,19 +166,19 @@ class _StorageSettingsScreenState extends State<StorageSettingsScreen> with Them
     return Scaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Storage Management', style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Storage Management'.t(context), style: headingStyle.copyWith(fontSize: 18)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16).copyWith(bottom: 120),
+        padding: EdgeInsets.all(16).copyWith(bottom: 120),
         children: [
           // Storage Overview
           if (_isLoadingSize)
             Center(
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.all(24),
                 child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(theme.accentColor)),
               ),
             )
@@ -185,30 +186,30 @@ class _StorageSettingsScreenState extends State<StorageSettingsScreen> with Them
             Column(
               children: [
                 StorageUsageBar(
-                  label: 'Database',
+                  label: 'Database'.t(context),
                   usedBytes: _databaseSize,
                   totalBytes: 100 * 1024 * 1024, // 100 MB max
                   color: Colors.blue,
                 ),
                 StorageUsageBar(
-                  label: 'Images',
+                  label: 'Images'.t(context),
                   usedBytes: _imagesSize,
                   totalBytes: 200 * 1024 * 1024, // 200 MB max
                   color: Colors.green,
                 ),
                 StorageUsageBar(
-                  label: 'Cache',
+                  label: 'Cache'.t(context),
                   usedBytes: _cacheSize,
                   totalBytes: 50 * 1024 * 1024, // 50 MB max
                   color: Colors.orange,
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Total Used',
+                        'Total Used'.t(context),
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.textPrimary),
                       ),
                       Text(
@@ -221,18 +222,18 @@ class _StorageSettingsScreenState extends State<StorageSettingsScreen> with Them
               ],
             ),
           
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           
           // Backup & Restore
           SettingsTile(
-            title: 'Backup & Restore',
+            title: 'Backup & Restore'.t(context),
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 child: ElevatedButton.icon(
                   onPressed: _backupData,
-                  icon: const Icon(Icons.cloud_upload_outlined),
-                  label: const Text('Create Backup'),
+                  icon: Icon(Icons.cloud_upload_outlined),
+                  label: Text('Create Backup'.t(context)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.accentColor.withOpacity(0.2),
                     foregroundColor: theme.accentColor,
@@ -241,11 +242,11 @@ class _StorageSettingsScreenState extends State<StorageSettingsScreen> with Them
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 child: OutlinedButton.icon(
                   onPressed: _restoreData,
-                  icon: const Icon(Icons.cloud_download_outlined),
-                  label: const Text('Restore from Backup'),
+                  icon: Icon(Icons.cloud_download_outlined),
+                  label: Text('Restore from Backup'.t(context)),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: theme.accentColor),
                     minimumSize: const Size(double.infinity, 48),
@@ -255,45 +256,45 @@ class _StorageSettingsScreenState extends State<StorageSettingsScreen> with Them
             ],
           ),
           
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           
           // Cache Management
           SettingsTile(
-            title: 'Cache Management',
+            title: 'Cache Management'.t(context),
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 child: OutlinedButton.icon(
                   onPressed: _clearCache,
-                  icon: const Icon(Icons.cleaning_services_outlined),
-                  label: const Text('Clear Cache'),
+                  icon: Icon(Icons.cleaning_services_outlined),
+                  label: Text('Clear Cache'.t(context)),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 48),
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Text(
-                  'Current cache size: ${_formatBytes(_cacheSize)}',
+                  'Current cache size: ${_formatBytes(_cacheSize)}'.t(context),
                   style: TextStyle(fontSize: 12, color: theme.textSecondary),
                 ),
               ),
             ],
           ),
           
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           
           // Info
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: theme.accentColor.withOpacity(0.1),
               borderRadius: theme.cornerRadius,
               border: Border.all(color: theme.accentColor.withOpacity(0.3)),
             ),
             child: Text(
-              'Backups include your database, images, and all settings. They are stored as encrypted .zip files on your device.',
+              'Backups include your database, images, and all settings. They are stored as encrypted .zip files on your device.'.t(context),
               style: TextStyle(fontSize: 12, color: theme.textSecondary),
             ),
           ),

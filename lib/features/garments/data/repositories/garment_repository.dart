@@ -2,6 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../shared/data/database/database_helper.dart';
 import '../models/garment.dart';
+import '../../../../features/notifications/data/services/notification_service.dart';
 
 class GarmentRepository {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
@@ -21,6 +22,7 @@ class GarmentRepository {
       updatedAt: DateTime.now(),
     );
     await db.insert('garments', newGarment.toMap());
+    await NotificationService().showModelNotification(action: 'Created', type: 'Garment', name: garment.name);
     return id;
   }
 
@@ -50,16 +52,23 @@ class GarmentRepository {
 
   Future<int> updateGarment(Garment garment) async {
     final db = await _dbHelper.database;
-    return await db.update(
+    final res = await db.update(
       'garments',
       garment.toMap(),
       where: 'id = ?',
       whereArgs: [garment.id],
     );
+    await NotificationService().showModelNotification(action: 'Updated', type: 'Garment', name: garment.name);
+    return res;
   }
 
   Future<int> deleteGarment(String id) async {
     final db = await _dbHelper.database;
-    return await db.delete('garments', where: 'id = ?', whereArgs: [id]);
+    final garment = await getById(id);
+    final res = await db.delete('garments', where: 'id = ?', whereArgs: [id]);
+    if (garment != null) {
+      await NotificationService().showModelNotification(action: 'Deleted', type: 'Garment', name: garment.name);
+    }
+    return res;
   }
 }

@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../shared/mixins/theme_aware_mixin.dart';
@@ -24,7 +25,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with ThemeAwa
     return IchitoScaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Notifications', style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Notifications'.t(context), style: headingStyle.copyWith(fontSize: 18)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
@@ -34,7 +35,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with ThemeAwa
               onPressed: () => notifProvider.markAllAsRead(),
               icon: Icon(Icons.done_all, color: theme.accentColor, size: 18),
               label: Text(
-                'Mark All Read',
+                'Mark All Read'.t(context),
                 style: TextStyle(
                   color: theme.accentColor,
                   fontSize: 12,
@@ -48,7 +49,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with ThemeAwa
         child: notifications.isEmpty
             ? _buildEmptyState()
             : ListView.builder(
-                padding: const EdgeInsets.fromLTRB(12, 8, 12, 100),
+                padding: EdgeInsets.fromLTRB(12, 8, 12, 100),
                 itemCount: notifications.length,
                 itemBuilder: (context, index) {
                   return _NotificationTile(
@@ -76,7 +77,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with ThemeAwa
   Widget _buildEmptyState() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(48),
+        padding: EdgeInsets.all(48),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -89,9 +90,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> with ThemeAwa
               ),
               child: Icon(Icons.notifications_none, size: 40, color: theme.accentColor),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             Text(
-              'No Notifications',
+              'No Notifications'.t(context),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -99,9 +100,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> with ThemeAwa
                 fontFamily: theme.fontFamily,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
-              'You\'re all caught up! Notifications about upcoming orders will appear here.',
+              'You\'.t(context)re all caught up! Notifications about upcoming orders will appear here.',
               style: TextStyle(fontSize: 14, color: theme.textSecondary, fontFamily: theme.fontFamily),
               textAlign: TextAlign.center,
             ),
@@ -173,19 +174,19 @@ class _NotificationTile extends StatelessWidget {
       onDismissed: (_) => onDismiss(),
       background: Container(
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
-        margin: const EdgeInsets.symmetric(vertical: 4),
+        padding: EdgeInsets.only(right: 20),
+        margin: EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
           color: const Color(0xFFF44336).withOpacity(0.15),
           borderRadius: theme.cornerRadius,
         ),
-        child: const Icon(Icons.delete_outline, color: Color(0xFFF44336)),
+        child: Icon(Icons.delete_outline, color: Color(0xFFF44336)),
       ),
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 4),
-          padding: const EdgeInsets.all(14),
+          margin: EdgeInsets.symmetric(vertical: 4),
+          padding: EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: notification.isRead
                 ? theme.cardColor
@@ -211,7 +212,7 @@ class _NotificationTile extends StatelessWidget {
                 ),
                 child: Icon(_getIcon(), color: iconColor, size: 22),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               // Content
               Expanded(
                 child: Column(
@@ -241,7 +242,7 @@ class _NotificationTile extends StatelessWidget {
                           ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       notification.body,
                       style: TextStyle(
@@ -252,7 +253,7 @@ class _NotificationTile extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 6),
+                    SizedBox(height: 6),
                     Text(
                       _formatTime(notification.createdAt),
                       style: TextStyle(

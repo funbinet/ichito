@@ -25,7 +25,7 @@ class QuickActionTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         decoration: BoxDecoration(
           color: theme.cardColor,
           borderRadius: theme.cornerRadius,
@@ -44,7 +44,7 @@ class QuickActionTile extends StatelessWidget {
               ),
               child: Icon(icon, color: theme.accentColor, size: 24),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               label,
               style: TextStyle(
@@ -57,7 +57,7 @@ class QuickActionTile extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 2),
+            SizedBox(height: 2),
             Text(
               subtitle,
               style: TextStyle(
@@ -91,7 +91,7 @@ class SectionHeader extends StatelessWidget {
     final theme = Provider.of<ThemeProvider>(context);
     
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
+      padding: EdgeInsets.fromLTRB(16, 24, 16, 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -185,11 +185,11 @@ class ActivityFeedItem extends StatelessWidget {
         arguments: order.id,
       ),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         child: Row(
           children: [
             StatusDot(status: order.status),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Container(
               width: 40,
               height: 40,
@@ -203,13 +203,13 @@ class ActivityFeedItem extends StatelessWidget {
                 size: 20,
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Order ${order.orderNumber}',
+                    'Order ${order.orderNumber}'.t(context),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -217,13 +217,13 @@ class ActivityFeedItem extends StatelessWidget {
                       fontFamily: theme.fontFamily,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
-                    'Client ID: ${order.customerId} - ${language.formatCurrency(order.totalAmount, showSymbol: true)}',
+                    'Client ID: ${order.customerId} - ${language.formatCurrency(order.totalAmount, showSymbol: true)}'.t(context),
                     style: TextStyle(fontSize: 13, color: theme.textSecondary, fontFamily: theme.fontFamily),
                   ),
                   Text(
-                    'Garment ID: ${order.garmentId}',
+                    'Garment ID: ${order.garmentId}'.t(context),
                     style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily),
                   ),
                 ],
@@ -236,7 +236,7 @@ class ActivityFeedItem extends StatelessWidget {
                   _formatTimeAgo(order.orderDate), // using orderDate as fallback for createdAt
                   style: TextStyle(fontSize: 11, color: theme.textSecondary, fontFamily: theme.fontFamily),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Icon(Icons.arrow_forward, size: 16, color: theme.textSecondary),
               ],
             ),

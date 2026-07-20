@@ -1,3 +1,4 @@
+import 'package:ichito/shared/providers/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../../shared/mixins/theme_aware_mixin.dart';
@@ -101,7 +102,7 @@ class _Step5PricingState extends State<Step5Pricing> with ThemeAwareMixin {
       }
 
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'.t(context))));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -119,7 +120,7 @@ class _Step5PricingState extends State<Step5Pricing> with ThemeAwareMixin {
 
   void _saveAndNext() {
     if (_dueDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select a Due Date')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select a Due Date'.t(context))));
       return;
     }
 
@@ -176,7 +177,7 @@ class _Step5PricingState extends State<Step5Pricing> with ThemeAwareMixin {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: EdgeInsets.all(32.0),
         child: Center(child: CircularProgressIndicator(color: theme.accentColor)),
       );
     }
@@ -184,16 +185,16 @@ class _Step5PricingState extends State<Step5Pricing> with ThemeAwareMixin {
     final dateFormat = DateFormat('dd MMM yyyy');
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(16.0),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Step 5: Pricing & Scheduling',
+              'Step 5: Pricing & Scheduling'.t(context),
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             // Financials
             Card(
@@ -201,7 +202,7 @@ class _Step5PricingState extends State<Step5Pricing> with ThemeAwareMixin {
               elevation: 0,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: theme.borderColor)),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0),
                 child: Column(
                   children: [
                     TextField(
@@ -209,19 +210,19 @@ class _Step5PricingState extends State<Step5Pricing> with ThemeAwareMixin {
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: 'Labor/Stitching Cost (KES)',
-                        prefixIcon: const Icon(Icons.cut),
+                        prefixIcon: Icon(Icons.cut),
                         filled: true,
                         fillColor: theme.backgroundColor,
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     TextField(
                       controller: _fabricCostController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: 'Material/Fabric Cost (KES)',
-                        prefixIcon: const Icon(Icons.texture),
+                        prefixIcon: Icon(Icons.texture),
                         filled: true,
                         fillColor: theme.backgroundColor,
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
@@ -231,17 +232,17 @@ class _Step5PricingState extends State<Step5Pricing> with ThemeAwareMixin {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Total Expected', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                        Text('KES ${_totalAmount.toStringAsFixed(0)}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: theme.accentColor, fontFamily: theme.fontFamily)),
+                        Text('Total Expected'.t(context), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                        Text('KES ${_totalAmount.toStringAsFixed(0)}'.t(context), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: theme.accentColor, fontFamily: theme.fontFamily)),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     TextField(
                       controller: _depositController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: 'Deposit Received (KES)',
-                        prefixIcon: const Icon(Icons.money),
+                        prefixIcon: Icon(Icons.money),
                         filled: true,
                         fillColor: theme.backgroundColor,
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
@@ -251,7 +252,7 @@ class _Step5PricingState extends State<Step5Pricing> with ThemeAwareMixin {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             // Scheduling
             Card(
@@ -259,37 +260,37 @@ class _Step5PricingState extends State<Step5Pricing> with ThemeAwareMixin {
               elevation: 0,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: theme.borderColor)),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0),
                 child: Column(
                   children: [
                     ListTile(
                       contentPadding: EdgeInsets.zero,
                       leading: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(color: theme.accentColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
                         child: Icon(Icons.event_available, color: theme.accentColor),
                       ),
-                      title: Text('Due Date', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                      title: Text('Due Date'.t(context), style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
                       subtitle: Text(_dueDate != null ? dateFormat.format(_dueDate!) : 'Not set', style: TextStyle(color: _dueDate == null ? Colors.red : theme.textSecondary, fontFamily: theme.fontFamily)),
-                      trailing: TextButton(onPressed: () => _pickDate(true), child: const Text('Change')),
+                      trailing: TextButton(onPressed: () => _pickDate(true), child: Text('Change'.t(context))),
                     ),
                     const Divider(height: 1),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
                       leading: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(color: Colors.purple.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
-                        child: const Icon(Icons.accessibility_new, color: Colors.purple),
+                        child: Icon(Icons.accessibility_new, color: Colors.purple),
                       ),
-                      title: Text('Trial/Fitting Date', style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                      title: Text('Trial/Fitting Date'.t(context), style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily)),
                       subtitle: Text(_trialDate != null ? dateFormat.format(_trialDate!) : 'Not set', style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
-                      trailing: TextButton(onPressed: () => _pickDate(false), child: const Text('Change')),
+                      trailing: TextButton(onPressed: () => _pickDate(false), child: Text('Change'.t(context))),
                     ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             // Instructions
             TextField(
@@ -297,13 +298,13 @@ class _Step5PricingState extends State<Step5Pricing> with ThemeAwareMixin {
               maxLines: 3,
               decoration: InputDecoration(
                 labelText: 'Special Instructions',
-                hintText: 'Any extra details, pockets, collar type...',
+                hintText: 'Any extra details, pockets, collar type...'.t(context),
                 filled: true,
                 fillColor: theme.cardColor,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             Row(
               children: [
                 Expanded(
@@ -313,7 +314,7 @@ class _Step5PricingState extends State<Step5Pricing> with ThemeAwareMixin {
                     isPrimary: false,
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(
                   child: AdaptiveButton(
                     text: 'Review Order',
