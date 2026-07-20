@@ -126,8 +126,8 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
                 ),
                 SizedBox(height: 12),
                 Text(
-                  'ICHITO is a complete tailor management system built with care for tailors everywhere.\n\n'.t(context)
-                  '"Ichito" means "to work" or "work/job" in Sheng (Kenyan slang).\n\n'
+                  'ICHITO is a complete tailor management system built with care for tailors everywhere.\n\n'.t(context) +
+                  '"Ichito" means "to work" or "work/job" in Sheng (Kenyan slang).\n\n' +
                   'The app combines premium aesthetics with powerful functionality to help you manage your tailoring business offline, anytime, anywhere.',
                   style: TextStyle(
                     color: theme.textSecondary,
@@ -161,8 +161,8 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
                 ),
                 SizedBox(height: 12),
                 Text(
-                  'Powered by Flutter & Dart\n'.t(context)
-                  'SQLite for local data storage\n'
+                  'Powered by Flutter & Dart\n'.t(context) +
+                  'SQLite for local data storage\n' +
                   'Clean Architecture with Provider state management',
                   style: TextStyle(
                     color: theme.textSecondary,
@@ -218,7 +218,7 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
           // Footer
           Center(
             child: Text(
-              '© 2026 ICHITO. All rights reserved.\n'.t(context)
+              '© 2026 ICHITO. All rights reserved.\n'.t(context) +
               'Licensed under MIT License',
               textAlign: TextAlign.center,
               style: TextStyle(

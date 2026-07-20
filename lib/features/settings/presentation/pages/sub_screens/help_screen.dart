@@ -13,7 +13,7 @@ class HelpScreen extends StatefulWidget {
 }
 
 class _HelpScreenState extends State<HelpScreen> with ThemeAwareMixin {
-  final Map<String, List<_HelpTopic>> _categorizedTopics = {
+  Map<String, List<_HelpTopic>> get _categorizedTopics => {
     'Getting Started & Basics': [
       _HelpTopic(
         title: 'Welcome to ICHITO'.t(context),
@@ -61,7 +61,7 @@ class _HelpScreenState extends State<HelpScreen> with ThemeAwareMixin {
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not launch WhatsApp'.t(context))));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not launch WhatsApp'.t(context))));
     }
   }
 

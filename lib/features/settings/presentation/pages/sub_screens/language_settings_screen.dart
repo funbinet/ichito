@@ -98,8 +98,8 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
                 label: 'Select Language'.t(context),
                 value: _selectedLanguage,
                 items: [
-                  const DropdownMenuItem(value: 'english', child: Text('English'.t(context))),
-                  const DropdownMenuItem(value: 'sheng', child: Text('Sheng'.t(context))),
+                  DropdownMenuItem(value: 'english', child: Text('English'.t(context))),
+                  DropdownMenuItem(value: 'sheng', child: Text('Sheng'.t(context))),
                 ],
                 onChanged: (value) {
                   if (value != null) {
@@ -126,8 +126,8 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
                 label: 'Select Unit'.t(context),
                 value: _selectedUnit,
                 items: [
-                  const DropdownMenuItem(value: 'cm', child: Text('Centimeters (cm)'.t(context))),
-                  const DropdownMenuItem(value: 'inches', child: Text('Inches'.t(context))),
+                  DropdownMenuItem(value: 'cm', child: Text('Centimeters (cm)'.t(context))),
+                  DropdownMenuItem(value: 'inches', child: Text('Inches'.t(context))),
                 ],
                 onChanged: (value) {
                   if (value != null) {
@@ -154,12 +154,12 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
                 label: 'Select Currency'.t(context),
                 value: _selectedCurrency,
                 items: [
-                  const DropdownMenuItem(value: 'KES', child: Text('KES - Kenya Shilling'.t(context))),
-                  const DropdownMenuItem(value: 'USD', child: Text('USD - US Dollar'.t(context))),
-                  const DropdownMenuItem(value: 'EUR', child: Text('EUR - Euro'.t(context))),
-                  const DropdownMenuItem(value: 'GBP', child: Text('GBP - British Pound'.t(context))),
-                  const DropdownMenuItem(value: 'TZS', child: Text('TZS - Tanzania Shilling'.t(context))),
-                  const DropdownMenuItem(value: 'UGX', child: Text('UGX - Uganda Shilling'.t(context))),
+                  DropdownMenuItem(value: 'KES', child: Text('KES - Kenya Shilling'.t(context))),
+                  DropdownMenuItem(value: 'USD', child: Text('USD - US Dollar'.t(context))),
+                  DropdownMenuItem(value: 'EUR', child: Text('EUR - Euro'.t(context))),
+                  DropdownMenuItem(value: 'GBP', child: Text('GBP - British Pound'.t(context))),
+                  DropdownMenuItem(value: 'TZS', child: Text('TZS - Tanzania Shilling'.t(context))),
+                  DropdownMenuItem(value: 'UGX', child: Text('UGX - Uganda Shilling'.t(context))),
                 ],
                 onChanged: (value) {
                   if (value != null) {
@@ -186,9 +186,9 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
                 label: 'Select Date Format'.t(context),
                 value: _selectedDateFormat,
                 items: [
-                  const DropdownMenuItem(value: 'DD/MM/YYYY', child: Text('DD/MM/YYYY'.t(context))),
-                  const DropdownMenuItem(value: 'MM/DD/YYYY', child: Text('MM/DD/YYYY'.t(context))),
-                  const DropdownMenuItem(value: 'YYYY-MM-DD', child: Text('YYYY-MM-DD'.t(context))),
+                  DropdownMenuItem(value: 'DD/MM/YYYY', child: Text('DD/MM/YYYY'.t(context))),
+                  DropdownMenuItem(value: 'MM/DD/YYYY', child: Text('MM/DD/YYYY'.t(context))),
+                  DropdownMenuItem(value: 'YYYY-MM-DD', child: Text('YYYY-MM-DD'.t(context))),
                 ],
                 onChanged: (value) {
                   if (value != null) {

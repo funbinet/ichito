@@ -45,8 +45,8 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
                     value: prefs.defaultView,
                     description: 'Grid or List view for entity lists',
                     items: [
-                      const DropdownMenuItem(value: 'grid', child: Text('Grid'.t(context))),
-                      const DropdownMenuItem(value: 'list', child: Text('List'.t(context))),
+                      DropdownMenuItem(value: 'grid', child: Text('Grid'.t(context))),
+                      DropdownMenuItem(value: 'list', child: Text('List'.t(context))),
                     ],
                     onChanged: (value) {
                       if (value != null) {
@@ -59,10 +59,10 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
                     value: prefs.gridDensity,
                     description: 'Items per row in grid view',
                     items: [
-                      const DropdownMenuItem(value: 4, child: Text('4 items'.t(context))),
-                      const DropdownMenuItem(value: 8, child: Text('8 items'.t(context))),
-                      const DropdownMenuItem(value: 16, child: Text('16 items'.t(context))),
-                      const DropdownMenuItem(value: 32, child: Text('32 items'.t(context))),
+                      DropdownMenuItem(value: 4, child: Text('4 items'.t(context))),
+                      DropdownMenuItem(value: 8, child: Text('8 items'.t(context))),
+                      DropdownMenuItem(value: 16, child: Text('16 items'.t(context))),
+                      DropdownMenuItem(value: 32, child: Text('32 items'.t(context))),
                     ],
                     onChanged: (value) {
                       if (value != null) {
@@ -92,10 +92,10 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
                       value: prefs.autoSaveIntervalSeconds,
                       description: 'Wait time before auto-saving',
                       items: [
-                        const DropdownMenuItem(value: 1, child: Text('1 second'.t(context))),
-                        const DropdownMenuItem(value: 3, child: Text('3 seconds'.t(context))),
-                        const DropdownMenuItem(value: 5, child: Text('5 seconds'.t(context))),
-                        const DropdownMenuItem(value: 10, child: Text('10 seconds'.t(context))),
+                        DropdownMenuItem(value: 1, child: Text('1 second'.t(context))),
+                        DropdownMenuItem(value: 3, child: Text('3 seconds'.t(context))),
+                        DropdownMenuItem(value: 5, child: Text('5 seconds'.t(context))),
+                        DropdownMenuItem(value: 10, child: Text('10 seconds'.t(context))),
                       ],
                       onChanged: (value) {
                         if (value != null) {
@@ -147,10 +147,10 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
                     label: 'Sort Customers By'.t(context),
                     value: prefs.defaultCustomerSort,
                     items: [
-                      const DropdownMenuItem(value: 'name', child: Text('Name'.t(context))),
-                      const DropdownMenuItem(value: 'orders', child: Text('Number of Orders'.t(context))),
-                      const DropdownMenuItem(value: 'spent', child: Text('Total Spent'.t(context))),
-                      const DropdownMenuItem(value: 'recent', child: Text('Recently Added'.t(context))),
+                      DropdownMenuItem(value: 'name', child: Text('Name'.t(context))),
+                      DropdownMenuItem(value: 'orders', child: Text('Number of Orders'.t(context))),
+                      DropdownMenuItem(value: 'spent', child: Text('Total Spent'.t(context))),
+                      DropdownMenuItem(value: 'recent', child: Text('Recently Added'.t(context))),
                     ],
                     onChanged: (value) {
                       if (value != null) {
@@ -162,10 +162,10 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
                     label: 'Sort Orders By'.t(context),
                     value: prefs.defaultOrderSort,
                     items: [
-                      const DropdownMenuItem(value: 'date', child: Text('Date Created'.t(context))),
-                      const DropdownMenuItem(value: 'due', child: Text('Due Date'.t(context))),
-                      const DropdownMenuItem(value: 'amount', child: Text('Amount'.t(context))),
-                      const DropdownMenuItem(value: 'status', child: Text('Status'.t(context))),
+                      DropdownMenuItem(value: 'date', child: Text('Date Created'.t(context))),
+                      DropdownMenuItem(value: 'due', child: Text('Due Date'.t(context))),
+                      DropdownMenuItem(value: 'amount', child: Text('Amount'.t(context))),
+                      DropdownMenuItem(value: 'status', child: Text('Status'.t(context))),
                     ],
                     onChanged: (value) {
                       if (value != null) {
@@ -177,9 +177,9 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
                     label: 'Sort Notes By'.t(context),
                     value: prefs.defaultNoteSort,
                     items: [
-                      const DropdownMenuItem(value: 'newest', child: Text('Newest First'.t(context))),
-                      const DropdownMenuItem(value: 'oldest', child: Text('Oldest First'.t(context))),
-                      const DropdownMenuItem(value: 'title', child: Text('Title'.t(context))),
+                      DropdownMenuItem(value: 'newest', child: Text('Newest First'.t(context))),
+                      DropdownMenuItem(value: 'oldest', child: Text('Oldest First'.t(context))),
+                      DropdownMenuItem(value: 'title', child: Text('Title'.t(context))),
                     ],
                     onChanged: (value) {
                       if (value != null) {
