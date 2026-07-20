@@ -257,7 +257,7 @@ class _CustomerListScreenState extends State<CustomerListScreen> with ThemeAware
             icon: Icon(Icons.keyboard_arrow_down, size: 16, color: theme.textSecondary),
             style: TextStyle(fontSize: 12, color: theme.textPrimary, fontFamily: theme.fontFamily),
             dropdownColor: theme.cardColor,
-            items: const [
+            items: [
               DropdownMenuItem(value: SortOption.name, child: Text('Name'.t(context))),
               DropdownMenuItem(value: SortOption.orders, child: Text('Orders'.t(context))),
               DropdownMenuItem(value: SortOption.spent, child: Text('Spent'.t(context))),

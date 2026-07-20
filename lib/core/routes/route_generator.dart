@@ -167,8 +167,9 @@ class RouteGenerator {
   }
 
   static Widget _comingSoonRoute(String routeName) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Coming Soon'.t(context))),
+    return Builder(
+      builder: (context) => Scaffold(
+        appBar: AppBar(title: Text('Coming Soon'.t(context))),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -179,14 +180,17 @@ class RouteGenerator {
           ],
         ),
       ),
+      ),
     );
   }
 
   static Widget _errorRoute(String? routeName) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Route Not Found'.t(context))),
+    return Builder(
+      builder: (context) => Scaffold(
+        appBar: AppBar(title: Text('Route Not Found'.t(context))),
       body: Center(
         child: Text('ERROR: The route "$routeName" could not be found.'),
+      ),
       ),
     );
   }

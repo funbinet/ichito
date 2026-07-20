@@ -12,8 +12,8 @@ class AdaptiveCard extends StatelessWidget {
   const AdaptiveCard({
     super.key,
     required this.child,
-    this.padding = EdgeInsets.all(16.0),
-    this.margin = EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+    this.padding = const EdgeInsets.all(16.0),
+    this.margin = const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
     this.onTap,
   });
 

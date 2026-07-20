@@ -69,7 +69,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
       setState(() {
         _isEditingNotes = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Notes updated successfully'.t(context))));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Notes updated successfully'.t(context))));
     }
   }
 

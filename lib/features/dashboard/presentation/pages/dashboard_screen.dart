@@ -45,7 +45,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
         .fold(0.0, (sum, o) => sum + o.paidAmount);
 
     final lang = Provider.of<LanguageProvider>(context, listen: false);
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Generating PDF Report...'.t(context))));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Generating PDF Report...'.t(context))));
     await ExportService.exportStatsToPDF(
       title: 'Dashboard Overview'.t(context),
       fileNamePrefix: 'dashboard_stats',
@@ -64,7 +64,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
         .where((o) => o.orderDate.month == now.month && o.orderDate.year == now.year)
         .fold(0.0, (sum, o) => sum + o.paidAmount);
 
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Exporting CSV...'.t(context))));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Exporting CSV...'.t(context))));
     await ExportService.exportStatsToCSV(
       title: 'Dashboard Overview'.t(context),
       fileNamePrefix: 'dashboard_stats',

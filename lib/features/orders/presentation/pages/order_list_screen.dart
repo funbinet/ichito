@@ -214,7 +214,7 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
             icon: Icon(Icons.keyboard_arrow_down, size: 16, color: theme.textSecondary),
             style: TextStyle(fontSize: 12, color: theme.textPrimary, fontFamily: theme.fontFamily),
             dropdownColor: theme.cardColor,
-            items: const [
+            items: [
               DropdownMenuItem(value: OrderSortOption.newest, child: Text('Newest'.t(context))),
               DropdownMenuItem(value: OrderSortOption.oldest, child: Text('Oldest'.t(context))),
               DropdownMenuItem(value: OrderSortOption.dueSoon, child: Text('Due Soon'.t(context))),
