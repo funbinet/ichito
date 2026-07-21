@@ -20,26 +20,13 @@ class _PinLockScreenState extends State<PinLockScreen> with ThemeAwareMixin {
   final SecurityService _securityService = SecurityService();
   String _input = '';
   bool _isError = false;
-  bool _isPasswordMode = false;
-  final _passwordController = TextEditingController();
   
   @override
   void initState() {
     super.initState();
-    _checkMode();
     _tryBiometric();
   }
   
-  @override
-  void dispose() {
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _checkMode() async {
-    // In a real app we'd check if the user set a PIN or Password.
-    // For now we assume PIN mode is default.
-  }
 
   Future<void> _tryBiometric() async {
     final lang = Provider.of<LanguageProvider>(context, listen: false);
@@ -84,18 +71,6 @@ class _PinLockScreenState extends State<PinLockScreen> with ThemeAwareMixin {
       // Optionally trigger shake animation here
     }
   }
-  
-  Future<void> _verifyPassword() async {
-    final success = await _securityService.verifyPin(_passwordController.text);
-    if (success) {
-      if (mounted) widget.onUnlocked();
-    } else {
-      setState(() {
-        _isError = true;
-        _passwordController.clear();
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +87,7 @@ class _PinLockScreenState extends State<PinLockScreen> with ThemeAwareMixin {
             ),
             SizedBox(height: 24),
             Text(
-              'Enter ${_isPasswordMode ? '.t(context)Password' : 'PIN'}',
+              'Enter PIN'.t(context),
               style: TextStyle(
                 color: theme.textPrimary,
                 fontSize: theme.fontSize * 1.5,
@@ -123,22 +98,18 @@ class _PinLockScreenState extends State<PinLockScreen> with ThemeAwareMixin {
             SizedBox(height: 16),
             if (_isError)
               Text(
-                'Incorrect ${_isPasswordMode ? '.t(context)Password' : 'PIN'}. Try again.',
+                'Incorrect PIN. Try again.'.t(context),
                 style: TextStyle(color: Colors.red, fontFamily: theme.fontFamily),
               )
             else
               SizedBox(height: 16),
             const Spacer(),
             
-            if (_isPasswordMode)
-              _buildPasswordInput()
-            else
-              _buildPinDots(),
+            _buildPinDots(),
               
             const Spacer(),
             
-            if (!_isPasswordMode)
-              _buildKeypad(),
+            _buildKeypad(),
               
             const Spacer(),
             Row(
@@ -182,46 +153,6 @@ class _PinLockScreenState extends State<PinLockScreen> with ThemeAwareMixin {
           ),
         );
       }),
-    );
-  }
-  
-  Widget _buildPasswordInput() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 48.0),
-      child: Column(
-        children: [
-          TextField(
-            controller: _passwordController,
-            obscureText: true,
-            style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily),
-            decoration: InputDecoration(
-              hintText: 'Password'.t(context),
-              hintStyle: TextStyle(color: theme.textSecondary),
-              filled: true,
-              fillColor: theme.cardColor,
-              border: OutlineInputBorder(
-                borderRadius: theme.cornerRadius,
-                borderSide: BorderSide(color: theme.borderColor),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: theme.cornerRadius,
-                borderSide: BorderSide(color: theme.accentColor),
-              ),
-            ),
-            onSubmitted: (_) => _verifyPassword(),
-          ),
-          SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _verifyPassword,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: theme.accentColor,
-              shape: RoundedRectangleBorder(borderRadius: theme.buttonRadius),
-              padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-            ),
-            child: Text('Unlock'.t(context), style: TextStyle(color: theme.onAccent)),
-          ),
-        ],
-      ),
     );
   }
 

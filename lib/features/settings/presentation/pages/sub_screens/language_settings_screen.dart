@@ -14,215 +14,110 @@ class LanguageSettingsScreen extends StatefulWidget {
 
 class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with ThemeAwareMixin {
   late SettingsRepository _settings;
-  late String _selectedLanguage;
-  late String _selectedCurrency;
-  late String _selectedUnit;
-  late String _selectedDateFormat;
 
   @override
   void initState() {
     super.initState();
     _settings = SettingsRepository();
-    _selectedLanguage = _settings.getLanguage();
-    _selectedCurrency = _settings.getCurrency();
-    _selectedUnit = _settings.getMeasurementUnit();
-    _selectedDateFormat = _settings.getDateFormat();
   }
 
-  void _saveSettings() {
-    _settings.setLanguage(_selectedLanguage);
-    _settings.setCurrency(_selectedCurrency);
-    _settings.setMeasurementUnit(_selectedUnit);
-    _settings.setDateFormat(_selectedDateFormat);
-
+  void _setLanguage(String lang) {
+    _settings.setLanguage(lang);
     final langProv = Provider.of<LanguageProvider>(context, listen: false);
-    langProv.setLanguage(_selectedLanguage == 'sheng' ? AppLanguage.sheng : AppLanguage.english);
-    langProv.setCurrency(_selectedCurrency);
-    langProv.setMeasurementUnit(_selectedUnit);
-    langProv.setDateFormat(_selectedDateFormat);
+    langProv.setLanguage(lang == 'sheng' ? AppLanguage.sheng : AppLanguage.english);
+  }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Language & Format settings saved'.t(context))),
+  Widget _buildLanguageOption(String title, String subtitle, String value, String currentValue) {
+    final bool isSelected = value == currentValue;
+    
+    return GestureDetector(
+      onTap: () => _setLanguage(value),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: theme.cornerRadius,
+          border: Border.all(
+            color: isSelected ? theme.accentColor : theme.borderColor.withOpacity(0.3),
+            width: isSelected ? 2 : 1,
+          ),
+          boxShadow: isSelected && theme.enableShadows
+              ? <BoxShadow>[BoxShadow(color: theme.accentColor.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 4))]
+              : (theme.cardShadow as List<BoxShadow>?),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          child: Row(
+            children: [
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isSelected ? theme.accentColor : theme.textSecondary.withOpacity(0.5),
+                    width: isSelected ? 6 : 2,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title.t(context),
+                      style: headingStyle.copyWith(fontSize: theme.fontSize, color: theme.textPrimary),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle.t(context),
+                      style: subtitleStyle.copyWith(color: theme.textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
-    Navigator.pop(context);
-  }
-
-  String _formatDateExample(String format) {
-    final now = DateTime.now();
-    switch (format) {
-      case 'DD/MM/YYYY':
-        return '${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year}';
-      case 'MM/DD/YYYY':
-        return '${now.month.toString().padLeft(2, '0')}/${now.day.toString().padLeft(2, '0')}/${now.year}';
-      case 'YYYY-MM-DD':
-        return '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
-      default:
-        return format;
-    }
-  }
-
-  String _formatCurrencyExample(String currency) {
-    const examples = {
-      'KES': 'KES 1,500.00',
-      'USD': '\$1,500.00',
-      'EUR': '€1,500.00',
-      'GBP': '£1,500.00',
-      'TZS': 'TSh 1,500',
-      'UGX': 'UGX 1,500,000',
-    };
-    return examples[currency] ?? '$currency 1,500.00';
-  }
-
-  String _formatMeasurementExample(String unit) {
-    return unit == 'cm' ? '85 cm' : '33.5 inches';
   }
 
   @override
   Widget build(BuildContext context) {
+    final currentLanguage = Provider.of<LanguageProvider>(context).currentLanguage == AppLanguage.sheng ? 'sheng' : 'english';
+
     return Scaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Language & Format'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
+        title: Text('Language'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
       ),
       body: ListView(
-        padding: EdgeInsets.all(16).copyWith(bottom: 120),
+        padding: const EdgeInsets.all(16),
         children: [
-          // Language
-          SettingsTile(
-            title: 'Language'.t(context),
-            children: [
-              SettingsDropdown<String>(
-                label: 'Select Language'.t(context),
-                value: _selectedLanguage,
-                items: [
-                  DropdownMenuItem(value: 'english', child: Text('English'.t(context))),
-                  DropdownMenuItem(value: 'sheng', child: Text('Sheng'.t(context))),
-                ],
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() => _selectedLanguage = value);
-                  }
-                },
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Text(
-                  _selectedLanguage == 'english' ? 'Full interface language' : 'Sheng slang with English fallbacks',
-                  style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 12),
-          
-          // Measurement Unit
-          SettingsTile(
-            title: 'Measurement Unit'.t(context),
-            children: [
-              SettingsDropdown<String>(
-                label: 'Select Unit'.t(context),
-                value: _selectedUnit,
-                items: [
-                  DropdownMenuItem(value: 'cm', child: Text('Centimeters (cm)'.t(context))),
-                  DropdownMenuItem(value: 'inches', child: Text('Inches'.t(context))),
-                ],
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() => _selectedUnit = value);
-                  }
-                },
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Text(
-                  'Example: ${_formatMeasurementExample(_selectedUnit)}'.t(context),
-                  style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 12),
-          
-          // Currency
-          SettingsTile(
-            title: 'Currency'.t(context),
-            children: [
-              SettingsDropdown<String>(
-                label: 'Select Currency'.t(context),
-                value: _selectedCurrency,
-                items: [
-                  DropdownMenuItem(value: 'KES', child: Text('KES - Kenya Shilling'.t(context))),
-                  DropdownMenuItem(value: 'USD', child: Text('USD - US Dollar'.t(context))),
-                  DropdownMenuItem(value: 'EUR', child: Text('EUR - Euro'.t(context))),
-                  DropdownMenuItem(value: 'GBP', child: Text('GBP - British Pound'.t(context))),
-                  DropdownMenuItem(value: 'TZS', child: Text('TZS - Tanzania Shilling'.t(context))),
-                  DropdownMenuItem(value: 'UGX', child: Text('UGX - Uganda Shilling'.t(context))),
-                ],
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() => _selectedCurrency = value);
-                  }
-                },
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Text(
-                  'Example: ${_formatCurrencyExample(_selectedCurrency)}'.t(context),
-                  style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 12),
-          
-          // Date Format
-          SettingsTile(
-            title: 'Date Format'.t(context),
-            children: [
-              SettingsDropdown<String>(
-                label: 'Select Date Format'.t(context),
-                value: _selectedDateFormat,
-                items: [
-                  DropdownMenuItem(value: 'DD/MM/YYYY', child: Text('DD/MM/YYYY'.t(context))),
-                  DropdownMenuItem(value: 'MM/DD/YYYY', child: Text('MM/DD/YYYY'.t(context))),
-                  DropdownMenuItem(value: 'YYYY-MM-DD', child: Text('YYYY-MM-DD'.t(context))),
-                ],
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() => _selectedDateFormat = value);
-                  }
-                },
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Text(
-                  'Example: ${_formatDateExample(_selectedDateFormat)}'.t(context),
-                  style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 24),
-          
-          // Save button
-          ElevatedButton(
-            onPressed: _saveSettings,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: theme.accentColor,
-              padding: EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
-            ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 24),
             child: Text(
-              'Save Settings'.t(context),
-              style: TextStyle(
-                color: theme.onAccent,
-                fontWeight: FontWeight.bold,
-                fontSize: theme.fontSize,
-              ),
+              'Select your preferred language. Changes are applied immediately across the entire application.'.t(context),
+              style: bodyStyle.copyWith(color: theme.textSecondary),
             ),
+          ),
+          _buildLanguageOption(
+            'English',
+            'Full interface language',
+            'english',
+            currentLanguage,
+          ),
+          _buildLanguageOption(
+            'Sheng',
+            'Sheng slang with English fallbacks',
+            'sheng',
+            currentLanguage,
           ),
         ],
       ),

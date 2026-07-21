@@ -12,6 +12,7 @@ import 'shared/data/database/database_helper.dart';
 import 'shared/data/local/settings_repository.dart';
 import 'features/notifications/data/services/notification_service.dart';
 import 'features/security/presentation/pages/pin_lock_screen.dart';
+import 'features/security/presentation/pages/password_lock_screen.dart';
 import 'core/routes/route_generator.dart';
 
 void main() async {
@@ -143,10 +144,11 @@ class _IchitoAppState extends State<IchitoApp> with WidgetsBindingObserver {
           child: child!,
         );
         if (appState.isLocked) {
+          final lockType = SettingsRepository().getLockType();
           return Scaffold(
-            body: PinLockScreen(
-              onUnlocked: () => appState.unlock(),
-            ),
+            body: lockType == 'password'
+              ? PasswordLockScreen(onUnlocked: () => appState.unlock())
+              : PinLockScreen(onUnlocked: () => appState.unlock()),
           );
         }
         return scaledChild;

@@ -38,7 +38,7 @@ class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
           ),
           _buildSettingsTile(
             title: 'Language & Format'.t(context),
-            subtitle: 'Language, units, currency & dates'.t(context),
+            subtitle: 'Language selection'.t(context),
             icon: Icons.language_outlined,
             onTap: () => Navigator.pushNamed(context, '/settings/language'),
           ),
@@ -47,12 +47,6 @@ class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
             subtitle: 'App lock, biometrics, PIN'.t(context),
             icon: Icons.security_outlined,
             onTap: () => Navigator.pushNamed(context, '/settings/security'),
-          ),
-          _buildSettingsTile(
-            title: 'Preferences Settings'.t(context),
-            subtitle: 'Display, interaction & default sort'.t(context),
-            icon: Icons.tune_outlined,
-            onTap: () => Navigator.pushNamed(context, '/settings/preferences'),
           ),
           _buildSettingsTile(
             title: 'Measurement Types'.t(context),

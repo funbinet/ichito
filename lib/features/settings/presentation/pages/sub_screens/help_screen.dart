@@ -57,7 +57,7 @@ class _HelpScreenState extends State<HelpScreen> with ThemeAwareMixin {
   };
 
   Future<void> _launchWhatsApp() async {
-    final Uri url = Uri.parse('https://wa.me/254700000000?text=Hello%20ICHITO%20Support');
+    final Uri url = Uri.parse('https://wa.me/254707657191?text=Hello%20ICHITO%20Support');
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {

@@ -20,13 +20,13 @@ import '../../features/settings/presentation/pages/sub_screens/profile_settings_
 import '../../features/settings/presentation/pages/sub_screens/appearance_settings_screen.dart';
 import '../../features/settings/presentation/pages/sub_screens/security_settings_screen.dart';
 import '../../features/settings/presentation/pages/sub_screens/language_settings_screen.dart';
-import '../../features/settings/presentation/pages/sub_screens/preferences_settings_screen.dart';
 import '../../features/settings/presentation/pages/sub_screens/measurement_types_screen.dart';
 import '../../features/settings/presentation/pages/sub_screens/backup_restore_screen.dart';
 import '../../features/settings/presentation/pages/sub_screens/help_screen.dart';
 import '../../features/settings/presentation/pages/sub_screens/about_screen.dart';
 import '../../features/security/presentation/pages/pin_lock_screen.dart';
 import '../../features/security/presentation/pages/pin_setup_screen.dart';
+import '../../features/security/presentation/pages/password_setup_screen.dart';
 import '../../features/customers/presentation/pages/customer_form_screen.dart';
 import '../../features/customers/presentation/pages/customer_detail_screen.dart';
 import '../../features/customers/presentation/pages/customer_financials_screen.dart';
@@ -71,9 +71,6 @@ class RouteGenerator {
       case '/settings/language':
         page = const LanguageSettingsScreen();
         break;
-      case '/settings/preferences':
-        page = const PreferencesSettingsScreen();
-        break;
       case '/settings/measurements':
         page = const MeasurementTypesScreen();
         break;
@@ -88,6 +85,9 @@ class RouteGenerator {
         break;
       case '/setup_pin':
         page = const PinSetupScreen();
+        break;
+      case '/setup_password':
+        page = const PasswordSetupScreen();
         break;
       case '/lock_screen':
         page = PinLockScreen(onUnlocked: () {});

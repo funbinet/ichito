@@ -30,6 +30,20 @@ class BackupService {
       final dbBytes = await dbFile.readAsBytes();
       archive.addFile(ArchiveFile('ichito.db', dbBytes.length, dbBytes));
       
+      // Try to find images directory
+      final appDocsDir = await getApplicationDocumentsDirectory();
+      final imagesDir = Directory(p.join(appDocsDir.path, 'app_data', 'images'));
+      if (await imagesDir.exists()) {
+        final entities = await imagesDir.list(recursive: true).toList();
+        for (final entity in entities) {
+          if (entity is File) {
+            final relPath = p.relative(entity.path, from: appDocsDir.path);
+            final fileBytes = await entity.readAsBytes();
+            archive.addFile(ArchiveFile(relPath, fileBytes.length, fileBytes));
+          }
+        }
+      }
+      
       // Create the zip file
       final zipEncoder = ZipEncoder();
       final zipBytes = zipEncoder.encode(archive);
@@ -54,7 +68,7 @@ class BackupService {
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['db'],
+        allowedExtensions: ['zip'],
       );
 
       if (result == null || result.files.single.path == null) {
@@ -87,6 +101,17 @@ class BackupService {
       
       final content = dbArchiveFile.content as List<int>;
       await dbFile.writeAsBytes(content, flush: true);
+
+      // Restore images if present
+      final appDocsDir = await getApplicationDocumentsDirectory();
+      for (final file in archive) {
+        if (file.name != 'ichito.db' && file.isFile) {
+          final targetPath = p.join(appDocsDir.path, file.name);
+          final targetFile = File(targetPath);
+          await targetFile.parent.create(recursive: true);
+          await targetFile.writeAsBytes(file.content as List<int>, flush: true);
+        }
+      }
 
       // Re-initialize database is done lazily when get database is called
       return true;

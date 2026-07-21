@@ -11,7 +11,7 @@ class AboutScreen extends StatefulWidget {
 }
 
 class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
-  static const String _appVersion = '4.0.0';
+  static const String _appVersion = '6.0.0';
   static const String _buildNumber = '1';
 
   Future<void> _openUrl(String url) async {
@@ -55,11 +55,7 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
                 border: Border.all(color: theme.accentColor.withOpacity(0.3), width: 2),
               ),
               child: Center(
-                child: Icon(
-                  Icons.checkroom_outlined,
-                  size: 60,
-                  color: theme.accentColor,
-                ),
+                child: Image.asset('assets/images/logo_white.png', width: 60, height: 60),
               ),
             ),
           ),
@@ -203,10 +199,23 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
           SizedBox(height: 12),
           OutlinedButton.icon(
             onPressed: () {
-              _openUrl('https://ichito.app/licenses');
+              _openUrl('https://github.com/funbinet');
             },
-            icon: Icon(Icons.description_outlined),
-            label: Text('Open Source Licenses'.t(context)),
+            icon: Icon(Icons.code),
+            label: Text('GitHub Repository'.t(context)),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48),
+              shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),
+              side: BorderSide(color: theme.borderColor),
+            ),
+          ),
+          SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: () {
+              _openUrl('https://codeberg.org/funbinet');
+            },
+            icon: Icon(Icons.code_off),
+            label: Text('Codeberg Repository'.t(context)),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
               shape: RoundedRectangleBorder(borderRadius: theme.cornerRadius),

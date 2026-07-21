@@ -5,6 +5,7 @@ import '../../../../core/widgets/ichito_scaffold.dart';
 import '../../services/security_service.dart';
 import 'package:provider/provider.dart';
 import '../../../../shared/providers/app_state_provider.dart';
+import '../../../../shared/data/local/settings_repository.dart';
 
 class PinSetupScreen extends StatefulWidget {
   const PinSetupScreen({super.key});
@@ -15,15 +16,10 @@ class PinSetupScreen extends StatefulWidget {
 
 class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
   final SecurityService _securityService = SecurityService();
-  bool _isPasswordMode = false;
-  
   String _firstInput = '';
   String _secondInput = '';
   bool _isConfirming = false;
   bool _isError = false;
-  
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
 
   void _onDigitPressed(String digit) {
     if (!_isConfirming && _firstInput.length < 4) {
@@ -69,6 +65,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
   Future<void> _verifySetup() async {
     if (_firstInput == _secondInput) {
       await _securityService.setPin(_firstInput);
+      await SettingsRepository().setLockType('pin');
       if (await _securityService.canUseBiometrics()) {
         final useBiometrics = await _securityService.authenticateWithBiometrics('Enable Biometrics for quicker access');
         if (useBiometrics && mounted) {
@@ -86,34 +83,6 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
       });
     }
   }
-  
-  Future<void> _savePassword() async {
-    final p1 = _passwordController.text;
-    final p2 = _confirmPasswordController.text;
-    
-    if (p1.isEmpty || p1.length < 6) {
-      setState(() => _isError = true);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Password must be at least 6 characters'.t(context))));
-      return;
-    }
-    
-    if (p1 == p2) {
-      await _securityService.setPin(p1);
-      if (await _securityService.canUseBiometrics()) {
-        final useBiometrics = await _securityService.authenticateWithBiometrics('Enable Biometrics for quicker access');
-        if (useBiometrics && mounted) {
-          Provider.of<AppStateProvider>(context, listen: false).setBiometricEnabled(true);
-        }
-      }
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Password setup successfully!'.t(context), style: TextStyle(color: theme.onAccent)), backgroundColor: theme.accentColor));
-        Navigator.pop(context);
-      }
-    } else {
-      setState(() => _isError = true);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Passwords do not match'.t(context))));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,34 +98,13 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                _isPasswordMode = !_isPasswordMode;
-                _firstInput = '';
-                _secondInput = '';
-                _isConfirming = false;
-                _isError = false;
-                _passwordController.clear();
-                _confirmPasswordController.clear();
-              });
-            },
-            child: Text(
-              _isPasswordMode ? 'Use PIN' : 'Use Password', 
-              style: TextStyle(color: theme.accentColor),
-            ),
-          ),
-        ],
       ),
       body: SafeArea(
         child: Column(
           children: [
             SizedBox(height: 32),
             Text(
-              _isPasswordMode 
-                ? 'Create a Secure Password'
-                : (_isConfirming ? 'Confirm your PIN' : 'Create a 4-digit PIN'),
+              _isConfirming ? 'Confirm your PIN' : 'Create a 4-digit PIN',
               style: TextStyle(
                 color: theme.textPrimary,
                 fontSize: theme.fontSize * 1.5,
@@ -174,15 +122,11 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
               SizedBox(height: 16),
             const Spacer(),
             
-            if (_isPasswordMode)
-              _buildPasswordInput()
-            else
-              _buildPinDots(),
+            _buildPinDots(),
               
             const Spacer(),
             
-            if (!_isPasswordMode)
-              _buildKeypad(),
+            _buildKeypad(),
               
             SizedBox(height: 32),
           ],
@@ -211,51 +155,6 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
           ),
         );
       }),
-    );
-  }
-  
-  Widget _buildPasswordInput() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 32.0),
-      child: Column(
-        children: [
-          TextField(
-            controller: _passwordController,
-            obscureText: true,
-            style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily),
-            decoration: InputDecoration(
-              labelText: 'Password',
-              labelStyle: TextStyle(color: theme.textSecondary),
-              filled: true,
-              fillColor: theme.cardColor,
-              border: OutlineInputBorder(borderRadius: theme.cornerRadius),
-            ),
-          ),
-          SizedBox(height: 16),
-          TextField(
-            controller: _confirmPasswordController,
-            obscureText: true,
-            style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily),
-            decoration: InputDecoration(
-              labelText: 'Confirm Password',
-              labelStyle: TextStyle(color: theme.textSecondary),
-              filled: true,
-              fillColor: theme.cardColor,
-              border: OutlineInputBorder(borderRadius: theme.cornerRadius),
-            ),
-          ),
-          SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: _savePassword,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: theme.accentColor,
-              minimumSize: const Size(double.infinity, 50),
-              shape: RoundedRectangleBorder(borderRadius: theme.buttonRadius),
-            ),
-            child: Text('Save Password'.t(context), style: TextStyle(color: theme.onAccent)),
-          ),
-        ],
-      ),
     );
   }
 

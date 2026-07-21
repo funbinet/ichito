@@ -6,6 +6,9 @@ import '../../../../../shared/providers/app_state_provider.dart';
 import '../../../../../core/widgets/ichito_scaffold.dart';
 import '../../../../security/services/security_service.dart';
 import '../../../../security/presentation/pages/recovery_setup_screen.dart';
+import '../../../../../shared/data/local/settings_repository.dart';
+import '../../../../security/presentation/pages/pin_lock_screen.dart';
+import '../../../../security/presentation/pages/password_lock_screen.dart';
 
 class SecuritySettingsScreen extends StatefulWidget {
   const SecuritySettingsScreen({super.key});
@@ -15,6 +18,88 @@ class SecuritySettingsScreen extends StatefulWidget {
 }
 
 class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> with ThemeAwareMixin {
+  Future<void> _showLockTypeSelectionDialog(AppStateProvider appState) async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: theme.cardColor,
+          title: Text('Select Lock Type'.t(context), style: TextStyle(color: theme.textPrimary)),
+          content: Text('How would you like to secure your app?'.t(context), style: TextStyle(color: theme.textSecondary)),
+          actions: [
+            TextButton(
+              onPressed: () {
+                appState.setAppLockEnabled(false);
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'.t(context), style: TextStyle(color: theme.textSecondary)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/setup_pin');
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: theme.accentColor),
+              child: Text('Use PIN'.t(context), style: TextStyle(color: theme.onAccent)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/setup_password');
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: theme.accentColor),
+              child: Text('Use Password'.t(context), style: TextStyle(color: theme.onAccent)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _requireAuthToChange() async {
+    final lockType = SettingsRepository().getLockType();
+    
+    // Simplistic auth requirement logic: 
+    // Wait for the user to unlock the app using the same lock screen.
+    // This is basically achieved by locking the app now and navigating to the setup screen upon unlock.
+    // Alternatively, we can use SecurityService to authenticate.
+    
+    bool authenticated = false;
+    final securityService = SecurityService();
+    
+    if (await securityService.canUseBiometrics()) {
+      authenticated = await securityService.authenticateWithBiometrics('Authenticate to change credentials');
+    }
+    
+    // If biometrics fail or aren't available, we would typically show a PIN/Password prompt.
+    // For simplicity, we assume the user is authenticated if they have the app unlocked, 
+    // but the requirement is "Change PIN/password must require current authentication first".
+    
+    // Let's implement a manual check using the lock screens:
+    if (!authenticated) {
+      if (!mounted) return;
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => lockType == 'password' 
+              ? PasswordLockScreen(onUnlocked: () => Navigator.pop(context, true))
+              : PinLockScreen(onUnlocked: () => Navigator.pop(context, true)),
+        ),
+      ).then((val) {
+        if (val == true) authenticated = true;
+      });
+    }
+    
+    if (authenticated && mounted) {
+      if (lockType == 'password') {
+        Navigator.pushNamed(context, '/setup_password');
+      } else {
+        Navigator.pushNamed(context, '/setup_pin');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppStateProvider>(context);
@@ -44,14 +129,14 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> with Th
             child: Column(
               children: [
                 SwitchListTile(
-                  title: Text('Enable App Lock (PIN)'.t(context), style: bodyStyle),
-                  subtitle: Text('Require PIN or Biometrics on startup'.t(context), style: subtitleStyle),
+                  title: Text('Enable App Lock'.t(context), style: bodyStyle),
+                  subtitle: Text('Require PIN, Password or Biometrics on startup'.t(context), style: subtitleStyle),
                   value: appState.isAppLockEnabled,
                   activeColor: theme.accentColor,
                   onChanged: (val) {
                     appState.setAppLockEnabled(val);
                     if (val) {
-                      Navigator.pushNamed(context, '/setup_pin');
+                      _showLockTypeSelectionDialog(appState);
                     }
                   },
                 ),
@@ -78,7 +163,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> with Th
                     title: Text('Change PIN or Password'.t(context), style: bodyStyle),
                     trailing: Icon(Icons.chevron_right, color: theme.textSecondary),
                     onTap: () {
-                      Navigator.pushNamed(context, '/setup_pin');
+                      _requireAuthToChange();
                     },
                   ),
                   const Divider(height: 1),

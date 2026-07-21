@@ -131,25 +131,41 @@ class _AppearanceSettingsScreenState extends State<AppearanceSettingsScreen> wit
   }
 
   Widget _buildColorSettings() {
-    return Card(
-      color: theme.cardColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: theme.cornerRadius,
-        side: BorderSide(color: theme.accentColor.withOpacity(0.2)),
-      ),
-      child: ListTile(
-        title: Text('Accent Color'.t(context), style: bodyStyle),
-        subtitle: Text('Tap to change the primary accent color'.t(context), style: subtitleStyle),
-        trailing: Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(
-            color: theme.accentColor,
-            shape: BoxShape.circle,
-            border: Border.all(color: theme.borderColor),
-          ),
+    final bool isGradientActive = theme.useGradients;
+
+    return Opacity(
+      opacity: isGradientActive ? 0.5 : 1.0,
+      child: Card(
+        color: theme.cardColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: theme.cornerRadius,
+          side: BorderSide(color: isGradientActive ? Colors.transparent : theme.accentColor.withOpacity(0.5), width: 2),
         ),
-        onTap: _showColorPicker,
+        child: ListTile(
+          title: Text('Solid Accent Color'.t(context), style: bodyStyle),
+          subtitle: Text(
+            isGradientActive 
+              ? 'Currently using gradients (Tap to switch back to solid color)'.t(context)
+              : 'Tap to change the primary accent color'.t(context), 
+            style: subtitleStyle
+          ),
+          trailing: Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: isGradientActive ? Colors.grey : theme.accentColor,
+              shape: BoxShape.circle,
+              border: Border.all(color: theme.borderColor),
+            ),
+          ),
+          onTap: () {
+            if (isGradientActive) {
+              theme.setUseGradients(false);
+              theme.setGradientId(null);
+            }
+            _showColorPicker();
+          },
+        ),
       ),
     );
   }
@@ -260,78 +276,94 @@ class _AppearanceSettingsScreenState extends State<AppearanceSettingsScreen> wit
   }
 
   Widget _buildGradientSettings() {
-    final List<Color> gradientThemes = [
-      const Color(0xFFFFD700), // Gold
-      const Color(0xFF6200EA), // Purple
-      const Color(0xFFF44336), // Red
-      const Color(0xFFE91E63), // Pink
-      const Color(0xFF9C27B0), // Deep Purple
-      const Color(0xFF3F51B5), // Indigo
-      const Color(0xFF2196F3), // Blue
-      const Color(0xFF03A9F4), // Light Blue
-      const Color(0xFF00BCD4), // Cyan
-      const Color(0xFF009688), // Teal
-      const Color(0xFF4CAF50), // Green
-      const Color(0xFF8BC34A), // Light Green
-      const Color(0xFFFF9800), // Orange
-      const Color(0xFFFF5722), // Deep Orange
-      const Color(0xFF607D8B), // Blue Grey
+    final bool isGradientActive = theme.useGradients;
+
+    // Define true multi-color gradients
+    final List<List<Color>> trueGradients = [
+      [const Color(0xFFFF9A9E), const Color(0xFFFECFEF)], // 0: Warm Pink
+      [const Color(0xFFa18cd1), const Color(0xFFfbc2eb)], // 1: Purple Dream
+      [const Color(0xFF84fab0), const Color(0xFF8fd3f4)], // 2: Mint Blue
+      [const Color(0xFFfccb90), const Color(0xFFd57eeb)], // 3: Orange Purple
+      [const Color(0xFFe0c3fc), const Color(0xFF8ec5fc)], // 4: Soft Blue
+      [const Color(0xFF4facfe), const Color(0xFF00f2fe)], // 5: Deep Blue
+      [const Color(0xFF43e97b), const Color(0xFF38f9d7)], // 6: Green
+      [const Color(0xFFfa709a), const Color(0xFFfee140)], // 7: Sunset
+      [const Color(0xFF30cfd0), const Color(0xFF330867)], // 8: Dark Indigo
+      [const Color(0xFFff0844), const Color(0xFFffb199)], // 9: Fiery Red
+      [const Color(0xFFf43b47), const Color(0xFF453a94)], // 10: Deep Purple Red
+      [const Color(0xFF0ba360), const Color(0xFF3cba92)], // 11: Emerald
     ];
 
-    return Card(
-      color: theme.cardColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: theme.cornerRadius,
-        side: BorderSide(color: theme.accentColor.withOpacity(0.2)),
-      ),
-      child: Column(
-        children: [
-          SwitchListTile(
-            title: Text('Use Gradient Accents'.t(context), style: bodyStyle),
-            subtitle: Text('Apply gradients instead of solid colors'.t(context), style: subtitleStyle),
-            value: theme.useGradients,
-            activeColor: theme.accentColor,
-            onChanged: (val) {
-              theme.setUseGradients(val);
-            },
-          ),
-          const Divider(height: 1),
-          Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: gradientThemes.map((color) {
-                final isSelected = theme.accentColor.value == color.value;
-                return GestureDetector(
-                  onTap: () {
-                    theme.setAccentColor(color);
-                    _settings.setAccentColor(color.value);
-                  },
-                  child: Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [color, color.withOpacity(0.5)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      border: Border.all(
-                        color: isSelected ? theme.textPrimary : Colors.transparent,
-                        width: 3,
-                      ),
-                    ),
-                    child: isSelected
-                        ? Icon(Icons.check, color: color.computeLuminance() > 0.5 ? Colors.black : Colors.white)
-                        : null,
-                  ),
-                );
-              }).toList(),
+    return Opacity(
+      opacity: isGradientActive ? 1.0 : 0.5,
+      child: Card(
+        color: theme.cardColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: theme.cornerRadius,
+          side: BorderSide(color: isGradientActive ? theme.accentColor.withOpacity(0.5) : Colors.transparent, width: 2),
+        ),
+        child: Column(
+          children: [
+            SwitchListTile(
+              title: Text('Use Gradient Accents'.t(context), style: bodyStyle),
+              subtitle: Text(
+                isGradientActive 
+                  ? 'Gradients are currently active'.t(context)
+                  : 'Toggle to apply true multi-color gradients instead of solid colors'.t(context), 
+                style: subtitleStyle
+              ),
+              value: theme.useGradients,
+              activeColor: theme.accentColor,
+              onChanged: (val) {
+                theme.setUseGradients(val);
+                if (val && theme.gradientId == null) {
+                  theme.setGradientId(0); // Set default gradient if none selected
+                } else if (!val) {
+                  theme.setGradientId(null);
+                }
+              },
             ),
-          ),
-        ],
+            if (isGradientActive) const Divider(height: 1),
+            if (isGradientActive)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: List.generate(trueGradients.length, (index) {
+                    final isSelected = theme.gradientId == index;
+                    final colors = trueGradients[index];
+                    return GestureDetector(
+                      onTap: () {
+                        theme.setGradientId(index);
+                        theme.setAccentColor(colors[0]); // Base accent for components that don't support gradients
+                        _settings.setAccentColor(colors[0].value);
+                      },
+                      child: Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: colors,
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          border: Border.all(
+                            color: isSelected ? theme.textPrimary : Colors.transparent,
+                            width: 3,
+                          ),
+                        ),
+                        child: isSelected
+                            ? const Icon(Icons.check, color: Colors.white)
+                            : null,
+                      ),
+                    );
+                  }),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

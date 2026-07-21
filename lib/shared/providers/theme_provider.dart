@@ -167,8 +167,13 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   void setFontFamily(String family) {
-    _fontFamily = family;
-    notifyListeners();
+    if (_fontFamily != family) {
+      _fontFamily = family;
+      if (_settings != null) {
+        _settings!.setFontFamily(family);
+      }
+      notifyListeners();
+    }
   }
 
   void setFontSize(double size) {
