@@ -15,14 +15,42 @@ class NotificationProvider extends ChangeNotifier {
 
   List<AppNotification> _notifications = [];
   int _unreadCount = 0;
+  bool _hasMore = true;
+  bool _isLoading = false;
+  
+  String? _searchQuery;
+  String? _filterType;
 
   List<AppNotification> get notifications => _notifications;
   int get unreadCount => _unreadCount;
+  bool get hasMore => _hasMore;
+  bool get isLoading => _isLoading;
 
-  /// Load all notifications from SQLite. Call during app startup.
-  Future<void> loadNotifications() async {
-    _notifications = await _repo.getAll();
+  /// Load initial notifications from SQLite. Call during app startup.
+  Future<void> loadNotifications({String? query, String? type}) async {
+    _searchQuery = query;
+    _filterType = type;
+    _isLoading = true;
+    notifyListeners();
+
+    _notifications = await _repo.getAll(searchQuery: _searchQuery, type: _filterType, limit: 20, offset: 0);
     _unreadCount = await _repo.getUnreadCount();
+    _hasMore = _notifications.length == 20;
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  /// Load more notifications for pagination.
+  Future<void> loadMore() async {
+    if (_isLoading || !_hasMore) return;
+    
+    _isLoading = true;
+    notifyListeners();
+
+    final more = await _repo.getAll(searchQuery: _searchQuery, type: _filterType, limit: 20, offset: _notifications.length);
+    _notifications.addAll(more);
+    _hasMore = more.length == 20;
+    _isLoading = false;
     notifyListeners();
   }
 
@@ -68,8 +96,12 @@ class NotificationProvider extends ChangeNotifier {
             id: _uuid.v4(),
             title: title,
             body: body,
-            type: 'order_due',
+            type: 'System',
+            action: 'System',
             referenceId: order.id,
+            orderId: order.id,
+            clientId: order.customerId,
+            clientName: order.customerName,
             createdAt: DateTime.now(),
           );
 
@@ -78,7 +110,7 @@ class NotificationProvider extends ChangeNotifier {
       }
 
       // Reload after generating new notifications
-      await loadNotifications();
+      await loadNotifications(query: _searchQuery, type: _filterType);
     } catch (e) {
       // Silently handle - orders table might be empty or have join issues
       debugPrint('NotificationProvider.checkOrderDueDates error: $e');
@@ -90,18 +122,26 @@ class NotificationProvider extends ChangeNotifier {
     required String title,
     required String body,
     required String type,
+    required String action,
     String? referenceId,
+    String? clientId,
+    String? orderId,
+    String? clientName,
   }) async {
     final notification = AppNotification(
       id: _uuid.v4(),
       title: title,
       body: body,
       type: type,
+      action: action,
       referenceId: referenceId,
+      clientId: clientId,
+      orderId: orderId,
+      clientName: clientName,
       createdAt: DateTime.now(),
     );
     await _repo.insert(notification);
-    await loadNotifications();
+    await loadNotifications(query: _searchQuery, type: _filterType);
   }
 
   /// Mark a single notification as read.
@@ -112,7 +152,7 @@ class NotificationProvider extends ChangeNotifier {
       if (n.id == id) return n.copyWith(isRead: true);
       return n;
     }).toList();
-    _unreadCount = _notifications.where((n) => !n.isRead).length;
+    _unreadCount = await _repo.getUnreadCount();
     notifyListeners();
   }
 
@@ -122,19 +162,5 @@ class NotificationProvider extends ChangeNotifier {
     _notifications = _notifications.map((n) => n.copyWith(isRead: true)).toList();
     _unreadCount = 0;
     notifyListeners();
-  }
-
-  /// Delete a notification.
-  Future<void> deleteNotification(String id) async {
-    await _repo.delete(id);
-    _notifications.removeWhere((n) => n.id == id);
-    _unreadCount = _notifications.where((n) => !n.isRead).length;
-    notifyListeners();
-  }
-
-  /// Clean up notifications older than 30 days.
-  Future<void> cleanup() async {
-    await _repo.deleteOld(30);
-    await loadNotifications();
   }
 }

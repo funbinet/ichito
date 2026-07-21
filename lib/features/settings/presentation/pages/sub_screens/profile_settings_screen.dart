@@ -67,7 +67,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> with Them
       showRadialMenu: false,
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Profile'.t(context), style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Profile'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
@@ -131,7 +131,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> with Them
               padding: EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(borderRadius: theme.buttonRadius),
             ),
-            child: Text('Save Changes'.t(context), style: TextStyle(color: theme.onAccent, fontSize: 16, fontWeight: FontWeight.bold)),
+            child: Text('Save Changes'.t(context), style: TextStyle(color: theme.onAccent, fontSize: theme.fontSize, fontWeight: FontWeight.bold)),
           ),
         ],
       ),

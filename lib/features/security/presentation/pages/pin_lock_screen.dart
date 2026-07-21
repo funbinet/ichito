@@ -288,7 +288,7 @@ class _PinLockScreenState extends State<PinLockScreen> with ThemeAwareMixin {
             : Text(
                 value,
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: theme.fontSize * 1.75,
                   fontWeight: FontWeight.w500,
                   color: theme.textPrimary,
                   fontFamily: theme.fontFamily,

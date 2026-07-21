@@ -244,7 +244,7 @@ class _CustomerFinancialsScreenState extends State<CustomerFinancialsScreen> wit
                               ),
                               title: Text(lang.formatCurrency(payment.amount, showSymbol: true), style: TextStyle(color: theme.textPrimary, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily)),
                               subtitle: Text(DateFormat('dd MMM yyyy').format(payment.date), style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
-                              trailing: Text(payment.method.toUpperCase(), style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily, fontSize: 12)),
+                              trailing: Text(payment.method.toUpperCase(), style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily, fontSize: theme.fontSize * 0.75)),
                               onTap: () => _showTransactionDetails(payment, lang),
                             ),
                           );

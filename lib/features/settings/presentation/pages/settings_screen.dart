@@ -16,7 +16,7 @@ class _SettingsScreenState extends State<SettingsScreen> with ThemeAwareMixin {
     return IchitoScaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text(lang.t('Settings') ?? 'Settings', style: headingStyle.copyWith(fontSize: 18)),
+        title: Text(lang.t('Settings') ?? 'Settings', style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),

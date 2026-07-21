@@ -36,7 +36,7 @@ class ImagePickerDialog extends StatelessWidget {
             Text(
               'Choose Photo'.t(context),
               style: TextStyle(
-                fontSize: 18,
+                fontSize: theme.fontSize * 1.12,
                 fontWeight: FontWeight.bold,
                 color: theme.textPrimary,
                 fontFamily: theme.fontFamily,
@@ -46,7 +46,7 @@ class ImagePickerDialog extends StatelessWidget {
             Text(
               'Select a source for your profile photo'.t(context),
               style: TextStyle(
-                fontSize: 13,
+                fontSize: theme.fontSize * 0.81,
                 color: theme.textSecondary,
                 fontFamily: theme.fontFamily,
               ),
@@ -131,7 +131,7 @@ class _OptionCard extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: theme.fontSize * 0.88,
                 fontWeight: FontWeight.w600,
                 color: theme.textPrimary,
                 fontFamily: theme.fontFamily,

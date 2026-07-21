@@ -165,7 +165,7 @@ class _Step4MaterialsState extends State<Step4Materials> with ThemeAwareMixin, S
           Text(
             'Step 4: Materials & Design'.t(context),
             style: TextStyle(
-              fontSize: 18,
+              fontSize: theme.fontSize * 1.12,
               fontWeight: FontWeight.bold,
               color: theme.textPrimary,
               fontFamily: theme.fontFamily,
@@ -279,7 +279,7 @@ class _Step4MaterialsState extends State<Step4Materials> with ThemeAwareMixin, S
                                 Text(
                                   fabric.name,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily),
+                                  style: TextStyle(fontSize: theme.fontSize * 0.75, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -378,7 +378,7 @@ class _Step4MaterialsState extends State<Step4Materials> with ThemeAwareMixin, S
                                 Text(
                                   design.name,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily),
+                                  style: TextStyle(fontSize: theme.fontSize * 0.75, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),

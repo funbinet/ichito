@@ -164,7 +164,7 @@ class _GarmentFormDialogState extends State<GarmentFormDialog> with ThemeAwareMi
                 if (_selectedMeasurements.isEmpty)
                   Padding(
                     padding: EdgeInsets.only(top: 8),
-                    child: Text('Please select at least one measurement field.'.t(context), style: TextStyle(color: Colors.redAccent, fontSize: 12)),
+                    child: Text('Please select at least one measurement field.'.t(context), style: TextStyle(color: Colors.redAccent, fontSize: theme.fontSize * 0.75)),
                   ),
                 SizedBox(height: 16),
                 

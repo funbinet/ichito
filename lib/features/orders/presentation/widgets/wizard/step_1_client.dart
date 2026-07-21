@@ -147,7 +147,7 @@ class _Step1ClientState extends State<Step1Client> with ThemeAwareMixin {
                     Text(
                       customer.name,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: theme.fontSize * 0.75,
                         fontWeight: FontWeight.bold,
                         color: theme.textPrimary,
                         fontFamily: theme.fontFamily,
@@ -160,7 +160,7 @@ class _Step1ClientState extends State<Step1Client> with ThemeAwareMixin {
                     Text(
                       customer.phone,
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: theme.fontSize * 0.62,
                         color: theme.textSecondary,
                         fontFamily: theme.fontFamily,
                       ),
@@ -215,7 +215,7 @@ class _Step1ClientState extends State<Step1Client> with ThemeAwareMixin {
               Text(
                 'Step 1: Select Client'.t(context),
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: theme.fontSize * 1.12,
                   fontWeight: FontWeight.bold,
                   color: theme.textPrimary,
                   fontFamily: theme.fontFamily,

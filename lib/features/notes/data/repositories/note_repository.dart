@@ -28,7 +28,7 @@ class NoteRepository {
       updatedAt: DateTime.now(),
     );
     await db.insert('notes', newNote.toMap());
-    await NotificationService().showModelNotification(action: 'Created', type: 'Note', name: note.title);
+    await NotificationService().showModelNotification(action: 'Created', type: 'Note', name: note.title, referenceId: note.id);
     return id;
   }
 
@@ -52,7 +52,7 @@ class NoteRepository {
   Future<int> updateNote(Note note) async {
     final db = await _dbHelper.database;
     final res = await db.update('notes', note.toMap(), where: 'id = ?', whereArgs: [note.id]);
-    await NotificationService().showModelNotification(action: 'Updated', type: 'Note', name: note.title);
+    await NotificationService().showModelNotification(action: 'Updated', type: 'Note', name: note.title, referenceId: note.id);
     return res;
   }
 
@@ -61,7 +61,7 @@ class NoteRepository {
     final note = await getById(id);
     final res = await db.delete('notes', where: 'id = ?', whereArgs: [id]);
     if (note != null) {
-      await NotificationService().showModelNotification(action: 'Deleted', type: 'Note', name: note.title);
+      await NotificationService().showModelNotification(action: 'Deleted', type: 'Note', name: note.title, referenceId: note.id);
     }
     return res;
   }

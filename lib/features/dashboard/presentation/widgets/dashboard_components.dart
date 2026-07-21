@@ -48,7 +48,7 @@ class QuickActionTile extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: theme.fontSize * 0.75,
                 fontWeight: FontWeight.w600,
                 color: theme.textPrimary,
                 fontFamily: theme.fontFamily,
@@ -61,7 +61,7 @@ class QuickActionTile extends StatelessWidget {
             Text(
               subtitle,
               style: TextStyle(
-                fontSize: 10,
+                fontSize: theme.fontSize * 0.62,
                 color: theme.textSecondary,
                 fontFamily: theme.fontFamily,
               ),
@@ -98,7 +98,7 @@ class SectionHeader extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              fontSize: 16,
+              fontSize: theme.fontSize,
               fontWeight: FontWeight.w600,
               color: theme.textPrimary,
               fontFamily: theme.fontFamily,
@@ -110,7 +110,7 @@ class SectionHeader extends StatelessWidget {
               child: Text(
                 actionLabel!,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: theme.fontSize * 0.81,
                   color: theme.accentColor,
                   fontWeight: FontWeight.w500,
                   fontFamily: theme.fontFamily,
@@ -211,7 +211,7 @@ class ActivityFeedItem extends StatelessWidget {
                   Text(
                     'Order ${order.orderNumber}'.t(context),
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: theme.fontSize * 0.88,
                       fontWeight: FontWeight.w600,
                       color: theme.textPrimary,
                       fontFamily: theme.fontFamily,
@@ -220,11 +220,11 @@ class ActivityFeedItem extends StatelessWidget {
                   SizedBox(height: 4),
                   Text(
                     'Client ID: ${order.customerId} - ${language.formatCurrency(order.totalAmount, showSymbol: true)}'.t(context),
-                    style: TextStyle(fontSize: 13, color: theme.textSecondary, fontFamily: theme.fontFamily),
+                    style: TextStyle(fontSize: theme.fontSize * 0.81, color: theme.textSecondary, fontFamily: theme.fontFamily),
                   ),
                   Text(
                     'Garment ID: ${order.garmentId}'.t(context),
-                    style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily),
+                    style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary, fontFamily: theme.fontFamily),
                   ),
                 ],
               ),
@@ -234,7 +234,7 @@ class ActivityFeedItem extends StatelessWidget {
               children: [
                 Text(
                   _formatTimeAgo(order.orderDate), // using orderDate as fallback for createdAt
-                  style: TextStyle(fontSize: 11, color: theme.textSecondary, fontFamily: theme.fontFamily),
+                  style: TextStyle(fontSize: theme.fontSize * 0.69, color: theme.textSecondary, fontFamily: theme.fontFamily),
                 ),
                 SizedBox(height: 4),
                 Icon(Icons.arrow_forward, size: 16, color: theme.textSecondary),

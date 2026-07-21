@@ -35,7 +35,7 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
     return Scaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('About ICHITO'.t(context), style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('About ICHITO'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
@@ -70,7 +70,7 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
             child: Text(
               'ICHITO'.t(context),
               style: TextStyle(
-                fontSize: 32,
+                fontSize: theme.fontSize * 2,
                 fontWeight: FontWeight.bold,
                 color: theme.textPrimary,
                 fontFamily: theme.fontFamily,
@@ -84,7 +84,7 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
             child: Text(
               'Version $_appVersion (Build $_buildNumber)'.t(context),
               style: TextStyle(
-                fontSize: 14,
+                fontSize: theme.fontSize * 0.88,
                 color: theme.textSecondary,
               ),
             ),
@@ -96,7 +96,7 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
             child: Text(
               '"Work. Create. Thrive."',
               style: TextStyle(
-                fontSize: 14,
+                fontSize: theme.fontSize * 0.88,
                 fontStyle: FontStyle.italic,
                 color: theme.accentColor,
                 fontWeight: FontWeight.w500,
@@ -120,7 +120,7 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
                   'About'.t(context),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    fontSize: theme.fontSize,
                     color: theme.textPrimary,
                   ),
                 ),
@@ -132,7 +132,7 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
                   style: TextStyle(
                     color: theme.textSecondary,
                     height: 1.6,
-                    fontSize: 13,
+                    fontSize: theme.fontSize * 0.81,
                   ),
                 ),
               ],
@@ -155,7 +155,7 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
                   'Built With'.t(context),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    fontSize: theme.fontSize,
                     color: theme.textPrimary,
                   ),
                 ),
@@ -166,7 +166,7 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
                   'Clean Architecture with Provider state management',
                   style: TextStyle(
                     color: theme.textSecondary,
-                    fontSize: 13,
+                    fontSize: theme.fontSize * 0.81,
                     height: 1.8,
                   ),
                 ),
@@ -222,7 +222,7 @@ class _AboutScreenState extends State<AboutScreen> with ThemeAwareMixin {
               'Licensed under MIT License',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: theme.fontSize * 0.69,
                 color: theme.textSecondary,
               ),
             ),

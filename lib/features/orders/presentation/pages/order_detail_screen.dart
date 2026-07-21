@@ -91,7 +91,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('Record Payment'.t(context), style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                  Text('Record Payment'.t(context), style: TextStyle(fontSize: theme.fontSize * 1.25, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
                   SizedBox(height: 16),
                   TextField(
                     controller: controller,
@@ -207,7 +207,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
                   Text(
                     status == 'in_progress' ? 'In Progress' : status[0].toUpperCase() + status.substring(1),
                     style: TextStyle(
-                      fontSize: 10,
+                      fontSize: theme.fontSize * 0.62,
                       fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
                       color: isCurrent ? theme.accentColor : (isCompleted ? theme.textPrimary : theme.textSecondary),
                       fontFamily: theme.fontFamily,
@@ -229,7 +229,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
     return ListView(
       padding: EdgeInsets.all(16),
       children: [
-        Text('Client & Garment'.t(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+        Text('Client & Garment'.t(context), style: TextStyle(fontSize: theme.fontSize, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
         SizedBox(height: 8),
         Card(
           color: theme.cardColor,
@@ -244,7 +244,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
                   children: [
                     Icon(Icons.person_outline, size: 20, color: theme.textSecondary),
                     SizedBox(width: 8),
-                    Text(_order!.customerName ?? 'Unknown', style: TextStyle(fontSize: 16, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                    Text(_order!.customerName ?? 'Unknown', style: TextStyle(fontSize: theme.fontSize, color: theme.textPrimary, fontFamily: theme.fontFamily)),
                   ],
                 ),
                 SizedBox(height: 12),
@@ -252,7 +252,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
                   children: [
                     Icon(Icons.checkroom_outlined, size: 20, color: theme.textSecondary),
                     SizedBox(width: 8),
-                    Text(_order!.garmentName ?? 'Unknown', style: TextStyle(fontSize: 16, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                    Text(_order!.garmentName ?? 'Unknown', style: TextStyle(fontSize: theme.fontSize, color: theme.textPrimary, fontFamily: theme.fontFamily)),
                   ],
                 ),
                 const Divider(height: 24),
@@ -279,7 +279,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
         ),
         
         SizedBox(height: 24),
-        Text('Measurements'.t(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+        Text('Measurements'.t(context), style: TextStyle(fontSize: theme.fontSize, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
         SizedBox(height: 8),
         Card(
           color: theme.cardColor,
@@ -295,8 +295,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(e.key, style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
-                    Text(e.value.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), ''), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                    Text(e.key, style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+                    Text(e.value.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), ''), style: TextStyle(fontSize: theme.fontSize, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
                   ],
                 ),
               )).toList(),
@@ -308,7 +308,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Special Instructions / Notes'.t(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+            Text('Special Instructions / Notes'.t(context), style: TextStyle(fontSize: theme.fontSize, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
             IconButton(
               icon: Icon(_isEditingNotes ? Icons.check : Icons.edit, color: theme.accentColor),
               onPressed: () {
@@ -351,7 +351,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
     return ListView(
       padding: EdgeInsets.all(16),
       children: [
-        Text('Financial Summary'.t(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+        Text('Financial Summary'.t(context), style: TextStyle(fontSize: theme.fontSize, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
         SizedBox(height: 8),
         Card(
           color: theme.cardColor,
@@ -365,7 +365,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Total Amount'.t(context), style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
-                    Text('KES ${_order!.totalAmount.toStringAsFixed(0)}'.t(context), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                    Text('KES ${_order!.totalAmount.toStringAsFixed(0)}'.t(context), style: TextStyle(fontWeight: FontWeight.bold, fontSize: theme.fontSize, color: theme.textPrimary, fontFamily: theme.fontFamily)),
                   ],
                 ),
                 const Divider(height: 24),
@@ -385,7 +385,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
                       'KES ${_order!.balance.toStringAsFixed(0)}'.t(context),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                        fontSize: theme.fontSize * 1.12,
                         color: _order!.isFullyPaid ? Colors.green : Colors.red,
                         fontFamily: theme.fontFamily,
                       ),
@@ -401,7 +401,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Payment History'.t(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+            Text('Payment History'.t(context), style: TextStyle(fontSize: theme.fontSize, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
             if (!_order!.isFullyPaid)
               TextButton.icon(
                 onPressed: _showAddPaymentDialog,
@@ -432,8 +432,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> with ThemeAwareMi
                 child: Icon(p.method == 'cash' ? Icons.money : Icons.account_balance_wallet, color: theme.accentColor, size: 20),
               ),
               title: Text('KES ${p.amount.toStringAsFixed(0)}'.t(context), style: TextStyle(fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
-              subtitle: Text(dateFormat.format(p.date), style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
-              trailing: Text(p.method.toUpperCase(), style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+              subtitle: Text(dateFormat.format(p.date), style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+              trailing: Text(p.method.toUpperCase(), style: TextStyle(fontSize: theme.fontSize * 0.75, fontWeight: FontWeight.bold, color: theme.textSecondary, fontFamily: theme.fontFamily)),
             ),
           )).toList(),
         SizedBox(height: 32),

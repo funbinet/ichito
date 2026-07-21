@@ -39,7 +39,7 @@ class WelcomeHeader extends StatelessWidget {
                   Text(
                     'ICHITO'.t(context),
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: theme.fontSize * 1.12,
                       fontWeight: FontWeight.bold,
                       color: theme.accentColor,
                       letterSpacing: 2,
@@ -52,7 +52,7 @@ class WelcomeHeader extends StatelessWidget {
               Text(
                 '${language.t("greeting")}, ${profile.businessName.isNotEmpty ? profile.businessName : "Tailor"}',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: theme.fontSize * 0.88,
                   color: theme.textSecondary,
                   fontFamily: theme.fontFamily,
                 ),
@@ -119,7 +119,7 @@ class WelcomeHeader extends StatelessWidget {
                       notifProvider.unreadCount > 99 ? '99+' : '${notifProvider.unreadCount}',
                       style: TextStyle(
                         color: theme.onAccent,
-                        fontSize: 10,
+                        fontSize: theme.fontSize * 0.62,
                         fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
@@ -135,6 +135,7 @@ class WelcomeHeader extends StatelessWidget {
             child: SquareAvatar(
               size: 36,
               base64Image: profile.profilePhotoBase64, // Needs to use base64 String
+              isCircular: true,
             ),
           ),
         ],

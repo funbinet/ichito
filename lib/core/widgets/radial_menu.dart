@@ -103,7 +103,7 @@ class _RadialMenuState extends State<RadialMenu>
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 10,
+              fontSize: theme.fontSize * 0.62,
               color: theme.textPrimary,
               fontWeight: FontWeight.w600,
               fontFamily: theme.fontFamily,

@@ -5,13 +5,13 @@ import urllib.error
 
 github_token = os.environ.get('GIT_TOKEN') or os.environ.get('GITHUB_TOKEN')
 codeberg_token = os.environ.get('CODEBERG_TOKEN')
-version = 'v5.5.0'
+version = 'v5.5.1'
 try:
-    with open('release_notes_5.5.0.md', 'r') as f:
+    with open('releases/release_notes.md', 'r') as f:
         notes = f.read()
 except Exception:
-    notes = "ICHITO Release v5.5.0"
-apk_path = 'build/app/outputs/flutter-apk/app-release.apk'
+    notes = "ICHITO Release v5.5.1"
+apk_path = 'releases/ichito-v5.5.1-arm64.apk'
 
 def create_github_release():
     print("Creating GitHub release...")

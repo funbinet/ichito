@@ -26,7 +26,7 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
     return Scaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Preferences'.t(context), style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Preferences'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
@@ -201,7 +201,7 @@ class _PreferencesSettingsScreenState extends State<PreferencesSettingsScreen> w
                 ),
                 child: Text(
                   'Preferences are applied immediately to your view. Sort preferences affect how lists are displayed.'.t(context),
-                  style: TextStyle(fontSize: 12, color: theme.textSecondary),
+                  style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary),
                 ),
               ),
             ],

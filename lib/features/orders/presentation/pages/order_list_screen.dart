@@ -184,7 +184,7 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          Text('View:'.t(context), style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+          Text('View:'.t(context), style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary, fontFamily: theme.fontFamily)),
           SizedBox(width: 8),
           IconButton(
             icon: Icon(
@@ -207,12 +207,12 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
             padding: EdgeInsets.all(4),
           ),
           const Spacer(),
-          Text('Sort: '.t(context), style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+          Text('Sort: '.t(context), style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary, fontFamily: theme.fontFamily)),
           DropdownButton<OrderSortOption>(
             value: _sortOption,
             underline: SizedBox(),
             icon: Icon(Icons.keyboard_arrow_down, size: 16, color: theme.textSecondary),
-            style: TextStyle(fontSize: 12, color: theme.textPrimary, fontFamily: theme.fontFamily),
+            style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textPrimary, fontFamily: theme.fontFamily),
             dropdownColor: theme.cardColor,
             items: [
               DropdownMenuItem(value: OrderSortOption.newest, child: Text('Newest'.t(context))),
@@ -292,7 +292,7 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(order.orderNumber, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                  Text(order.orderNumber, style: TextStyle(fontWeight: FontWeight.bold, fontSize: theme.fontSize, color: theme.textPrimary, fontFamily: theme.fontFamily)),
                   if (_viewMode == ViewMode.list)
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -302,7 +302,7 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
                       ),
                       child: Text(
                         _formatStatusLabel(order.status),
-                        style: TextStyle(color: _getStatusColor(order.status), fontSize: 12, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily),
+                        style: TextStyle(color: _getStatusColor(order.status), fontSize: theme.fontSize * 0.75, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily),
                       ),
                     ),
                 ],
@@ -318,7 +318,7 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
                   ),
                   child: Text(
                     _formatStatusLabel(order.status),
-                    style: TextStyle(color: _getStatusColor(order.status), fontSize: 12, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily),
+                    style: TextStyle(color: _getStatusColor(order.status), fontSize: theme.fontSize * 0.75, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily),
                   ),
                 ),
               Row(
@@ -348,21 +348,21 @@ class _OrderListScreenState extends State<OrderListScreen> with ThemeAwareMixin,
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Due Date'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 10, fontFamily: theme.fontFamily)),
-                      Text(lang.formatDate(order.dueDate), style: TextStyle(color: isOverdue ? Colors.red : theme.textPrimary, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily, fontSize: 12)),
+                      Text('Due Date'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: theme.fontSize * 0.62, fontFamily: theme.fontFamily)),
+                      Text(lang.formatDate(order.dueDate), style: TextStyle(color: isOverdue ? Colors.red : theme.textPrimary, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily, fontSize: theme.fontSize * 0.75)),
                     ],
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text('Balance'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 10, fontFamily: theme.fontFamily)),
+                      Text('Balance'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: theme.fontSize * 0.62, fontFamily: theme.fontFamily)),
                       Text(
                         lang.formatCurrency(order.balance),
                         style: TextStyle(
                           color: order.isFullyPaid ? Colors.green : theme.textPrimary,
                           fontWeight: FontWeight.bold,
                           fontFamily: theme.fontFamily,
-                          fontSize: 12,
+                          fontSize: theme.fontSize * 0.75,
                         ),
                       ),
                     ],

@@ -71,7 +71,7 @@ class _MeasurementTypesScreenState extends State<MeasurementTypesScreen> with Th
       showRadialMenu: false,
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Measurement Types'.t(context), style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Measurement Types'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),

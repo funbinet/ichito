@@ -82,7 +82,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
     return Scaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Language & Format'.t(context), style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Language & Format'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
@@ -111,7 +111,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Text(
                   _selectedLanguage == 'english' ? 'Full interface language' : 'Sheng slang with English fallbacks',
-                  style: TextStyle(fontSize: 12, color: theme.textSecondary),
+                  style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary),
                 ),
               ),
             ],
@@ -139,7 +139,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Text(
                   'Example: ${_formatMeasurementExample(_selectedUnit)}'.t(context),
-                  style: TextStyle(fontSize: 12, color: theme.textSecondary),
+                  style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary),
                 ),
               ),
             ],
@@ -171,7 +171,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Text(
                   'Example: ${_formatCurrencyExample(_selectedCurrency)}'.t(context),
-                  style: TextStyle(fontSize: 12, color: theme.textSecondary),
+                  style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary),
                 ),
               ),
             ],
@@ -200,7 +200,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Text(
                   'Example: ${_formatDateExample(_selectedDateFormat)}'.t(context),
-                  style: TextStyle(fontSize: 12, color: theme.textSecondary),
+                  style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary),
                 ),
               ),
             ],
@@ -220,7 +220,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen> with Th
               style: TextStyle(
                 color: theme.onAccent,
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontSize: theme.fontSize,
               ),
             ),
           ),

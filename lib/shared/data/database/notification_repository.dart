@@ -11,12 +11,35 @@ class NotificationRepository {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
   final Uuid _uuid = const Uuid();
 
-  /// Get all notifications ordered by date descending.
-  Future<List<AppNotification>> getAll() async {
+  /// Get notifications with optional filtering and pagination.
+  Future<List<AppNotification>> getAll({
+    String? searchQuery,
+    String? type,
+    int limit = 50,
+    int offset = 0,
+  }) async {
     final db = await _dbHelper.database;
+    String where = '1=1';
+    List<dynamic> whereArgs = [];
+
+    if (searchQuery != null && searchQuery.isNotEmpty) {
+      where += ' AND (title LIKE ? OR body LIKE ? OR client_name LIKE ? OR order_id LIKE ? OR client_id LIKE ?)';
+      final likeQuery = '%$searchQuery%';
+      whereArgs.addAll([likeQuery, likeQuery, likeQuery, likeQuery, likeQuery]);
+    }
+
+    if (type != null && type.isNotEmpty && type != 'All') {
+      where += ' AND type = ?';
+      whereArgs.add(type);
+    }
+
     final results = await db.query(
       'notifications',
+      where: where,
+      whereArgs: whereArgs,
       orderBy: 'created_at DESC',
+      limit: limit,
+      offset: offset,
     );
     return results.map((map) => AppNotification.fromMap(map)).toList();
   }
@@ -39,7 +62,11 @@ class NotificationRepository {
       title: notification.title,
       body: notification.body,
       type: notification.type,
+      action: notification.action,
       referenceId: notification.referenceId,
+      clientId: notification.clientId,
+      orderId: notification.orderId,
+      clientName: notification.clientName,
       isRead: notification.isRead,
       createdAt: notification.createdAt,
     );
@@ -63,23 +90,6 @@ class NotificationRepository {
   Future<void> markAllAsRead() async {
     final db = await _dbHelper.database;
     await db.update('notifications', {'is_read': 1});
-  }
-
-  /// Delete notifications older than [daysOld] days.
-  Future<void> deleteOld(int daysOld) async {
-    final db = await _dbHelper.database;
-    final cutoff = DateTime.now().subtract(Duration(days: daysOld)).toIso8601String();
-    await db.delete(
-      'notifications',
-      where: 'created_at < ?',
-      whereArgs: [cutoff],
-    );
-  }
-
-  /// Delete a specific notification.
-  Future<void> delete(String id) async {
-    final db = await _dbHelper.database;
-    await db.delete('notifications', where: 'id = ?', whereArgs: [id]);
   }
 
   /// Check if a notification with given type and referenceId already exists today.

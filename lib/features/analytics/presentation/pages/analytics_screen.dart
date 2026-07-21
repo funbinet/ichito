@@ -132,7 +132,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with ThemeAwareMixin 
               children: [
                 _buildSummaryCards(),
                 SizedBox(height: 24),
-                Text('Revenue Trend (Last 6 Months)'.t(context), style: headingStyle.copyWith(fontSize: 18)),
+                Text('Revenue Trend (Last 6 Months)'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
                 SizedBox(height: 16),
                 _buildRevenueChart(),
               ],
@@ -171,7 +171,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with ThemeAwareMixin 
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(value, style: headingStyle.copyWith(fontSize: 20, color: color)),
+            Text(value, style: headingStyle.copyWith(fontSize: theme.fontSize * 1.25, color: color)),
             SizedBox(height: 8),
             Text(title, style: subtitleStyle),
           ],

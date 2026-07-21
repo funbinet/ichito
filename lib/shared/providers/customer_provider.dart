@@ -26,13 +26,13 @@ class CustomerProvider extends ChangeNotifier {
 
   Future<void> addCustomer(Customer customer) async {
     await _repository.createCustomer(customer);
-    await NotificationService().showModelNotification(action: 'Created', type: 'Client', name: customer.name);
+    await NotificationService().showModelNotification(action: 'Created', type: 'Client', name: customer.name, referenceId: customer.id, clientId: customer.id, clientName: customer.name);
     await loadCustomers();
   }
 
   Future<void> updateCustomer(Customer customer) async {
     await _repository.updateCustomer(customer);
-    await NotificationService().showModelNotification(action: 'Updated', type: 'Client', name: customer.name);
+    await NotificationService().showModelNotification(action: 'Updated', type: 'Client', name: customer.name, referenceId: customer.id, clientId: customer.id, clientName: customer.name);
     await loadCustomers();
   }
 
@@ -40,7 +40,7 @@ class CustomerProvider extends ChangeNotifier {
     final customer = getCustomerById(id);
     await _repository.deleteCustomer(id);
     if (customer != null) {
-      await NotificationService().showModelNotification(action: 'Deleted', type: 'Client', name: customer.name);
+      await NotificationService().showModelNotification(action: 'Deleted', type: 'Client', name: customer.name, referenceId: customer.id, clientId: customer.id, clientName: customer.name);
     }
     await loadCustomers();
   }

@@ -160,7 +160,7 @@ class _Step2GarmentState extends State<Step2Garment> with ThemeAwareMixin {
           Text(
             'Step 2: Select Garment'.t(context),
             style: TextStyle(
-              fontSize: 18,
+              fontSize: theme.fontSize * 1.12,
               fontWeight: FontWeight.bold,
               color: theme.textPrimary,
               fontFamily: theme.fontFamily,
@@ -257,7 +257,7 @@ class _Step2GarmentState extends State<Step2Garment> with ThemeAwareMixin {
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 12,
+                                          fontSize: theme.fontSize * 0.75,
                                           color: theme.textPrimary,
                                           fontFamily: theme.fontFamily,
                                         ),
@@ -268,7 +268,7 @@ class _Step2GarmentState extends State<Step2Garment> with ThemeAwareMixin {
                                       Text(
                                         '${garment.measurementFields.length} meas.',
                                         style: TextStyle(
-                                          fontSize: 10,
+                                          fontSize: theme.fontSize * 0.62,
                                           color: theme.textSecondary,
                                           fontFamily: theme.fontFamily,
                                         ),
@@ -276,7 +276,7 @@ class _Step2GarmentState extends State<Step2Garment> with ThemeAwareMixin {
                                       Text(
                                         garment.category,
                                         style: TextStyle(
-                                          fontSize: 10,
+                                          fontSize: theme.fontSize * 0.62,
                                           color: theme.textSecondary,
                                           fontFamily: theme.fontFamily,
                                         ),

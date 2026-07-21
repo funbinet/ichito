@@ -121,7 +121,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
       showRadialMenu: false,
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Setup Security'.t(context), style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Setup Security'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
@@ -322,7 +322,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> with ThemeAwareMixin {
             : Text(
                 value,
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: theme.fontSize * 1.75,
                   fontWeight: FontWeight.w500,
                   color: theme.textPrimary,
                   fontFamily: theme.fontFamily,

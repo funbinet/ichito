@@ -192,7 +192,7 @@ class _Step5PricingState extends State<Step5Pricing> with ThemeAwareMixin {
           children: [
             Text(
               'Step 5: Pricing & Scheduling'.t(context),
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily),
+              style: TextStyle(fontSize: theme.fontSize * 1.12, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily),
             ),
             SizedBox(height: 16),
             
@@ -232,8 +232,8 @@ class _Step5PricingState extends State<Step5Pricing> with ThemeAwareMixin {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Total Expected'.t(context), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                        Text('KES ${_totalAmount.toStringAsFixed(0)}'.t(context), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: theme.accentColor, fontFamily: theme.fontFamily)),
+                        Text('Total Expected'.t(context), style: TextStyle(fontWeight: FontWeight.bold, fontSize: theme.fontSize, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                        Text('KES ${_totalAmount.toStringAsFixed(0)}'.t(context), style: TextStyle(fontWeight: FontWeight.bold, fontSize: theme.fontSize * 1.12, color: theme.accentColor, fontFamily: theme.fontFamily)),
                       ],
                     ),
                     SizedBox(height: 16),

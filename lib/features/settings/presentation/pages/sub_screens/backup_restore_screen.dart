@@ -17,7 +17,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> with ThemeAwa
       showRadialMenu: false,
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Backup & Restore'.t(context), style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Backup & Restore'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),

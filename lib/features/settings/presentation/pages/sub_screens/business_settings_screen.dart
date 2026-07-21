@@ -88,7 +88,7 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> with Th
     return Scaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Business Settings'.t(context), style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Business Settings'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
@@ -145,7 +145,7 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> with Th
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Text(
                   'Default cost per order used in the order wizard pricing step'.t(context),
-                  style: TextStyle(fontSize: 12, color: theme.textSecondary),
+                  style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary),
                 ),
               ),
               SettingsTextField(
@@ -159,7 +159,7 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> with Th
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Text(
                   'Percentage tax applied to order totals (0 = no tax)'.t(context),
-                  style: TextStyle(fontSize: 12, color: theme.textSecondary),
+                  style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary),
                 ),
               ),
             ],
@@ -183,14 +183,14 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> with Th
                   children: [
                     Text(
                       'Example order number:'.t(context),
-                      style: TextStyle(fontSize: 12, color: theme.textSecondary),
+                      style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary),
                     ),
                     SizedBox(height: 4),
                     Text(
                       '${_orderPrefixController.text.isNotEmpty ? _orderPrefixController.text : 'ICHITO'}-2026-07-001',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                        fontSize: theme.fontSize * 0.88,
                         color: theme.accentColor,
                         fontFamily: 'monospace',
                       ),
@@ -215,7 +215,7 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> with Th
               style: TextStyle(
                 color: theme.onAccent,
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontSize: theme.fontSize,
               ),
             ),
           ),

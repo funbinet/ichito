@@ -8,13 +8,15 @@ class SquareAvatar extends StatefulWidget {
   final String? base64Image;
   final IconData? fallbackIcon;
   final String? fallbackText;
+  final bool isCircular;
 
-  SquareAvatar({
+  const SquareAvatar({
     super.key,
     this.size = 64.0,
     this.base64Image,
     this.fallbackIcon,
     this.fallbackText,
+    this.isCircular = false,
   });
 
   @override
@@ -29,7 +31,8 @@ class _SquareAvatarState extends State<SquareAvatar> with ThemeAwareMixin {
       height: widget.size,
       decoration: BoxDecoration(
         color: theme.accentLight,
-        borderRadius: theme.cornerRadius, // Follows system corner style
+        shape: widget.isCircular ? BoxShape.circle : BoxShape.rectangle,
+        borderRadius: widget.isCircular ? null : theme.cornerRadius, // Follows system corner style
         border: Border.all(
           color: theme.borderColor, // Thin outline
           width: 1.0,

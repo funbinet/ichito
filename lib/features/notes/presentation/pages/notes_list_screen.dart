@@ -238,7 +238,7 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          Text('View:'.t(context), style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+          Text('View:'.t(context), style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary, fontFamily: theme.fontFamily)),
           SizedBox(width: 8),
           IconButton(
             icon: Icon(
@@ -261,12 +261,12 @@ class _NotesListScreenState extends State<NotesListScreen> with ThemeAwareMixin,
             padding: EdgeInsets.all(4),
           ),
           const Spacer(),
-          Text('Sort: '.t(context), style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+          Text('Sort: '.t(context), style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary, fontFamily: theme.fontFamily)),
           DropdownButton<NoteSortOption>(
             value: _sortOption,
             underline: SizedBox(),
             icon: Icon(Icons.keyboard_arrow_down, size: 16, color: theme.textSecondary),
-            style: TextStyle(fontSize: 12, color: theme.textPrimary, fontFamily: theme.fontFamily),
+            style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textPrimary, fontFamily: theme.fontFamily),
             dropdownColor: theme.cardColor,
             items: [
               DropdownMenuItem(value: NoteSortOption.newest, child: Text('Newest'.t(context))),

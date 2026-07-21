@@ -22,7 +22,7 @@ class GarmentRepository {
       updatedAt: DateTime.now(),
     );
     await db.insert('garments', newGarment.toMap());
-    await NotificationService().showModelNotification(action: 'Created', type: 'Garment', name: garment.name);
+    await NotificationService().showModelNotification(action: 'Created', type: 'Garment', name: garment.name, referenceId: garment.id);
     return id;
   }
 
@@ -58,7 +58,7 @@ class GarmentRepository {
       where: 'id = ?',
       whereArgs: [garment.id],
     );
-    await NotificationService().showModelNotification(action: 'Updated', type: 'Garment', name: garment.name);
+    await NotificationService().showModelNotification(action: 'Updated', type: 'Garment', name: garment.name, referenceId: garment.id);
     return res;
   }
 
@@ -67,7 +67,7 @@ class GarmentRepository {
     final garment = await getById(id);
     final res = await db.delete('garments', where: 'id = ?', whereArgs: [id]);
     if (garment != null) {
-      await NotificationService().showModelNotification(action: 'Deleted', type: 'Garment', name: garment.name);
+      await NotificationService().showModelNotification(action: 'Deleted', type: 'Garment', name: garment.name, referenceId: garment.id);
     }
     return res;
   }

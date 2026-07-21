@@ -82,7 +82,7 @@ class _RecoverySetupScreenState extends State<RecoverySetupScreen> with ThemeAwa
       showRadialMenu: false,
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Account Recovery Setup'.t(context), style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Account Recovery Setup'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
@@ -126,7 +126,7 @@ class _RecoverySetupScreenState extends State<RecoverySetupScreen> with ThemeAwa
                     SizedBox(width: 16),
                     Text(
                       _selectedDate == null ? 'Select Date of Birth' : _selectedDate!.toIso8601String().split('T')[0],
-                      style: TextStyle(color: _selectedDate == null ? theme.textSecondary : theme.textPrimary, fontSize: 16),
+                      style: TextStyle(color: _selectedDate == null ? theme.textSecondary : theme.textPrimary, fontSize: theme.fontSize),
                     ),
                   ],
                 ),
@@ -140,7 +140,7 @@ class _RecoverySetupScreenState extends State<RecoverySetupScreen> with ThemeAwa
                 padding: EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: theme.buttonRadius),
               ),
-              child: Text('Save Recovery Details'.t(context), style: TextStyle(color: theme.onAccent, fontSize: 16, fontWeight: FontWeight.bold)),
+              child: Text('Save Recovery Details'.t(context), style: TextStyle(color: theme.onAccent, fontSize: theme.fontSize, fontWeight: FontWeight.bold)),
             ),
             SizedBox(height: 24),
           ],

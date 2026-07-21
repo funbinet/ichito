@@ -105,7 +105,7 @@ class _OrderWizardScreenState extends State<OrderWizardScreen> with ThemeAwareMi
               'New Order'.t(context),
               style: TextStyle(
                 color: theme.textPrimary,
-                fontSize: 16,
+                fontSize: theme.fontSize,
                 fontWeight: FontWeight.bold,
                 fontFamily: theme.fontFamily,
               ),
@@ -126,7 +126,7 @@ class _OrderWizardScreenState extends State<OrderWizardScreen> with ThemeAwareMi
                   '${((_currentStep + 1) / _totalSteps * 100).toInt()}%',
                   style: TextStyle(
                     color: theme.textSecondary,
-                    fontSize: 12,
+                    fontSize: theme.fontSize * 0.75,
                     fontFamily: theme.fontFamily,
                   ),
                 ),

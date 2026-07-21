@@ -191,7 +191,7 @@ class _DesignListTileState extends State<DesignListTile> {
                         Text(
                           widget.design.name,
                           style: TextStyle(
-                            fontSize: 16, 
+                            fontSize: theme.fontSize, 
                             fontWeight: FontWeight.w600, 
                             color: theme.textPrimary, 
                             fontFamily: theme.fontFamily
@@ -204,7 +204,7 @@ class _DesignListTileState extends State<DesignListTile> {
                             style: TextStyle(
                               fontFamily: theme.fontFamily,
                               color: theme.textSecondary,
-                              fontSize: 13,
+                              fontSize: theme.fontSize * 0.81,
                             ),
                           ),
                         ],
@@ -238,9 +238,9 @@ class _DesignListTileState extends State<DesignListTile> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (widget.design.description != null && widget.design.description!.isNotEmpty)
-                            Text(widget.design.description!, style: TextStyle(fontSize: 13, color: theme.textSecondary), maxLines: 2, overflow: TextOverflow.ellipsis)
+                            Text(widget.design.description!, style: TextStyle(fontSize: theme.fontSize * 0.81, color: theme.textSecondary), maxLines: 2, overflow: TextOverflow.ellipsis)
                           else
-                            Text('No description'.t(context), style: TextStyle(fontSize: 13, color: theme.textSecondary, fontStyle: FontStyle.italic)),
+                            Text('No description'.t(context), style: TextStyle(fontSize: theme.fontSize * 0.81, color: theme.textSecondary, fontStyle: FontStyle.italic)),
                         ],
                       ),
                     ),

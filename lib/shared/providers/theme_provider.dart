@@ -46,6 +46,7 @@ class ThemeProvider extends ChangeNotifier {
       _gradientId = _settings!.getGradientId();
       _useGradients = _gradientId != null;
       _fontSize = _settings!.getFontSize();
+      _fontFamily = _settings!.getFontFamily();
     }
     notifyListeners();
   }

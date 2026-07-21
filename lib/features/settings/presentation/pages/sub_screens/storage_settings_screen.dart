@@ -166,7 +166,7 @@ class _StorageSettingsScreenState extends State<StorageSettingsScreen> with Them
     return Scaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Storage Management'.t(context), style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Storage Management'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
@@ -210,11 +210,11 @@ class _StorageSettingsScreenState extends State<StorageSettingsScreen> with Them
                     children: [
                       Text(
                         'Total Used'.t(context),
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.textPrimary),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: theme.fontSize, color: theme.textPrimary),
                       ),
                       Text(
                         _formatBytes(totalSize),
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.accentColor),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: theme.fontSize, color: theme.accentColor),
                       ),
                     ],
                   ),
@@ -277,7 +277,7 @@ class _StorageSettingsScreenState extends State<StorageSettingsScreen> with Them
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Text(
                   'Current cache size: ${_formatBytes(_cacheSize)}'.t(context),
-                  style: TextStyle(fontSize: 12, color: theme.textSecondary),
+                  style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary),
                 ),
               ),
             ],
@@ -295,7 +295,7 @@ class _StorageSettingsScreenState extends State<StorageSettingsScreen> with Them
             ),
             child: Text(
               'Backups include your database, images, and all settings. They are stored as encrypted .zip files on your device.'.t(context),
-              style: TextStyle(fontSize: 12, color: theme.textSecondary),
+              style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary),
             ),
           ),
         ],

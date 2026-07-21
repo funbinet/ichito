@@ -203,7 +203,7 @@ class _FabricListTileState extends State<FabricListTile> {
                         Text(
                           widget.fabric.name,
                           style: TextStyle(
-                            fontSize: 16, 
+                            fontSize: theme.fontSize, 
                             fontWeight: FontWeight.w600, 
                             color: theme.textPrimary, 
                             fontFamily: theme.fontFamily
@@ -225,7 +225,7 @@ class _FabricListTileState extends State<FabricListTile> {
                               style: TextStyle(
                                 fontFamily: theme.fontFamily,
                                 color: theme.textSecondary,
-                                fontSize: 12,
+                                fontSize: theme.fontSize * 0.75,
                               ),
                             ),
                           ],
@@ -258,10 +258,10 @@ class _FabricListTileState extends State<FabricListTile> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Unit: ${widget.fabric.unit}'.t(context), style: TextStyle(fontSize: 13, color: theme.textSecondary)),
+                        Text('Unit: ${widget.fabric.unit}'.t(context), style: TextStyle(fontSize: theme.fontSize * 0.81, color: theme.textSecondary)),
                         if (widget.fabric.color != null) ...[
                           SizedBox(height: 4),
-                          Text('Color: ${widget.fabric.color}'.t(context), style: TextStyle(fontSize: 13, color: theme.textSecondary)),
+                          Text('Color: ${widget.fabric.color}'.t(context), style: TextStyle(fontSize: theme.fontSize * 0.81, color: theme.textSecondary)),
                         ],
                       ],
                     ),

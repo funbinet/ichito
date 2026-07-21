@@ -19,6 +19,7 @@ class VerseChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeProvider>(context);
     final chipColor = const Color(0xFF9C27B0); // Purple for church
     
     return Container(
@@ -36,7 +37,7 @@ class VerseChip extends StatelessWidget {
           Text(
             verse,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: theme.fontSize * 0.69,
               color: chipColor,
               fontWeight: FontWeight.w500,
             ),
@@ -99,7 +100,7 @@ class NoteCard extends StatelessWidget {
                   child: Text(
                     note.title,
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: theme.fontSize * 0.94,
                       fontWeight: FontWeight.w600,
                       color: theme.textPrimary,
                       fontFamily: theme.fontFamily,
@@ -114,7 +115,7 @@ class NoteCard extends StatelessWidget {
             // Content preview
             Text(
               (note.content == null || note.content!.isEmpty) ? '(No content)' : note.content!,
-              style: TextStyle(fontSize: 13, color: theme.textSecondary, fontFamily: theme.fontFamily),
+              style: TextStyle(fontSize: theme.fontSize * 0.81, color: theme.textSecondary, fontFamily: theme.fontFamily),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -124,7 +125,7 @@ class NoteCard extends StatelessWidget {
               if (note.speaker != null && note.speaker!.isNotEmpty)
                 Text(
                   'Speaker: ${note.speaker}'.t(context),
-                  style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily),
+                  style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary, fontFamily: theme.fontFamily),
                 ),
               if (note.bibleVerses != null && note.bibleVerses!.isNotEmpty) ...[
                 SizedBox(height: 4),
@@ -143,12 +144,12 @@ class NoteCard extends StatelessWidget {
                 children: [
                   Text(
                     'Members: ${note.members?.length ?? 0}'.t(context),
-                    style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily),
+                    style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary, fontFamily: theme.fontFamily),
                   ),
                   SizedBox(width: 16),
                   Text(
                     'Collected: ${language.formatCurrency(note.totalCollected ?? 0)}'.t(context),
-                    style: TextStyle(fontSize: 12, color: theme.accentColor, fontFamily: theme.fontFamily),
+                    style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.accentColor, fontFamily: theme.fontFamily),
                   ),
                 ],
               ),
@@ -156,7 +157,7 @@ class NoteCard extends StatelessWidget {
                 SizedBox(height: 4),
                 Text(
                   'Recipient: ${note.recipient}'.t(context),
-                  style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily),
+                  style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary, fontFamily: theme.fontFamily),
                 ),
               ],
             ],
@@ -172,13 +173,13 @@ class NoteCard extends StatelessWidget {
                   ),
                   child: Text(
                     _getNoteTypeName(),
-                    style: TextStyle(fontSize: 10, color: _getNoteColor(theme), fontFamily: theme.fontFamily),
+                    style: TextStyle(fontSize: theme.fontSize * 0.62, color: _getNoteColor(theme), fontFamily: theme.fontFamily),
                   ),
                 ),
                 const Spacer(),
                 Text(
                   timeago.format(note.updatedAt),
-                  style: TextStyle(fontSize: 11, color: theme.textSecondary, fontFamily: theme.fontFamily),
+                  style: TextStyle(fontSize: theme.fontSize * 0.69, color: theme.textSecondary, fontFamily: theme.fontFamily),
                 ),
               ],
             ),

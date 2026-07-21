@@ -114,7 +114,7 @@ class _FabricsListScreenState extends State<FabricsListScreen> with ThemeAwareMi
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text('View:'.t(context), style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+          Text('View:'.t(context), style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary, fontFamily: theme.fontFamily)),
           SizedBox(width: 8),
           IconButton(
             icon: Icon(

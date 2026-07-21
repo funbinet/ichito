@@ -53,7 +53,7 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> with Th
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: theme.cardColor,
-        title: Text('Factory Reset?'.t(context), style: TextStyle(color: Colors.red, fontSize: 16)),
+        title: Text('Factory Reset?'.t(context), style: TextStyle(color: Colors.red, fontSize: theme.fontSize)),
         content: Text(
           'This will delete ALL data including customers, orders, notes, and images. This action CANNOT be undone.'.t(context),
           style: TextStyle(color: theme.textSecondary),
@@ -85,7 +85,7 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> with Th
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: theme.cardColor,
-        title: Text('Last Chance!'.t(context), style: TextStyle(color: Colors.red, fontSize: 16)),
+        title: Text('Last Chance!'.t(context), style: TextStyle(color: Colors.red, fontSize: theme.fontSize)),
         content: Text(
           'All data will be permanently deleted. The app will restart to the welcome screen.'.t(context),
           style: TextStyle(color: theme.textSecondary),
@@ -122,7 +122,7 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> with Th
     return Scaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Advanced Settings'.t(context), style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Advanced Settings'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
@@ -233,7 +233,7 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> with Th
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Text(
                       'Delete all app data and reset to default settings. This cannot be undone.'.t(context),
-                      style: TextStyle(fontSize: 12, color: Colors.red.withOpacity(0.7)),
+                      style: TextStyle(fontSize: theme.fontSize * 0.75, color: Colors.red.withOpacity(0.7)),
                     ),
                   ),
                 ],
@@ -250,7 +250,7 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> with Th
                 ),
                 child: Text(
                   'Warning: Advanced settings are for experienced users. Incorrect changes may cause unexpected behavior.'.t(context),
-                  style: TextStyle(fontSize: 12, color: Colors.red.withOpacity(0.8)),
+                  style: TextStyle(fontSize: theme.fontSize * 0.75, color: Colors.red.withOpacity(0.8)),
                 ),
               ),
             ],
@@ -284,7 +284,7 @@ class _TypeResetConfirmDialogState extends State<_TypeResetConfirmDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: widget.theme.cardColor,
-      title: Text('Confirm Reset'.t(context), style: TextStyle(color: Colors.red, fontSize: 16)),
+      title: Text('Confirm Reset'.t(context), style: TextStyle(color: Colors.red, fontSize: theme.fontSize)),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,

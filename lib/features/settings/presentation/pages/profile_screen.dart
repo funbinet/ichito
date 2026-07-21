@@ -191,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> with ThemeAwareMixin, Nav
     return IchitoScaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Business Profile'.t(context), style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Business Profile'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),

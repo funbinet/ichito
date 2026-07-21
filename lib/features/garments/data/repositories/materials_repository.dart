@@ -25,14 +25,14 @@ class FabricRepository {
       updatedAt: DateTime.now(),
     );
     await db.insert('fabrics', newFabric.toMap());
-    await NotificationService().showModelNotification(action: 'Created', type: 'Fabric', name: fabric.name);
+    await NotificationService().showModelNotification(action: 'Created', type: 'Fabric', name: fabric.name, referenceId: fabric.id);
     return id;
   }
 
   Future<int> updateFabric(Fabric fabric) async {
     final db = await _dbHelper.database;
     final res = await db.update('fabrics', fabric.toMap(), where: 'id = ?', whereArgs: [fabric.id]);
-    await NotificationService().showModelNotification(action: 'Updated', type: 'Fabric', name: fabric.name);
+    await NotificationService().showModelNotification(action: 'Updated', type: 'Fabric', name: fabric.name, referenceId: fabric.id);
     return res;
   }
 
@@ -41,7 +41,7 @@ class FabricRepository {
     final fabric = await getById(id);
     final res = await db.delete('fabrics', where: 'id = ?', whereArgs: [id]);
     if (fabric != null) {
-      await NotificationService().showModelNotification(action: 'Deleted', type: 'Fabric', name: fabric.name);
+      await NotificationService().showModelNotification(action: 'Deleted', type: 'Fabric', name: fabric.name, referenceId: fabric.id);
     }
     return res;
   }
@@ -80,14 +80,14 @@ class DesignRepository {
       updatedAt: DateTime.now(),
     );
     await db.insert('designs', newDesign.toMap());
-    await NotificationService().showModelNotification(action: 'Created', type: 'Design', name: design.name);
+    await NotificationService().showModelNotification(action: 'Created', type: 'Design', name: design.name, referenceId: design.id);
     return id;
   }
 
   Future<int> updateDesign(Design design) async {
     final db = await _dbHelper.database;
     final res = await db.update('designs', design.toMap(), where: 'id = ?', whereArgs: [design.id]);
-    await NotificationService().showModelNotification(action: 'Updated', type: 'Design', name: design.name);
+    await NotificationService().showModelNotification(action: 'Updated', type: 'Design', name: design.name, referenceId: design.id);
     return res;
   }
 
@@ -96,7 +96,7 @@ class DesignRepository {
     final design = await getById(id);
     final res = await db.delete('designs', where: 'id = ?', whereArgs: [id]);
     if (design != null) {
-      await NotificationService().showModelNotification(action: 'Deleted', type: 'Design', name: design.name);
+      await NotificationService().showModelNotification(action: 'Deleted', type: 'Design', name: design.name, referenceId: design.id);
     }
     return res;
   }

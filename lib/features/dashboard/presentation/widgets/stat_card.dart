@@ -40,11 +40,11 @@ class StatCard extends StatelessWidget {
           Icon(icon, color: theme.accentColor, size: 28),
           const Spacer(),
           Text(title,
-            style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+            style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary, fontFamily: theme.fontFamily)),
           SizedBox(height: 4),
           Text(value,
             style: TextStyle(
-              fontSize: 22,
+              fontSize: theme.fontSize * 1.38,
               fontWeight: FontWeight.bold,
               color: theme.textPrimary,
               fontFamily: theme.fontFamily,
@@ -70,7 +70,7 @@ class StatCard extends StatelessWidget {
                   child: Text(
                     '${trendPositive ? "+" : ""}${trendPercentage!.toStringAsFixed(0)}% this month',
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: theme.fontSize * 0.69,
                       fontWeight: FontWeight.w600,
                       color: trendPositive
                         ? const Color(0xFF4CAF50)
@@ -160,7 +160,7 @@ class ChartStatCard extends StatelessWidget {
                       Text(
                         '${trendPositive ? "+" : ""}${trendPercentage!.toStringAsFixed(1)}%',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: theme.fontSize * 0.75,
                           fontWeight: FontWeight.bold,
                           color: trendPositive ? const Color(0xFF4CAF50) : const Color(0xFFF44336),
                           fontFamily: theme.fontFamily,
@@ -173,11 +173,11 @@ class ChartStatCard extends StatelessWidget {
           ),
           SizedBox(height: 16),
           Text(title,
-            style: TextStyle(fontSize: 14, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+            style: TextStyle(fontSize: theme.fontSize * 0.88, color: theme.textSecondary, fontFamily: theme.fontFamily)),
           SizedBox(height: 4),
           Text(value,
             style: TextStyle(
-              fontSize: 28,
+              fontSize: theme.fontSize * 1.75,
               fontWeight: FontWeight.bold,
               color: theme.textPrimary,
               fontFamily: theme.fontFamily,

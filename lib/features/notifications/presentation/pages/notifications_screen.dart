@@ -16,6 +16,46 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> with ThemeAwareMixin, NavigationMixin {
+  final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
+  String _selectedType = 'All';
+
+  final List<String> _types = ['All', 'Client', 'Order', 'Fabric', 'Design', 'Garment', 'System'];
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<NotificationProvider>(context, listen: false).loadNotifications();
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      Provider.of<NotificationProvider>(context, listen: false).loadMore();
+    }
+  }
+
+  void _onSearchChanged(String value) {
+    Provider.of<NotificationProvider>(context, listen: false)
+        .loadNotifications(query: value, type: _selectedType);
+  }
+
+  void _onTypeChanged(String? newValue) {
+    if (newValue != null) {
+      setState(() => _selectedType = newValue);
+      Provider.of<NotificationProvider>(context, listen: false)
+          .loadNotifications(query: _searchController.text, type: _selectedType);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +65,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with ThemeAwa
     return IchitoScaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Notifications'.t(context), style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Audit Trail'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
@@ -38,7 +78,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with ThemeAwa
                 'Mark All Read'.t(context),
                 style: TextStyle(
                   color: theme.accentColor,
-                  fontSize: 12,
+                  fontSize: theme.fontSize * 0.75,
                   fontFamily: theme.fontFamily,
                 ),
               ),
@@ -46,19 +86,87 @@ class _NotificationsScreenState extends State<NotificationsScreen> with ThemeAwa
         ],
       ),
       body: SafeArea(
-        child: notifications.isEmpty
-            ? _buildEmptyState()
-            : ListView.builder(
-                padding: EdgeInsets.fromLTRB(12, 8, 12, 100),
-                itemCount: notifications.length,
-                itemBuilder: (context, index) {
-                  return _NotificationTile(
-                    notification: notifications[index],
-                    onTap: () => _handleNotificationTap(notifications[index]),
-                    onDismiss: () => notifProvider.deleteNotification(notifications[index].id),
-                  );
-                },
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: _onSearchChanged,
+                      style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily, fontSize: theme.fontSize),
+                      decoration: InputDecoration(
+                        hintText: 'Search audit trail...',
+                        hintStyle: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily, fontSize: theme.fontSize),
+                        prefixIcon: Icon(Icons.search, color: theme.textSecondary),
+                        filled: true,
+                        fillColor: theme.cardColor,
+                        border: OutlineInputBorder(
+                          borderRadius: theme.cornerRadius,
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        color: theme.cardColor,
+                        borderRadius: theme.cornerRadius,
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: _selectedType,
+                          isExpanded: true,
+                          dropdownColor: theme.cardColor,
+                          style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily, fontSize: theme.fontSize),
+                          icon: Icon(Icons.filter_list, color: theme.textSecondary),
+                          onChanged: _onTypeChanged,
+                          items: _types.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
+            ),
+            Expanded(
+              child: notifications.isEmpty && !notifProvider.isLoading
+                  ? _buildEmptyState()
+                  : ListView.builder(
+                      controller: _scrollController,
+                      padding: EdgeInsets.fromLTRB(12, 8, 12, 100),
+                      itemCount: notifications.length + (notifProvider.isLoading ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index == notifications.length) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: CircularProgressIndicator(color: theme.accentColor),
+                            ),
+                          );
+                        }
+                        return _NotificationTile(
+                          notification: notifications[index],
+                          onTap: () => _handleNotificationTap(notifications[index]),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -68,9 +176,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> with ThemeAwa
     if (!notification.isRead) {
       notifProvider.markAsRead(notification.id);
     }
-    // Navigate to the referenced entity if it's an order notification
-    if (notification.type == 'order_due' && notification.referenceId != null) {
+    // Navigate based on type
+    if (notification.type == 'Order' && notification.referenceId != null) {
       navigateTo('/orders/detail', arguments: notification.referenceId);
+    } else if (notification.type == 'Client' && notification.referenceId != null) {
+      navigateTo('/customers/detail', arguments: notification.referenceId);
     }
   }
 
@@ -88,13 +198,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> with ThemeAwa
                 color: theme.accentLight,
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.notifications_none, size: 40, color: theme.accentColor),
+              child: Icon(Icons.history, size: 40, color: theme.accentColor),
             ),
             SizedBox(height: 24),
             Text(
-              'No Notifications'.t(context),
+              'No Audit Logs Found'.t(context),
               style: TextStyle(
-                fontSize: 18,
+                fontSize: theme.fontSize * 1.12,
                 fontWeight: FontWeight.w600,
                 color: theme.textPrimary,
                 fontFamily: theme.fontFamily,
@@ -102,8 +212,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> with ThemeAwa
             ),
             SizedBox(height: 8),
             Text(
-              'You\'.t(context)re all caught up! Notifications about upcoming orders will appear here.',
-              style: TextStyle(fontSize: 14, color: theme.textSecondary, fontFamily: theme.fontFamily),
+              'System events will appear here permanently.',
+              style: TextStyle(fontSize: theme.fontSize * 0.88, color: theme.textSecondary, fontFamily: theme.fontFamily),
               textAlign: TextAlign.center,
             ),
           ],
@@ -116,39 +226,39 @@ class _NotificationsScreenState extends State<NotificationsScreen> with ThemeAwa
 class _NotificationTile extends StatelessWidget {
   final AppNotification notification;
   final VoidCallback onTap;
-  final VoidCallback onDismiss;
 
   const _NotificationTile({
     required this.notification,
     required this.onTap,
-    required this.onDismiss,
   });
 
   IconData _getIcon() {
     switch (notification.type) {
-      case 'order_due':
-        return Icons.schedule;
-      case 'order_paid':
-        return Icons.payment;
-      case 'order_updated':
-        return Icons.update;
-      case 'system':
-        return Icons.info_outlined;
+      case 'Order':
+        return Icons.receipt_long;
+      case 'Client':
+        return Icons.person;
+      case 'Fabric':
+        return Icons.layers;
+      case 'Garment':
+        return Icons.checkroom;
+      case 'Design':
+        return Icons.brush;
+      case 'System':
+        return Icons.info_outline;
       default:
-        return Icons.notifications_outlined;
+        return Icons.history;
     }
   }
 
   Color _getIconColor(ThemeProvider theme) {
-    switch (notification.type) {
-      case 'order_due':
-        if (notification.title.contains('Overdue')) return const Color(0xFFF44336);
-        if (notification.title.contains('Today')) return const Color(0xFFFF9800);
-        return theme.accentColor;
-      case 'order_paid':
-        return const Color(0xFF4CAF50);
-      case 'order_updated':
-        return const Color(0xFF2196F3);
+    switch (notification.action) {
+      case 'Created':
+        return const Color(0xFF4CAF50); // Green
+      case 'Updated':
+        return const Color(0xFF2196F3); // Blue
+      case 'Deleted':
+        return const Color(0xFFF44336); // Red
       default:
         return theme.accentColor;
     }
@@ -168,105 +278,104 @@ class _NotificationTile extends StatelessWidget {
     final theme = Provider.of<ThemeProvider>(context);
     final iconColor = _getIconColor(theme);
 
-    return Dismissible(
-      key: Key(notification.id),
-      direction: DismissDirection.endToStart,
-      onDismissed: (_) => onDismiss(),
-      background: Container(
-        alignment: Alignment.centerRight,
-        padding: EdgeInsets.only(right: 20),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
         margin: EdgeInsets.symmetric(vertical: 4),
+        padding: EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: const Color(0xFFF44336).withOpacity(0.15),
+          color: notification.isRead
+              ? theme.cardColor
+              : theme.accentColor.withOpacity(0.06),
           borderRadius: theme.cornerRadius,
-        ),
-        child: Icon(Icons.delete_outline, color: Color(0xFFF44336)),
-      ),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          margin: EdgeInsets.symmetric(vertical: 4),
-          padding: EdgeInsets.all(14),
-          decoration: BoxDecoration(
+          border: Border.all(
             color: notification.isRead
-                ? theme.cardColor
-                : theme.accentColor.withOpacity(0.06),
-            borderRadius: theme.cornerRadius,
-            border: Border.all(
-              color: notification.isRead
-                  ? theme.accentColor.withOpacity(0.15)
-                  : theme.accentColor.withOpacity(0.4),
-              width: 1,
-            ),
+                ? theme.accentColor.withOpacity(0.15)
+                : theme.accentColor.withOpacity(0.4),
+            width: 1,
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Icon
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(_getIcon(), color: iconColor, size: 22),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Icon
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
               ),
-              SizedBox(width: 12),
-              // Content
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            notification.title,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: notification.isRead ? FontWeight.w500 : FontWeight.bold,
-                              color: theme.textPrimary,
-                              fontFamily: theme.fontFamily,
-                            ),
+              child: Icon(_getIcon(), color: iconColor, size: 22),
+            ),
+            SizedBox(width: 12),
+            // Content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          notification.title,
+                          style: TextStyle(
+                            fontSize: theme.fontSize * 0.88,
+                            fontWeight: notification.isRead ? FontWeight.w500 : FontWeight.bold,
+                            color: theme.textPrimary,
+                            fontFamily: theme.fontFamily,
                           ),
                         ),
-                        if (!notification.isRead)
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: theme.accentColor,
-                              shape: BoxShape.circle,
-                            ),
+                      ),
+                      if (!notification.isRead)
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: theme.accentColor,
+                            shape: BoxShape.circle,
                           ),
-                      ],
+                        ),
+                    ],
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    notification.body,
+                    style: TextStyle(
+                      fontSize: theme.fontSize * 0.81,
+                      color: theme.textSecondary,
+                      fontFamily: theme.fontFamily,
                     ),
-                    SizedBox(height: 4),
-                    Text(
-                      notification.body,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: theme.textSecondary,
-                        fontFamily: theme.fontFamily,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(height: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        _formatTime(notification.createdAt),
+                        style: TextStyle(
+                          fontSize: theme.fontSize * 0.69,
+                          color: theme.textSecondary.withOpacity(0.7),
+                          fontFamily: theme.fontFamily,
+                        ),
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(height: 6),
-                    Text(
-                      _formatTime(notification.createdAt),
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: theme.textSecondary.withOpacity(0.7),
-                        fontFamily: theme.fontFamily,
-                      ),
-                    ),
-                  ],
-                ),
+                      if (notification.clientName != null)
+                        Text(
+                          notification.clientName!,
+                          style: TextStyle(
+                            fontSize: theme.fontSize * 0.69,
+                            color: theme.accentColor.withOpacity(0.8),
+                            fontFamily: theme.fontFamily,
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

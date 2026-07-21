@@ -26,7 +26,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
       onConfigure: _onConfigure,
@@ -207,7 +207,11 @@ class DatabaseHelper {
         title TEXT NOT NULL,
         body TEXT NOT NULL,
         type TEXT NOT NULL,
+        action TEXT NOT NULL DEFAULT 'Unknown',
         reference_id TEXT,
+        client_id TEXT,
+        order_id TEXT,
+        client_name TEXT,
         is_read INTEGER DEFAULT 0,
         created_at TEXT NOT NULL
       )
@@ -271,6 +275,12 @@ class DatabaseHelper {
     }
     if (oldVersion < 3) {
       await db.execute('ALTER TABLE customers ADD COLUMN role TEXT DEFAULT "regular"');
+    }
+    if (oldVersion < 4) {
+      await db.execute('ALTER TABLE notifications ADD COLUMN action TEXT DEFAULT "Unknown"');
+      await db.execute('ALTER TABLE notifications ADD COLUMN client_id TEXT');
+      await db.execute('ALTER TABLE notifications ADD COLUMN order_id TEXT');
+      await db.execute('ALTER TABLE notifications ADD COLUMN client_name TEXT');
     }
   }
 

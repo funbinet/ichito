@@ -50,7 +50,7 @@ class LoyaltyBadge extends StatelessWidget {
           Text(
             status,
             style: TextStyle(
-              fontSize: 10, 
+              fontSize: theme.fontSize * 0.62, 
               color: badgeColor, 
               fontWeight: FontWeight.w600,
               fontFamily: theme.fontFamily,
@@ -125,7 +125,7 @@ class CustomerCard extends StatelessWidget {
                             style: TextStyle(
                               color: theme.accentColor,
                               fontWeight: FontWeight.bold,
-                              fontSize: 24,
+                              fontSize: theme.fontSize * 1.50,
                               fontFamily: theme.fontFamily,
                             ),
                           ),
@@ -144,7 +144,7 @@ class CustomerCard extends StatelessWidget {
                     Text(
                       customer.name,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: theme.fontSize * 0.88,
                         fontWeight: FontWeight.w600,
                         color: theme.textPrimary,
                         fontFamily: theme.fontFamily,
@@ -161,7 +161,7 @@ class CustomerCard extends StatelessWidget {
                         SizedBox(width: 4),
                         Text(
                           '${customer.totalOrders} Orders',
-                          style: TextStyle(fontSize: 11, color: theme.textSecondary, fontFamily: theme.fontFamily),
+                          style: TextStyle(fontSize: theme.fontSize * 0.69, color: theme.textSecondary, fontFamily: theme.fontFamily),
                         ),
                       ],
                     ),
@@ -263,7 +263,7 @@ class _CustomerListTileState extends State<CustomerListTile> {
                                 style: TextStyle(
                                   color: theme.accentColor,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 20,
+                                  fontSize: theme.fontSize * 1.25,
                                   fontFamily: theme.fontFamily,
                                 ),
                               ),
@@ -279,7 +279,7 @@ class _CustomerListTileState extends State<CustomerListTile> {
                         Text(
                           widget.customer.name,
                           style: TextStyle(
-                            fontSize: 16, 
+                            fontSize: theme.fontSize, 
                             fontWeight: FontWeight.w600, 
                             color: theme.textPrimary, 
                             fontFamily: theme.fontFamily
@@ -293,7 +293,7 @@ class _CustomerListTileState extends State<CustomerListTile> {
                             Text(
                               widget.customer.phone,
                               style: TextStyle(
-                                fontSize: 13, 
+                                fontSize: theme.fontSize * 0.81, 
                                 color: theme.textSecondary, 
                                 fontFamily: theme.fontFamily
                               )
@@ -331,9 +331,9 @@ class _CustomerListTileState extends State<CustomerListTile> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Total Orders: ${widget.customer.totalOrders}'.t(context), style: TextStyle(fontSize: 13, color: theme.textSecondary)),
+                        Text('Total Orders: ${widget.customer.totalOrders}'.t(context), style: TextStyle(fontSize: theme.fontSize * 0.81, color: theme.textSecondary)),
                         SizedBox(height: 4),
-                        Text('Role: ${widget.customer.role}'.t(context), style: TextStyle(fontSize: 13, color: theme.textSecondary)),
+                        Text('Role: ${widget.customer.role}'.t(context), style: TextStyle(fontSize: theme.fontSize * 0.81, color: theme.textSecondary)),
                       ],
                     ),
                     Row(

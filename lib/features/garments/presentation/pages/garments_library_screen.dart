@@ -249,7 +249,7 @@ class _GarmentsLibraryScreenState extends State<GarmentsLibraryScreen>
           Text(
             'View:'.t(context),
             style: TextStyle(
-              fontSize: 12,
+              fontSize: theme.fontSize * 0.75,
               color: theme.textSecondary,
               fontFamily: theme.fontFamily,
             ),
@@ -283,7 +283,7 @@ class _GarmentsLibraryScreenState extends State<GarmentsLibraryScreen>
           Text(
             'Sort: '.t(context),
             style: TextStyle(
-              fontSize: 12,
+              fontSize: theme.fontSize * 0.75,
               color: theme.textSecondary,
               fontFamily: theme.fontFamily,
             ),
@@ -297,7 +297,7 @@ class _GarmentsLibraryScreenState extends State<GarmentsLibraryScreen>
               color: theme.textSecondary,
             ),
             style: TextStyle(
-              fontSize: 12,
+              fontSize: theme.fontSize * 0.75,
               color: theme.textPrimary,
               fontFamily: theme.fontFamily,
             ),

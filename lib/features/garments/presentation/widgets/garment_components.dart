@@ -61,7 +61,7 @@ class GarmentCard extends StatelessWidget {
             Text(
               garment.name,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: theme.fontSize * 0.81,
                 fontWeight: FontWeight.w600,
                 color: theme.textPrimary,
                 fontFamily: theme.fontFamily,
@@ -74,7 +74,7 @@ class GarmentCard extends StatelessWidget {
             // Measurement count
             Text(
               '${garment.measurementFields.length} measurements',
-              style: TextStyle(fontSize: 11, color: theme.textSecondary, fontFamily: theme.fontFamily),
+              style: TextStyle(fontSize: theme.fontSize * 0.69, color: theme.textSecondary, fontFamily: theme.fontFamily),
             ),
             // Category badge
             SizedBox(height: 4),
@@ -87,7 +87,7 @@ class GarmentCard extends StatelessWidget {
               child: Text(
                 garment.category.capitalize(),
                 style: TextStyle(
-                  fontSize: 10,
+                  fontSize: theme.fontSize * 0.62,
                   color: _getCategoryColor(garment.category),
                   fontFamily: theme.fontFamily,
                 ),
@@ -97,7 +97,7 @@ class GarmentCard extends StatelessWidget {
             // Usage count
             Text(
               '${garment.usageCount ?? 0} orders',
-              style: TextStyle(fontSize: 10, color: theme.textSecondary, fontFamily: theme.fontFamily),
+              style: TextStyle(fontSize: theme.fontSize * 0.62, color: theme.textSecondary, fontFamily: theme.fontFamily),
             ),
           ],
         ),
@@ -153,10 +153,10 @@ class GarmentListTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(garment.name,
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                    style: TextStyle(fontSize: theme.fontSize * 0.94, fontWeight: FontWeight.w600, color: theme.textPrimary, fontFamily: theme.fontFamily)),
                   SizedBox(height: 2),
                   Text('${garment.measurementFields.length} measurements',
-                    style: TextStyle(fontSize: 13, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+                    style: TextStyle(fontSize: theme.fontSize * 0.81, color: theme.textSecondary, fontFamily: theme.fontFamily)),
                 ],
               ),
             ),
@@ -172,7 +172,7 @@ class GarmentListTile extends StatelessWidget {
                   child: Text(
                     garment.category.capitalize(),
                     style: TextStyle(
-                      fontSize: 10,
+                      fontSize: theme.fontSize * 0.62,
                       color: _getCategoryColor(garment.category),
                       fontFamily: theme.fontFamily,
                     ),
@@ -180,7 +180,7 @@ class GarmentListTile extends StatelessWidget {
                 ),
                 SizedBox(height: 4),
                 Text('${garment.usageCount ?? 0} orders',
-                  style: TextStyle(fontSize: 11, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+                  style: TextStyle(fontSize: theme.fontSize * 0.69, color: theme.textSecondary, fontFamily: theme.fontFamily)),
               ],
             ),
           ],

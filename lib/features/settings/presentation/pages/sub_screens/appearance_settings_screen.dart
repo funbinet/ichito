@@ -61,7 +61,7 @@ class _AppearanceSettingsScreenState extends State<AppearanceSettingsScreen> wit
       showRadialMenu: false,
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Appearance'.t(context), style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Appearance'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
@@ -78,8 +78,8 @@ class _AppearanceSettingsScreenState extends State<AppearanceSettingsScreen> wit
           SizedBox(height: 24),
           _buildSectionHeader('Colors'),
           _buildColorSettings(),
-          SizedBox(height: 24),
-          SizedBox(height: 24),
+          _buildSectionHeader('Typography'),
+          _buildFontFamilySettings(),
           SizedBox(height: 24),
           _buildSectionHeader('Global Font Size'),
           _buildFontSizeSettings(),
@@ -154,37 +154,67 @@ class _AppearanceSettingsScreenState extends State<AppearanceSettingsScreen> wit
     );
   }
 
-  Widget _buildFontSizeSettings() {
+  Widget _buildFontFamilySettings() {
+    final fonts = ['Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins'];
     return Card(
       color: theme.cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: theme.cornerRadius,
         side: BorderSide(color: theme.accentColor.withOpacity(0.2)),
       ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Font Size'.t(context), style: bodyStyle),
-                Text('${theme.fontSize.toInt()} pt', style: subtitleStyle.copyWith(color: theme.accentColor)),
-              ],
-            ),
-            Slider(
-              value: theme.fontSize,
-              min: 12.0,
-              max: 32.0,
-              divisions: 20,
+      child: Column(
+        children: fonts.map((font) {
+          return RadioListTile<String>(
+            title: Text(font, style: TextStyle(fontFamily: font, fontSize: theme.fontSize, color: theme.textPrimary)),
+            value: font,
+            groupValue: theme.fontFamily,
+            activeColor: theme.accentColor,
+            onChanged: (val) {
+              if (val != null) {
+                theme.setFontFamily(val);
+                _settings.setFontFamily(val);
+              }
+            },
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildFontSizeSettings() {
+    final sizes = [
+      {'label': 'Extra Small', 'value': 12.0},
+      {'label': 'Small', 'value': 14.0},
+      {'label': 'Medium (Default)', 'value': 16.0},
+      {'label': 'Large', 'value': 18.0},
+      {'label': 'Extra Large', 'value': 20.0},
+      {'label': 'Huge', 'value': 24.0},
+    ];
+
+    return Card(
+      color: theme.cardColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: theme.cornerRadius,
+        side: BorderSide(color: theme.accentColor.withOpacity(0.2)),
+      ),
+      child: Column(
+        children: [
+          ...sizes.map((size) {
+            return RadioListTile<double>(
+              title: Text(size['label'] as String, style: bodyStyle),
+              value: size['value'] as double,
+              groupValue: theme.fontSize,
               activeColor: theme.accentColor,
-              inactiveColor: theme.borderColor,
-              label: '${theme.fontSize.toInt()}',
               onChanged: (val) {
-                theme.setFontSize(val);
+                if (val != null) {
+                  theme.setFontSize(val);
+                }
               },
-            ),
-            Text(
+            );
+          }),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
               'Sample Text Preview'.t(context),
               style: TextStyle(
                 fontFamily: theme.fontFamily,
@@ -192,9 +222,8 @@ class _AppearanceSettingsScreenState extends State<AppearanceSettingsScreen> wit
                 color: theme.textPrimary,
               ),
             ),
-            SizedBox(height: 8),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

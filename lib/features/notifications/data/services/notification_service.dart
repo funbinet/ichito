@@ -4,6 +4,9 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:uuid/uuid.dart';
+import '../../../../shared/data/database/notification_repository.dart';
+import '../models/notification_model.dart';
 
 /// Service wrapper for local push notifications.
 ///
@@ -86,10 +89,34 @@ class NotificationService {
     required String action, // Created, Updated, Deleted
     required String type,   // Client, Order, Fabric, etc.
     required String name,   // Name of the item
+    String? referenceId,
+    String? clientId,
+    String? orderId,
+    String? clientName,
   }) async {
     final int id = DateTime.now().millisecondsSinceEpoch.remainder(100000);
     final String title = '$type $action';
     final String body = '$name has been successfully ${action.toLowerCase()}.';
+    
+    // Save to DB
+    try {
+      final notif = AppNotification(
+        id: const Uuid().v4(),
+        title: title,
+        body: body,
+        type: type,
+        action: action,
+        referenceId: referenceId,
+        clientId: clientId,
+        orderId: orderId,
+        clientName: clientName,
+        createdAt: DateTime.now(),
+      );
+      await NotificationRepository().insert(notif);
+    } catch (e) {
+      debugPrint('Failed to save notification: $e');
+    }
+
     await showNotification(id: id, title: title, body: body);
   }
 

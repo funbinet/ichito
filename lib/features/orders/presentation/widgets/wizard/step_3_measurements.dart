@@ -132,7 +132,7 @@ class _Step3MeasurementsState extends State<Step3Measurements> with ThemeAwareMi
           Text(
             'Step 3: Measurements for ${_garment!.name}'.t(context),
             style: TextStyle(
-              fontSize: 18,
+              fontSize: theme.fontSize * 1.12,
               fontWeight: FontWeight.bold,
               color: theme.textPrimary,
               fontFamily: theme.fontFamily,
@@ -141,7 +141,7 @@ class _Step3MeasurementsState extends State<Step3Measurements> with ThemeAwareMi
           SizedBox(height: 8),
           Text(
             'Enter measurements in inches. Existing profile data has been loaded automatically.'.t(context),
-            style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily, fontSize: 12),
+            style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily, fontSize: theme.fontSize * 0.75),
           ),
           SizedBox(height: 16),
           Expanded(
@@ -182,7 +182,7 @@ class _Step3MeasurementsState extends State<Step3Measurements> with ThemeAwareMi
           CheckboxListTile(
             title: Text(
               'Save these measurements to ${_customer?.name ?? "customer"}\'s profile as defaults.',
-              style: TextStyle(fontSize: 14, color: theme.textPrimary, fontFamily: theme.fontFamily),
+              style: TextStyle(fontSize: theme.fontSize * 0.88, color: theme.textPrimary, fontFamily: theme.fontFamily),
             ),
             value: _saveAsDefault,
             onChanged: (val) {

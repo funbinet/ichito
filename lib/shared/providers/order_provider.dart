@@ -29,14 +29,14 @@ class OrderProvider extends ChangeNotifier {
 
   Future<void> addOrder(Order order) async {
     await _repository.createOrder(order);
-    await NotificationService().showModelNotification(action: 'Created', type: 'Order', name: order.orderNumber);
+    await NotificationService().showModelNotification(action: 'Created', type: 'Order', name: order.orderNumber, referenceId: order.id, orderId: order.id, clientId: order.customerId, clientName: order.customerName);
     await NotificationService().scheduleDueReminders(order.dueDate, order.orderNumber, order.customerName ?? 'Client');
     await loadOrders();
   }
 
   Future<void> updateOrder(Order order) async {
     await _repository.updateOrder(order);
-    await NotificationService().showModelNotification(action: 'Updated', type: 'Order', name: order.orderNumber);
+    await NotificationService().showModelNotification(action: 'Updated', type: 'Order', name: order.orderNumber, referenceId: order.id, orderId: order.id, clientId: order.customerId, clientName: order.customerName);
     await NotificationService().scheduleDueReminders(order.dueDate, order.orderNumber, order.customerName ?? 'Client');
     await loadOrders();
   }
@@ -45,7 +45,7 @@ class OrderProvider extends ChangeNotifier {
     final order = getOrderById(id);
     await _repository.deleteOrder(id);
     if (order != null) {
-      await NotificationService().showModelNotification(action: 'Deleted', type: 'Order', name: order.orderNumber);
+      await NotificationService().showModelNotification(action: 'Deleted', type: 'Order', name: order.orderNumber, referenceId: order.id, orderId: order.id, clientId: order.customerId, clientName: order.customerName);
     }
     await loadOrders();
   }

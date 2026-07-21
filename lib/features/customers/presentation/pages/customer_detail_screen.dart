@@ -111,9 +111,16 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with ThemeA
     }
   }
   
-  Future<void> _updatePhoto() async {
-    // Placeholder for photo update logic
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Photo update coming soon'.t(context))));
+  void _showImagePreview(BuildContext context, String base64Image) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: InteractiveViewer(
+          child: Image.memory(base64Decode(base64Image), fit: BoxFit.contain),
+        ),
+      ),
+    );
   }
 
   @override
@@ -190,28 +197,18 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with ThemeA
   Widget _buildProfileHeader() {
     return Column(
       children: [
-        Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    SquareAvatar(
-                      size: 120,
-                      base64Image: _customer!.photoPath,
-                      fallbackText: _customer!.initials,
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: theme.accentColor,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: theme.backgroundColor, width: 2),
-                      ),
-                      child: IconButton(
-                        icon: Icon(Icons.camera_alt, color: Colors.white, size: 20),
-                        onPressed: _updatePhoto,
-                      ),
-                    ),
-                  ],
-                ),  SizedBox(height: 16),
-        Text(_customer!.name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+        GestureDetector(
+          onTap: _customer!.photoPath != null
+              ? () => _showImagePreview(context, _customer!.photoPath!)
+              : null,
+          child: SquareAvatar(
+            size: 120,
+            base64Image: _customer!.photoPath,
+            fallbackText: _customer!.initials,
+          ),
+        ),
+        SizedBox(height: 16),
+        Text(_customer!.name, style: TextStyle(fontSize: theme.fontSize * 1.25, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
         SizedBox(height: 16),
         
         // Contact Row
@@ -220,7 +217,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with ThemeA
           children: [
             Icon(Icons.phone_outlined, size: 16, color: theme.textSecondary),
             SizedBox(width: 4),
-            Text(_customer!.phone, style: TextStyle(fontSize: 14, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+            Text(_customer!.phone, style: TextStyle(fontSize: theme.fontSize * 0.88, color: theme.textSecondary, fontFamily: theme.fontFamily)),
             SizedBox(width: 16),
             _buildActionChip('Call', Icons.call, () => _launchUrl('tel', _customer!.phone)),
             SizedBox(width: 8),
@@ -235,7 +232,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with ThemeA
             children: [
               Icon(Icons.email_outlined, size: 16, color: theme.textSecondary),
               SizedBox(width: 4),
-              Text(_customer!.email!, style: TextStyle(fontSize: 14, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+              Text(_customer!.email!, style: TextStyle(fontSize: theme.fontSize * 0.88, color: theme.textSecondary, fontFamily: theme.fontFamily)),
               SizedBox(width: 16),
               _buildActionChip('Email', Icons.mail, () => _launchUrl('mailto', _customer!.email!)),
             ],
@@ -249,7 +246,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with ThemeA
             children: [
               Icon(Icons.location_on_outlined, size: 16, color: theme.textSecondary),
               SizedBox(width: 4),
-              Text(_customer!.location!, style: TextStyle(fontSize: 14, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+              Text(_customer!.location!, style: TextStyle(fontSize: theme.fontSize * 0.88, color: theme.textSecondary, fontFamily: theme.fontFamily)),
             ],
           ),
         ],
@@ -260,11 +257,11 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with ThemeA
           children: [
             Icon(_customer!.gender.toLowerCase() == 'male' ? Icons.male : Icons.female, size: 16, color: theme.textSecondary),
             SizedBox(width: 4),
-            Text(_customer!.gender.capitalize(), style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+            Text(_customer!.gender.capitalize(), style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary, fontFamily: theme.fontFamily)),
             Text('  |  ', style: TextStyle(color: Colors.grey)),
-            Text('${_customer!.totalOrders} Orders', style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+            Text('${_customer!.totalOrders} Orders', style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary, fontFamily: theme.fontFamily)),
             Text('  |  ', style: TextStyle(color: Colors.grey)),
-            Text('3 Years'.t(context), style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)), // Mocked years
+            Text('3 Years'.t(context), style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary, fontFamily: theme.fontFamily)), // Mocked years
           ],
         ),
         SizedBox(height: 16),
@@ -286,7 +283,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with ThemeA
           children: [
             Icon(icon, size: 12, color: theme.accentColor),
             SizedBox(width: 4),
-            Text(label, style: TextStyle(fontSize: 10, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+            Text(label, style: TextStyle(fontSize: theme.fontSize * 0.62, color: theme.textPrimary, fontFamily: theme.fontFamily)),
           ],
         ),
       ),
@@ -324,10 +321,10 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with ThemeA
       children: [
         Icon(icon, size: 16, color: theme.textSecondary),
         SizedBox(width: 8),
-        Text(label, style: TextStyle(fontSize: 14, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+        Text(label, style: TextStyle(fontSize: theme.fontSize * 0.88, color: theme.textSecondary, fontFamily: theme.fontFamily)),
         SizedBox(width: 16),
         Expanded(
-          child: Text(value, textAlign: TextAlign.right, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+          child: Text(value, textAlign: TextAlign.right, style: TextStyle(fontSize: theme.fontSize * 0.88, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
         ),
       ],
     );
@@ -340,7 +337,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with ThemeA
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Default Measurements'.t(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+            Text('Default Measurements'.t(context), style: TextStyle(fontSize: theme.fontSize, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
             TextButton(
               onPressed: () async {
                 final result = await Navigator.push(
@@ -365,8 +362,8 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with ThemeA
                 children: [
                   Icon(Icons.straighten_outlined, size: 48, color: theme.textSecondary.withOpacity(0.5)),
                   SizedBox(height: 8),
-                  Text('No Measurements'.t(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
-                  Text('Default measurements have not been recorded.'.t(context), style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+                  Text('No Measurements'.t(context), style: TextStyle(fontSize: theme.fontSize * 0.88, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+                  Text('Default measurements have not been recorded.'.t(context), style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary, fontFamily: theme.fontFamily)),
                 ],
               ),
             ),
@@ -389,12 +386,12 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with ThemeA
                     children: [
                       Text(
                         _formatMeasurementName(entry.key),
-                        style: TextStyle(fontSize: 14, color: theme.textSecondary, fontFamily: theme.fontFamily),
+                        style: TextStyle(fontSize: theme.fontSize * 0.88, color: theme.textSecondary, fontFamily: theme.fontFamily),
                       ),
                       const Spacer(),
                       Text(
                         '${entry.value} cm', // Use lang settings for unit in future
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: theme.textPrimary, fontFamily: theme.fontFamily),
+                        style: TextStyle(fontSize: theme.fontSize * 0.88, fontWeight: FontWeight.w600, color: theme.textPrimary, fontFamily: theme.fontFamily),
                       ),
                     ],
                   ),
@@ -417,7 +414,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with ThemeA
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Order History (${_customer!.totalOrders})'.t(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+            Text('Order History (${_customer!.totalOrders})'.t(context), style: TextStyle(fontSize: theme.fontSize, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
             if (_customer!.totalOrders > 5)
               TextButton(
                 onPressed: () {},
@@ -476,7 +473,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with ThemeA
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Financial Summary'.t(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+          Text('Financial Summary'.t(context), style: TextStyle(fontSize: theme.fontSize, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
           SizedBox(height: 16),
           _buildStatRow(Icons.receipt_outlined, 'Total Billed:', language.formatCurrency(totalBilled, showSymbol: true)),
           SizedBox(height: 8),
@@ -499,8 +496,8 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with ThemeA
     return Center(
       child: Column(
         children: [
-          Text('Created: ${_customer!.createdAt.toString().split('.t(context) ')[0]}', style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
-          Text('Last Order: ${_customer!.lastOrderDate?.toString().split('.t(context) ')[0] ?? 'N/A'}', style: TextStyle(fontSize: 12, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+          Text('Created: ${_customer!.createdAt.toString().split('.t(context) ')[0]}', style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary, fontFamily: theme.fontFamily)),
+          Text('Last Order: ${_customer!.lastOrderDate?.toString().split('.t(context) ')[0] ?? 'N/A'}', style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.textSecondary, fontFamily: theme.fontFamily)),
         ],
       ),
     );

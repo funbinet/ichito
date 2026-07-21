@@ -111,7 +111,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
     if (pickedFile == null) return;
     if (!mounted) return;
     
-    final croppedBytes = await ImageCropDialog.show(context, File(pickedFile.path), isCircularPreview: true);
+    final croppedBytes = await ImageCropDialog.show(context, File(pickedFile.path));
     if (croppedBytes == null) return;
     
     setState(() {
@@ -197,7 +197,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
                 style: TextStyle(
                   color: theme.accentColor,
                   fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                  fontSize: theme.fontSize,
                   fontFamily: theme.fontFamily,
                 ),
               ),
@@ -230,7 +230,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
                             children: [
                               Icon(Icons.camera_alt_outlined, color: theme.accentColor, size: 32),
                               SizedBox(height: 4),
-                              Text('Upload'.t(context), style: TextStyle(fontSize: 12, color: theme.accentColor, fontFamily: theme.fontFamily)),
+                              Text('Upload'.t(context), style: TextStyle(fontSize: theme.fontSize * 0.75, color: theme.accentColor, fontFamily: theme.fontFamily)),
                             ],
                           )
                         : null,
@@ -241,7 +241,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
               
               Padding(
                 padding: EdgeInsets.only(left: 16, bottom: 8),
-                child: Text('Full Name *'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
+                child: Text('Full Name *'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: theme.fontSize * 0.81, fontFamily: theme.fontFamily)),
               ),
               AdaptiveTextField(
                 controller: _nameController,
@@ -253,7 +253,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
               
               Padding(
                 padding: EdgeInsets.only(left: 16, top: 16, bottom: 8),
-                child: Text('Phone *'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
+                child: Text('Phone *'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: theme.fontSize * 0.81, fontFamily: theme.fontFamily)),
               ),
               AdaptiveTextField(
                 controller: _phoneController,
@@ -266,7 +266,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
               
               Padding(
                 padding: EdgeInsets.only(left: 16, top: 16, bottom: 8),
-                child: Text('Email (Optional)'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
+                child: Text('Email (Optional)'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: theme.fontSize * 0.81, fontFamily: theme.fontFamily)),
               ),
               AdaptiveTextField(
                 controller: _emailController,
@@ -278,7 +278,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
               
               Padding(
                 padding: EdgeInsets.only(left: 16, top: 16, bottom: 8),
-                child: Text('Gender *'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
+                child: Text('Gender *'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: theme.fontSize * 0.81, fontFamily: theme.fontFamily)),
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
@@ -317,7 +317,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
               
               Padding(
                 padding: EdgeInsets.only(left: 16, top: 16, bottom: 8),
-                child: Text('Role / Status'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
+                child: Text('Role / Status'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: theme.fontSize * 0.81, fontFamily: theme.fontFamily)),
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
@@ -352,7 +352,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
               
               Padding(
                 padding: EdgeInsets.only(left: 16, top: 16, bottom: 8),
-                child: Text('Location (Optional)'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 13, fontFamily: theme.fontFamily)),
+                child: Text('Location (Optional)'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: theme.fontSize * 0.81, fontFamily: theme.fontFamily)),
               ),
               AdaptiveTextField(
                 controller: _locationController,
@@ -369,7 +369,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
                     Expanded(child: Divider(color: theme.borderColor)),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Text('Default Measurements (Optional)'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 12, fontFamily: theme.fontFamily)),
+                      child: Text('Default Measurements (Optional)'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: theme.fontSize * 0.75, fontFamily: theme.fontFamily)),
                     ),
                     Expanded(child: Divider(color: theme.borderColor)),
                   ],
@@ -410,7 +410,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
             style: TextStyle(color: theme.textPrimary, fontFamily: theme.fontFamily),
             decoration: InputDecoration(
               labelText: _formatMeasurementLabel(field),
-              labelStyle: TextStyle(color: theme.textSecondary, fontSize: 14, fontFamily: theme.fontFamily),
+              labelStyle: TextStyle(color: theme.textSecondary, fontSize: theme.fontSize * 0.88, fontFamily: theme.fontFamily),
               border: OutlineInputBorder(borderRadius: theme.cornerRadius),
               enabledBorder: OutlineInputBorder(
                 borderRadius: theme.cornerRadius,
@@ -421,7 +421,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> with ThemeAware
                 borderSide: BorderSide(color: theme.accentColor, width: 2),
               ),
               suffixText: 'cm', // Or fetch from settings
-              suffixStyle: TextStyle(color: theme.textSecondary, fontSize: 12, fontFamily: theme.fontFamily),
+              suffixStyle: TextStyle(color: theme.textSecondary, fontSize: theme.fontSize * 0.75, fontFamily: theme.fontFamily),
               contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             ),
           );

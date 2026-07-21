@@ -142,7 +142,7 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
               child: Icon(Icons.check_circle, color: Colors.green, size: 64),
             ),
             SizedBox(height: 16),
-            Text('Order Created!'.t(context), style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
+            Text('Order Created!'.t(context), style: TextStyle(fontSize: theme.fontSize * 1.25, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily)),
             SizedBox(height: 8),
             Text('The order has been successfully recorded in the system.'.t(context), textAlign: TextAlign.center, style: TextStyle(color: theme.textSecondary, fontFamily: theme.fontFamily)),
             SizedBox(height: 24),
@@ -200,7 +200,7 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
           children: [
             Text(
               'Step 6: Review & Confirm'.t(context),
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily),
+              style: TextStyle(fontSize: theme.fontSize * 1.12, fontWeight: FontWeight.bold, color: theme.textPrimary, fontFamily: theme.fontFamily),
             ),
             SizedBox(height: 16),
             
@@ -261,7 +261,7 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Labor Cost'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 12, fontFamily: theme.fontFamily)),
+                              Text('Labor Cost'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: theme.fontSize * 0.75, fontFamily: theme.fontFamily)),
                               Text(currencyFormat.format(widget.laborCost), style: TextStyle(color: theme.textPrimary, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily)),
                             ],
                           ),
@@ -270,7 +270,7 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Material Cost'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 12, fontFamily: theme.fontFamily)),
+                              Text('Material Cost'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: theme.fontSize * 0.75, fontFamily: theme.fontFamily)),
                               Text(currencyFormat.format(widget.fabricCost), style: TextStyle(color: theme.textPrimary, fontWeight: FontWeight.bold, fontFamily: theme.fontFamily)),
                             ],
                           ),
@@ -284,8 +284,8 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Total Amount'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 12, fontFamily: theme.fontFamily)),
-                              Text(currencyFormat.format(widget.totalAmount), style: TextStyle(color: theme.accentColor, fontWeight: FontWeight.bold, fontSize: 18, fontFamily: theme.fontFamily)),
+                              Text('Total Amount'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: theme.fontSize * 0.75, fontFamily: theme.fontFamily)),
+                              Text(currencyFormat.format(widget.totalAmount), style: TextStyle(color: theme.accentColor, fontWeight: FontWeight.bold, fontSize: theme.fontSize * 1.12, fontFamily: theme.fontFamily)),
                             ],
                           ),
                         ),
@@ -294,8 +294,8 @@ class _Step6ReviewState extends State<Step6Review> with ThemeAwareMixin {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Balance Due'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: 12, fontFamily: theme.fontFamily)),
-                                Text(currencyFormat.format(widget.totalAmount - widget.deposit), style: TextStyle(color: theme.textPrimary, fontWeight: FontWeight.bold, fontSize: 18, fontFamily: theme.fontFamily)),
+                                Text('Balance Due'.t(context), style: TextStyle(color: theme.textSecondary, fontSize: theme.fontSize * 0.75, fontFamily: theme.fontFamily)),
+                                Text(currencyFormat.format(widget.totalAmount - widget.deposit), style: TextStyle(color: theme.textPrimary, fontWeight: FontWeight.bold, fontSize: theme.fontSize * 1.12, fontFamily: theme.fontFamily)),
                               ],
                             ),
                           ),

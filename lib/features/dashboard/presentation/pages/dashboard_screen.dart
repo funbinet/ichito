@@ -400,7 +400,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
                   Text(
                     order.orderNumber,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: theme.fontSize * 0.75,
                       fontWeight: FontWeight.w600,
                       color: theme.textPrimary,
                       fontFamily: theme.fontFamily,
@@ -412,7 +412,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
                     Text(
                       order.customerName!,
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: theme.fontSize * 0.69,
                         color: theme.textSecondary,
                         fontFamily: theme.fontFamily,
                       ),
@@ -436,7 +436,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
                               ? 'Due today!'
                               : '${daysLeft}d left',
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: theme.fontSize * 0.69,
                         fontWeight: FontWeight.w600,
                         color: isOverdue
                             ? const Color(0xFFF44336)
@@ -468,7 +468,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
             Text(
               'Welcome to ICHITO!'.t(context),
               style: TextStyle(
-                fontSize: 18,
+                fontSize: theme.fontSize * 1.12,
                 fontWeight: FontWeight.w600,
                 color: theme.textPrimary,
                 fontFamily: theme.fontFamily,
@@ -478,7 +478,7 @@ class _DashboardScreenState extends State<DashboardScreen> with ThemeAwareMixin,
             SizedBox(height: 8),
             Text(
               'Start by adding your first customer and creating an order.'.t(context),
-              style: TextStyle(fontSize: 14, color: theme.textSecondary, fontFamily: theme.fontFamily),
+              style: TextStyle(fontSize: theme.fontSize * 0.88, color: theme.textSecondary, fontFamily: theme.fontFamily),
               textAlign: TextAlign.center,
             ),
           ],

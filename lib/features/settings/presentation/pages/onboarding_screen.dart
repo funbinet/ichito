@@ -171,10 +171,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> with ThemeAwareMixi
           children: [
             Image.asset('assets/images/logo_white.png', height: 120),
             SizedBox(height: 32),
-            Text('Welcome to ICHITO'.t(context), style: headingStyle.copyWith(fontSize: 32)),
+            Text('Welcome to ICHITO'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 2)),
             SizedBox(height: 16),
             Text('The complete offline management system designed specifically for tailors.'.t(context), 
-                 textAlign: TextAlign.center, style: subtitleStyle.copyWith(fontSize: 16)),
+                 textAlign: TextAlign.center, style: subtitleStyle.copyWith(fontSize: theme.fontSize)),
           ],
         ),
       ),

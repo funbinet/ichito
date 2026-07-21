@@ -70,7 +70,7 @@ class _HelpScreenState extends State<HelpScreen> with ThemeAwareMixin {
     return Scaffold(
       backgroundColor: theme.backgroundColor,
       appBar: AppBar(
-        title: Text('Help & User Guide'.t(context), style: headingStyle.copyWith(fontSize: 18)),
+        title: Text('Help & User Guide'.t(context), style: headingStyle.copyWith(fontSize: theme.fontSize * 1.12)),
         backgroundColor: theme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.textPrimary),
@@ -91,7 +91,7 @@ class _HelpScreenState extends State<HelpScreen> with ThemeAwareMixin {
                 child: ExpansionTile(
                   title: Text(
                     category.key,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: theme.textPrimary, fontFamily: theme.fontFamily),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: theme.fontSize, color: theme.textPrimary, fontFamily: theme.fontFamily),
                   ),
                   iconColor: theme.accentColor,
                   collapsedIconColor: theme.textSecondary,
@@ -151,7 +151,7 @@ class _HelpTopicTileState extends State<HelpTopicTile> {
             widget.title,
             style: TextStyle(
               fontWeight: FontWeight.w600,
-              fontSize: 14,
+              fontSize: widget.theme.fontSize * 0.88,
               color: widget.theme.textPrimary,
               fontFamily: widget.theme.fontFamily,
             ),
@@ -171,7 +171,7 @@ class _HelpTopicTileState extends State<HelpTopicTile> {
                 widget.content,
                 style: TextStyle(
                   color: widget.theme.textSecondary,
-                  fontSize: 13,
+                  fontSize: widget.theme.fontSize * 0.81,
                   height: 1.6,
                   fontFamily: widget.theme.fontFamily,
                 ),
